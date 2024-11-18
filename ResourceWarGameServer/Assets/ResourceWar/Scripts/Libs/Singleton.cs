@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-namespace ResourceWar.Server
+namespace ResourceWar.Server.Lib
 {
   
     public class Singleton<T> where T : class, new()

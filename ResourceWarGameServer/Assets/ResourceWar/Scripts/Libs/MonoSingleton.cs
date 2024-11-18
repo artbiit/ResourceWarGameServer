@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
-namespace ResourceWar.Server
+namespace ResourceWar.Server.Lib
 {
     public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
