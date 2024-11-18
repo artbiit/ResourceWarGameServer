@@ -1,0 +1,19 @@
+{
+    "name": "ResourceWar",
+    "rootNamespace": "ResourceWar.Server",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "CloudRendering",
+        "WindowsStandalone64"
+    ],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

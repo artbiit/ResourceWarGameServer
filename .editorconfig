@@ -1,0 +1,8 @@
+[*.cs]
+charset = utf-8
+
+[*.{html,css,js}]
+charset = utf-8
+
+[*.txt]
+charset = utf-8
