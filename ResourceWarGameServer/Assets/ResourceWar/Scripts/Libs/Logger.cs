@@ -117,8 +117,9 @@ namespace ResourceWar.Server.Lib
             WriteToBuffer(FormatLogMessage(LogLevel.Log, message));
             UnityLog(message, context);
         }
-
+#if !UNITY_EDITOR
         [System.Diagnostics.Conditional("ENABLE_LOG")]
+#endif
         private static void UnityLog(object message, UnityEngine.Object context = null)
         {
             if (context == null)
@@ -143,8 +144,9 @@ namespace ResourceWar.Server.Lib
             WriteToBuffer(FormatLogMessage(LogLevel.WARNING, message));
             UnityLogWarning(message, context);
         }
-
+#if !UNITY_EDITOR
         [System.Diagnostics.Conditional("ENABLE_LOG")]
+#endif
         private static void UnityLogWarning(object message, UnityEngine.Object context = null)
         {
             if (context == null)
@@ -169,8 +171,9 @@ namespace ResourceWar.Server.Lib
             WriteToBuffer(FormatLogMessage(LogLevel.ERROR, message));
             UnityLogError(message, context);
         }
-
+#if !UNITY_EDITOR
         [System.Diagnostics.Conditional("ENABLE_LOG")]
+#endif
         private static void UnityLogError(object message, UnityEngine.Object context = null)
         {
             if (context == null)
@@ -193,8 +196,9 @@ namespace ResourceWar.Server.Lib
         {
             UnityLogAssertion(message, context);
         }
-
+#if !UNITY_EDITOR
         [System.Diagnostics.Conditional("ENABLE_LOG")]
+#endif
         private static void UnityLogAssertion(object message, UnityEngine.Object context = null)
         {
             if (context == null)
@@ -219,8 +223,9 @@ namespace ResourceWar.Server.Lib
             WriteToBuffer(FormatLogMessage(LogLevel.EXCEPTION, exception.ToString()));
             UnityLogException(exception, context);
         }
-
+#if !UNITY_EDITOR
         [System.Diagnostics.Conditional("ENABLE_LOG")]
+#endif
         private static void UnityLogException(Exception exception, UnityEngine.Object context = null)
         {
             if (context == null)
