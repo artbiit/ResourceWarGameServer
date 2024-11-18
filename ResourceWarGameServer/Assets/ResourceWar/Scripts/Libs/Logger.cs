@@ -67,6 +67,10 @@ namespace ResourceWar.Server.Lib
 
         private static void FlushBuffer()
         {
+#if UNITY_EDITOR
+            return;
+#endif
+
             if (logBuffer.Length > 0)
             {
                 lock (FileLock)
@@ -79,6 +83,9 @@ namespace ResourceWar.Server.Lib
 
         private static void WriteToBuffer(string message)
         {
+#if UNITY_EDITOR
+            return;
+#endif
             CheckAndRotateLogFile();
             lock (FileLock)
             {
