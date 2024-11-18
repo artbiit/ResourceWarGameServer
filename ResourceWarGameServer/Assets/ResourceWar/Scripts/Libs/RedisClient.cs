@@ -1,39 +1,123 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Sockets;
-using System.Text;
-using UnityEngine;
-using StackExchange.Redis.KeyspaceIsolation;
 using StackExchange.Redis;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using Cysharp.Threading.Tasks;
+using Logger = ResourceWar.Server.Lib.Logger;
+using ResourceWar.Server.Lib;
+
 namespace ResourceWar.Server
 {
-    public class RedisClient : IDisposable
+    public class RedisClient :  Singleton<RedisClient>, IDisposable
     {
         private bool disposedValue;
         private ConnectionMultiplexer redisConnection;
-        private IDatabase DB;
-        private ISubscriber sub;
-        public void Connect(string host, int port)
+        private IDatabase db;
+        private ISubscriber subscriber;
+        public ISubscriber Subscriber => subscriber;
+        private readonly ConcurrentQueue<System.Func<Task>> taskQueue = new();
+        private bool isProcessingQueue = false;
+
+        /// <summary>
+        /// 레디스 서버와 연결되어 있는지 나타냅니다.
+        /// </summary>
+        public bool isConnected => this.redisConnection?.IsConnected ?? false;
+
+        public bool Connect(string host, int port)
         {
             redisConnection = ConnectionMultiplexer.Connect($"{host}:{port},password=zhsthfTD1!");
-            if(redisConnection.IsConnected)
+            return connectionInit();
+        }
+        public async UniTask<bool> ConnectAsync(string host, int port)
+        {
+            redisConnection = await ConnectionMultiplexer.ConnectAsync($"{host}:{port},password=zhsthfTD1!");
+            return connectionInit();
+        }
+
+        private bool connectionInit()
+        {
+            if (redisConnection.IsConnected)
             {
-                DB = redisConnection.GetDatabase();
-                sub = redisConnection.GetSubscriber();
+                db = redisConnection.GetDatabase();
+                subscriber = redisConnection.GetSubscriber();
+                Logger.Log("Redis client is connected");
+                return true;
+            }
+            else
+            {
+                db = null;
+                subscriber = null;
+                redisConnection = null;
+                Logger.LogError("Redis client failed to connect");
+                return false;
             }
         }
 
-        public void SetKey(string key, string value)
+
+        public UniTask<T> ExecuteAsync<T>(Func<IDatabase, UniTask<T>> redisOperation)
         {
-            DB.StringSet(key, value);
+            var tcs = new UniTaskCompletionSource<T>();
+            taskQueue.Enqueue(async () =>
+            {
+                try
+                {
+                    T result = await redisOperation(db);
+                    tcs.TrySetResult(result);
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            });
+
+            ProcessQueue();
+            return tcs.Task;
         }
 
-        public string GetKey(string key)
+        public UniTask ExecuteAsync(Func<IDatabase, UniTask> redisOperation)
         {
-           return DB.StringGet(key);
+            var tcs = new UniTaskCompletionSource();
+            taskQueue.Enqueue(async () =>
+            {
+                try
+                {
+                    await redisOperation(db);
+                    tcs.TrySetResult();
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            });
+
+            ProcessQueue();
+            return tcs.Task;
         }
+
+
+        private void ProcessQueue()
+        {
+            if (isProcessingQueue) return;
+
+            isProcessingQueue = true;
+
+            UniTask.Void(async () =>
+            {
+                while (taskQueue.TryDequeue(out var task))
+                {
+                    try
+                    {
+                        await task();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"RedisClient exceiption in ProcessQueue : {ex.Message}");
+                    }
+                }
+                isProcessingQueue = false;
+            });
+        }
+
 
         public void Disconnect()
         {
@@ -50,12 +134,15 @@ namespace ResourceWar.Server
             {
                 if (disposing)
                 {
+                    
                     // TODO: 관리형 상태(관리형 개체)를 삭제합니다.
                     Disconnect();
                 }
 
                 // TODO: 비관리형 리소스(비관리형 개체)를 해제하고 종료자를 재정의합니다.
                 // TODO: 큰 필드를 null로 설정합니다.
+                this.db = null;
+                this.subscriber = null;
                 disposedValue = true;
             }
         }
