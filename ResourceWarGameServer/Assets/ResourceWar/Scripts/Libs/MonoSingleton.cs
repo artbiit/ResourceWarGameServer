@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 
 namespace ResourceWar.Server.Lib
@@ -17,7 +16,7 @@ namespace ResourceWar.Server.Lib
             {
                 if (applicationIsQuitting)
                 {
-                    Debug.LogWarning($"[Singleton] Instance of {typeof(T)} is already destroyed. Returning null.");
+                    Logger.LogWarning($"[Singleton] Instance of {typeof(T)} is already destroyed. Returning null.");
                     return null;
                 }
 
