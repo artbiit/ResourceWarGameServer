@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using UnityEditor.VersionControl;
 using UnityEngine;
+using System.IO.Compression;
 
 namespace ResourceWar.Server.Lib
 {
@@ -13,7 +14,6 @@ namespace ResourceWar.Server.Lib
     {
 
         private static readonly string LogDirectory = Path.Combine(Application.persistentDataPath, "Logs");
-        private static readonly string LogFilePath = Path.Combine(LogDirectory, "application.log");
         private static readonly object FileLock = new object();
         private static readonly int BufferLimit = 10;
         private static readonly StringBuilder logBuffer = new StringBuilder(BufferLimit);
@@ -36,6 +36,7 @@ namespace ResourceWar.Server.Lib
             {
                 Directory.CreateDirectory(LogDirectory);
             }
+            ArchiveOldLogs();
             Application.wantsToQuit += Application_wantsToQuit;
         }
 
@@ -56,7 +57,10 @@ namespace ResourceWar.Server.Lib
             if (currentLogTime.Hour != now.Hour)
             {
                 FlushBuffer();
-
+                if (currentLogTime.Date != now.Date)
+                {
+                    ArchiveOldLogs();
+                }
                 lock (FileLock)
                 {
                     currentLogTime = now;
@@ -232,6 +236,7 @@ namespace ResourceWar.Server.Lib
             {
                 if (disposing)
                 {
+                    ArchiveOldLogs();
                     FlushBuffer();
                 }
 
@@ -260,6 +265,37 @@ namespace ResourceWar.Server.Lib
             }
 
             Application.OpenURL(currentLogFileName);
+        }
+
+
+        private static void ArchiveOldLogs()
+        {
+            // 하루 전 날짜
+            DateTime yesterday = DateTime.UtcNow.AddDays(-1);
+            string yesterdayDirectory = Path.Combine(LogDirectory, yesterday.ToString("yyyy-MM-dd"));
+            string zipFileName = Path.Combine(LogDirectory, $"{yesterday:yyyy-MM-dd}.zip");
+
+            // 하루 전 로그 파일을 모두 찾음
+            var oldLogFiles = Directory.GetFiles(LogDirectory, $"{yesterday:yyyy-MM-dd}_*.log");
+
+            if (oldLogFiles.Length > 0)
+            {
+                // 임시 디렉토리 생성
+                Directory.CreateDirectory(yesterdayDirectory);
+
+                // 파일 이동
+                foreach (var file in oldLogFiles)
+                {
+                    string destination = Path.Combine(yesterdayDirectory, Path.GetFileName(file));
+                    File.Move(file, destination);
+                }
+
+                // 압축
+                ZipFile.CreateFromDirectory(yesterdayDirectory, zipFileName);
+
+                // 임시 디렉토리 삭제
+                Directory.Delete(yesterdayDirectory, true);
+            }
         }
 
 
