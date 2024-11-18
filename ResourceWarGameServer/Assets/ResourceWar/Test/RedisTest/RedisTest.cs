@@ -12,7 +12,7 @@ public class RedisTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-            test();
+            _ = test();
     }
 
         private async UniTask test()
