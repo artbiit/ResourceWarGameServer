@@ -54,7 +54,7 @@ namespace ResourceWar.Server
         }
 
 
-        public UniTask<T> ExecuteAsync<T>(Func<IDatabase, UniTask<T>> redisOperation)
+        public UniTask<T> ExecuteAsync<T>(Func<IDatabase, Task<T>> redisOperation)
         {
             var tcs = new UniTaskCompletionSource<T>();
             taskQueue.Enqueue(async () =>
@@ -74,7 +74,7 @@ namespace ResourceWar.Server
             return tcs.Task;
         }
 
-        public UniTask ExecuteAsync(Func<IDatabase, UniTask> redisOperation)
+        public UniTask ExecuteAsync(Func<IDatabase, Task> redisOperation)
         {
             var tcs = new UniTaskCompletionSource();
             taskQueue.Enqueue(async () =>
