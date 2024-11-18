@@ -8,12 +8,7 @@
         "GUID:5c01796d064528144a599661eaab93a6"
     ],
     "includePlatforms": [],
-    "excludePlatforms": [
-        "Editor",
-        "LinuxStandalone64",
-        "CloudRendering",
-        "WindowsStandalone64"
-    ],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
