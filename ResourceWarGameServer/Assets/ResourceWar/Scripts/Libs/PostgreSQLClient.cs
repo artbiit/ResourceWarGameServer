@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Npgsql;
 using ResourceWar.Server.Lib;
+using StackExchange.Redis;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,6 +9,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Codice.Client.Common.EventTracking.TrackFeatureUseEvent.Features.DesktopGUI.Filters;
+using UnityEditor.Experimental.GraphView;
 using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
@@ -18,7 +21,7 @@ namespace ResourceWar.Server
         private NpgsqlConnection connection; // PostgreSQL 연결 객체
         private readonly ConcurrentQueue<Func<Task>> taskQueue = new(); // 작업을 저장하는 큐
         private bool isProcessingQueue = false; // 작업 큐 처리 상태 플래그
-
+        private string connectionFormat = "Host={0};Port={1};Database={2};Username={3};Password={4};Pooling=true;MinPoolSize=5;MaxPoolSize=20;";
         /// <summary>
         /// PostgresSQL 서버와 연결되어 있는지 나타냅니다.
         /// </summary>
@@ -36,8 +39,7 @@ namespace ResourceWar.Server
         public bool Connect(string host, int port, string database, string user, string password)
         {
             // 연결 문자열 생성
-            string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
-            connection = new NpgsqlConnection(connectionString); // 연결 객체 생성
+            connection = new NpgsqlConnection(CreateConnectionString(host, port, database,user,password)); // 연결 객체 생성
             return connectionInit(); // 연결 초기화 및 상태 반환
         }
 
@@ -53,11 +55,12 @@ namespace ResourceWar.Server
         public async UniTask<bool> ConnectAsync(string host, int port, string database, string user, string password)
         {
             // 연결 문자열 생성
-            string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
-            connection = new NpgsqlConnection(connectionString); // 연결 객체 생성
+            connection = new NpgsqlConnection(CreateConnectionString(host, port, database, user, password)); // 연결 객체 생성
             await connection.OpenAsync(); // PostgreSQL 서버에 비동기로 연결
             return connectionInit(); // 연결 초기화 및 상태 반환
         }
+
+        private string CreateConnectionString(string host, int port, string database, string user, string password) => string.Format(connectionFormat, host, port, database, user, password);
 
         /// <summary>
         /// 연결 초기화. 연결 상태를 확인하고 로그를 기록합니다.
