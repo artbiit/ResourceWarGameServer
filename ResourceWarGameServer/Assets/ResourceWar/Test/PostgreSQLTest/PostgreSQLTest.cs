@@ -17,14 +17,8 @@ public class PostgreSQLTest : MonoBehaviour
     private async UniTask TestPostgresConnection()
     {
         postgresClient = PostgreSQLClient.Instance;
-
-        bool isConnected = await postgresClient.ConnectAsync(
-                "positivenerd.duckdns.org", // 호스트
-                15004,                     // 포트
-                "resourcewar",             // 데이터베이스 이름
-                "resourcewar",             // 사용자 이름
-                "FlthtmDnj1!"              // 비밀번호
-            );
+        bool isConnected = await postgresClient.ConnectAsync(DotEnv.Get<string>("DB_HOST"), DotEnv.Get<int>("DB_PORT"), DotEnv.Get<string>("DB_NAME"), DotEnv.Get<string>("DB_USER"), DotEnv.Get<string>("DB_PASSWORD"), DotEnv.Get<int>("DB_CONNECTION_LIMIT_MIN"), DotEnv.Get<int>("DB_CONNECTION_LIMIT_MAX"));
+ 
 
         if (isConnected)
         {

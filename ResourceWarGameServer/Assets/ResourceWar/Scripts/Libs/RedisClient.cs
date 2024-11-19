@@ -5,6 +5,8 @@ using System.Collections.Concurrent;
 using Cysharp.Threading.Tasks;
 using Logger = ResourceWar.Server.Lib.Logger;
 using ResourceWar.Server.Lib;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 namespace ResourceWar.Server
 {
@@ -23,16 +25,18 @@ namespace ResourceWar.Server
         /// </summary>
         public bool isConnected => this.redisConnection?.IsConnected ?? false;
 
-        public bool Connect(string host, int port)
+        public bool Connect(string host, int port,string password)
         {
-            redisConnection = ConnectionMultiplexer.Connect($"{host}:{port},password=zhsthfTD1!");
+            redisConnection = ConnectionMultiplexer.Connect(CreateConnectionUrl(host, port, password));
             return connectionInit();
         }
-        public async UniTask<bool> ConnectAsync(string host, int port)
+        public async UniTask<bool> ConnectAsync(string host, int port, string password)
         {
-            redisConnection = await ConnectionMultiplexer.ConnectAsync($"{host}:{port},password=zhsthfTD1!");
+            redisConnection = await ConnectionMultiplexer.ConnectAsync(CreateConnectionUrl(host, port, password));
             return connectionInit();
         }
+
+        private string CreateConnectionUrl(string host, int port, string password) => $"{host}:{port},password={password}";
 
         private bool connectionInit()
         {

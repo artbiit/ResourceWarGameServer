@@ -17,8 +17,10 @@ public class RedisTest : MonoBehaviour
 
         private async UniTask test()
         {
+            DotEnv.Config();
+
             redisClient = RedisClient.Instance;
-            redisClient.Connect("positivenerd.duckdns.org", 15005);
+            redisClient.Connect(DotEnv.Get<string>("REDIS_HOST"), DotEnv.Get<int>("REDIS_PORT"), DotEnv.Get<string>("REDIS_REDIS_PASSWORD"));
             await  redisClient.ExecuteAsync(db =>  db.StringSetAsync("테스트임ㅎㅎ", "테스트 값222"));
             var result = await redisClient.ExecuteAsync(db => db.StringGetAsync("테스트임ㅎㅎ"));
             Debug.Log(result);
