@@ -11,7 +11,7 @@ public class PostgreSQLTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        TestPostgresConnection();
+      _ = TestPostgresConnection();
     }
 
     private async UniTask TestPostgresConnection()
