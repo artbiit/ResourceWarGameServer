@@ -18,7 +18,7 @@ namespace ResourceWar.Server
             RedisClient.Instance.Connect(DotEnv.Get<string>("REDIS_HOST"), DotEnv.Get<int>("REDIS_PORT"), DotEnv.Get<string>("REDIS_PASSWORD"));
             Logger.Log("-------------DataLayer Initialized-------------");
             TcpServer.Instance.Init(DotEnv.Get<string>("SERVER_BIND"), DotEnv.Get<int>("SERVER_PORT"));
-            
+            Logger.Log("-------------Initializer-------------");
         }
        
     }

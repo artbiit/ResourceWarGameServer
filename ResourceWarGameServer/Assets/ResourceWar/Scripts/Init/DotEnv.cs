@@ -15,7 +15,7 @@ namespace ResourceWar.Server
             if (isConfiged&& !forceConfig) {
                 return;
             }
-
+            int savedCount = 0;
             string filePath = Path.Combine(Application.streamingAssetsPath, ".env");
             if (!File.Exists(filePath))
             {
@@ -48,8 +48,9 @@ namespace ResourceWar.Server
                 }
 
                 StoreValue(key, value);
-
+                savedCount++;
             }
+            Logger.Log($"{nameof(DotEnv)} is initialized. readCount : {savedCount}");
            isConfiged = true;
         }
 
