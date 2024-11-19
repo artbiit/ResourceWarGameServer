@@ -91,3 +91,5 @@ crashlytics-build.properties
 #Test and Debugging
 [Tt]est[Rr]esults/
 *.coverage
+
+*.env*
