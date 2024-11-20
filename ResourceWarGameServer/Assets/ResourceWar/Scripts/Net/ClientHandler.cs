@@ -35,7 +35,7 @@ namespace ResourceWar.Server
             this.ClientId = clientId; // 클라이언트 ID 설정
             this.tcpClient = tcpClient; // 클라이언트 소켓 설정
             this.onDisconnect = onDisconnect; // 연결 해제 콜백 설정
-            // this.stream = this.tcpClient.GetStream(); // 네트워크 스트림 초기화
+            this.stream = this.tcpClient.GetStream(); // 네트워크 스트림 초기화
 
             messageQueue = new MessageQueue(this);  // 메세지 큐를 초기화
         }
@@ -57,13 +57,24 @@ namespace ResourceWar.Server
         /// <returns></returns>
         public async Task HandleMessage(int packetType, byte[] payload)
         {
-            Logger.Log($"Client {ClientId}: Received packetType {packetType}, Payload: {Encoding.UTF8.GetString(payload)}");
-
-            // 처리 로직 추가 (예: 특정 작업 실행 - PacketParser 만들어야함)
-            if (packetType == 1)
+            try
             {
-                var response = Encoding.UTF8.GetBytes("Acknowledged");
-                messageQueue.EnqueueSend(response); // 송신 큐에 메시지 추가
+                Logger.Log($"Client {ClientId}: Received packetType {packetType}, Raw Payload Bytes: {BitConverter.ToString(payload)}");
+
+                // UTF-8 문자열로 변환
+                string payloadString = Encoding.UTF8.GetString(payload);
+                Logger.Log($"Client {ClientId}: Parsed Payload: {payloadString}");
+
+                // 처리 로직
+                if (packetType != -1)
+                {
+                    var response = Encoding.UTF8.GetBytes("Acknowledged");
+                    messageQueue.EnqueueSend(response); // 송신 큐에 메시지 추가
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Error in HandleMessage: {ex.Message}");
             }
         }
 
@@ -76,6 +87,12 @@ namespace ResourceWar.Server
         {
             try
             {
+                if (tcpClient == null || !tcpClient.Connected || stream == null)
+                {
+                    Logger.LogError($"Client {ClientId}: Cannot send data. Connection is closed.");
+                    Disconnect();
+                    return;
+                }
                 // 클라이언트로 데이터 송신
                 await stream.WriteAsync(data, 0, data.Length, cts.Token);
                 Logger.Log($"Client {ClientId}: Sent {Encoding.UTF8.GetString(data)}");
@@ -92,54 +109,77 @@ namespace ResourceWar.Server
         /// <returns></returns>
         private async UniTaskVoid HandleReceivingAsync()
         {
-            byte[] buffer = new byte[1024]; // 데이터 수신을 위한 버퍼
-            int PACKET_TYPE_LENGTH = 2; // 패킷 타입 길이 (바이트)
-            int PACKET_TOKEN_LENGTH = 1; // 토큰 길이 (바이트)
-            int PACKET_PAYLOAD_LENGTH = 4; // 페이로드 길이 (바이트)
-            int PACKET_TOTAL_LENGTH = PACKET_TYPE_LENGTH + PACKET_TOKEN_LENGTH + PACKET_PAYLOAD_LENGTH; // 전체 패킷 길이
+            // 수신 데이터 누적 버퍼
+            var accumulatedBuffer = new MemoryStream();
+            byte[] buffer = new byte[1024]; // 읽기 버퍼
+            const int PACKET_TYPE_LENGTH = 2; // 패킷 타입 길이
+            const int PACKET_PAYLOAD_LENGTH = 4; // 페이로드 길이
+
             try
             {
                 while (!cts.Token.IsCancellationRequested)
                 {
                     // 클라이언트로부터 데이터 읽기
-                    int byteRead = await stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
+                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
 
-                    // 수신된 데이터 처리 후 대기열에 추가 (현재는 패킷 파싱 필요)
-                    if (byteRead > 0)
+                    if (bytesRead > 0)
                     {
-                        int offset = 0;
-                        // 패킷이 충분한 길이인지 확인
-                        while (byteRead - offset >= PACKET_TOKEN_LENGTH)
+                        // 새 데이터를 누적 버퍼에 추가
+                        accumulatedBuffer.Write(buffer, 0, bytesRead);
+
+                        while (accumulatedBuffer.Length >= PACKET_TYPE_LENGTH + PACKET_PAYLOAD_LENGTH)
                         {
+                            // 누적 데이터를 배열로 변환
+                            byte[] data = accumulatedBuffer.ToArray();
+
                             // 패킷 타입 추출
-                            int packetType = BitConverter.ToUInt16(buffer, offset); // 2바이트 읽음
-                            offset += PACKET_TYPE_LENGTH;
-
-                            // 토큰 길이 추출
-                            byte tokenLength = buffer[offset]; // 1바이트 읽음
-                            offset += PACKET_TOKEN_LENGTH;
-
-                            // 토큰 데이터 추출
-                            string token = Encoding.UTF8.GetString(buffer, offset, tokenLength); // 토큰 문자열
-                            offset += tokenLength;
+                            int packetType = BitConverter.ToUInt16(data, 0);
+                            int offset = PACKET_TYPE_LENGTH;
 
                             // 페이로드 길이 추출
-                            int payloadLength = BitConverter.ToInt32(buffer, offset); // 4바이트 읽음
+                            int payloadLength = BitConverter.ToInt32(data, offset);
                             offset += PACKET_PAYLOAD_LENGTH;
 
-                            // 페이로드 데이터 추출
-                            if (byteRead - offset >= payloadLength)
+                            // 디버깅 로그: 패킷 타입 및 페이로드 길이
+                            Logger.Log($"Client {ClientId}: Parsed packetType = {packetType}, payloadLength = {payloadLength}");
+
+                            /*// 페이로드 크기 제한 검사
+                            if (payloadLength > 10 * 1024 * 1024) // 예: 10MB 제한
                             {
+                                Logger.LogError($"Client {ClientId}: Payload size exceeds the maximum allowed size ({payloadLength} bytes).");
+                                Disconnect();
+                                return;
+                            }*/
+
+                            // 패킷 전체 크기 계산
+                            int totalPacketSize = offset + payloadLength;
+
+                            // 패킷이 완전히 도착했는지 확인
+                            if (accumulatedBuffer.Length >= totalPacketSize)
+                            {
+                                // 페이로드 데이터 추출
                                 byte[] payload = new byte[payloadLength];
-                                Array.Copy(buffer, offset, payload, 0, payloadLength);
-                                offset += payloadLength;
+                                Array.Copy(data, offset, payload, 0, payloadLength);
+
+                                // 디버깅 로그: 페이로드 바이트 및 문자열
+                                Logger.Log($"Client {ClientId}: Extracted payload bytes = {BitConverter.ToString(payload)}");
+                                string payloadString = Encoding.UTF8.GetString(payload);
+                                Logger.Log($"Client {ClientId}: Parsed payload string = {payloadString}");
 
                                 // 메시지 큐에 수신 데이터 추가
                                 messageQueue.EnqueuReceive(packetType, payload);
+
+                                // 사용한 데이터를 누적 버퍼에서 제거
+                                byte[] remainingData = new byte[accumulatedBuffer.Length - totalPacketSize];
+                                Array.Copy(data, totalPacketSize, remainingData, 0, remainingData.Length);
+
+                                accumulatedBuffer.SetLength(0); // 버퍼 초기화
+                                accumulatedBuffer.Write(remainingData, 0, remainingData.Length);
                             }
                             else
                             {
-                                Logger.LogError("Incomplete packet received. Waiting for more data.");
+                                // 패킷이 완전히 도착하지 않음, 다음 ReadAsync에서 기다림
+                                Logger.Log($"Client {ClientId}: Incomplete packet received. Waiting for more data.");
                                 break;
                             }
                         }
@@ -148,16 +188,11 @@ namespace ResourceWar.Server
             }
             catch (Exception ex)
             {
-
                 Logger.LogError($"{nameof(ClientHandler)}/{nameof(HandleReceivingAsync)} Error in receiving from client {ClientId}: {ex.Message}");
                 Disconnect();
             }
-            finally
-            {
-
-            }
-
         }
+
 
         /// <summary>
         /// 메시지 큐에서 데이터를 꺼내 클라이언트로 송신
@@ -165,19 +200,69 @@ namespace ResourceWar.Server
         /// <returns></returns>
         private async UniTaskVoid HandleSendingAsync()
         {
+            // 수신 데이터 누적 버퍼
+            var accumulatedBuffer = new MemoryStream();
+            byte[] buffer = new byte[1024]; // 읽기 버퍼
+            const int PACKET_TYPE_LENGTH = 2; // 패킷 타입 길이
+            const int PACKET_PAYLOAD_LENGTH = 4; // 페이로드 길이
             try
             {
                 while (!cts.Token.IsCancellationRequested)
                 {
-                    // 메시지 큐에서 전송 처리하는 messageQueue 내부에서 관리중
+                    // 클라이언트로부터 데이터 읽기
+                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
 
-                    // 짧은 대기 (CPU 과부하 방지)
-                    await UniTask.Delay(10, cancellationToken: cts.Token);
+                    if (bytesRead > 0)
+                    {
+                        // 새 데이터를 누적 버퍼에 추가
+                        accumulatedBuffer.Write(buffer, 0, bytesRead);
+
+                        while (accumulatedBuffer.Length >= PACKET_TYPE_LENGTH + PACKET_PAYLOAD_LENGTH)
+                        {
+                            // 누적 데이터를 배열로 변환
+                            byte[] data = accumulatedBuffer.ToArray();
+
+                            // 패킷 타입 추출
+                            int packetType = BitConverter.ToUInt16(data, 0);
+                            int offset = PACKET_TYPE_LENGTH;
+
+                            // 페이로드 길이 추출
+                            int payloadLength = BitConverter.ToInt32(data, offset);
+                            offset += PACKET_PAYLOAD_LENGTH;
+
+                            // 패킷 전체 크기 계산
+                            int totalPacketSize = offset + payloadLength;
+
+                            // 패킷이 완전히 도착했는지 확인
+                            if (accumulatedBuffer.Length >= totalPacketSize)
+                            {
+                                // 페이로드 데이터 추출
+                                byte[] payload = new byte[payloadLength];
+                                Array.Copy(data, offset, payload, 0, payloadLength);
+
+                                // 메시지 큐에 수신 데이터 추가
+                                messageQueue.EnqueuReceive(packetType, payload);
+
+                                // 사용한 데이터를 누적 버퍼에서 제거
+                                byte[] remainingData = new byte[accumulatedBuffer.Length - totalPacketSize];
+                                Array.Copy(data, totalPacketSize, remainingData, 0, remainingData.Length);
+
+                                accumulatedBuffer.SetLength(0); // 버퍼 초기화
+                                accumulatedBuffer.Write(remainingData, 0, remainingData.Length);
+                            }
+                            else
+                            {
+                                // 패킷이 완전히 도착하지 않음, 다음 ReadAsync에서 기다림
+                                break;
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError($"{nameof(ClientHandler)}/{nameof(HandleSendingAsync)} Error in sending to client {ClientId}: {ex.Message}");
+                Logger.LogError($"{nameof(ClientHandler)}/{nameof(HandleReceivingAsync)} Error in receiving from client {ClientId}: {ex.Message}");
+                Disconnect();
             }
             finally
             {
