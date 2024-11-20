@@ -16,7 +16,11 @@ namespace ResourceWar.Utils
     /// </summary>
     public class MessageQueue
     {
-        private readonly ConcurrentDictionary<int, ClientQueue> clientQueues = new();
+        private readonly ClientHandler handler;
+        private readonly ConcurrentQueue<Message> receiveQueue = new();
+        private readonly ConcurrentQueue<byte[]> sendQueue = new();
+        private bool isProcessingReceive = false;
+        private bool isProcessingSend = false;
 
         public struct Message
         {
@@ -24,102 +28,61 @@ namespace ResourceWar.Utils
             public byte[] Payload;
         }
 
-        private class ClientQueue
+        public MessageQueue(ClientHandler handler)
         {
-            public ClientHandler Handler { get; set; }
-            public ConcurrentQueue<Message> ReceiveQueue { get; } = new();
-            public ConcurrentQueue<byte[]> SendQueue { get; } = new();
-            public bool isProcessingReceive { get; set; } = false;
-            public bool isProcessingSend { get; set; } = false;
+            this.handler = handler ?? throw new ArgumentNullException(nameof(handler));
         }
 
-        public void AddClient(int clientId, ClientHandler handler)
+        public void EnqueuReceive(int packetType, byte[] payload)
         {
-            if (!clientQueues.TryAdd(clientId, new ClientQueue { Handler = handler}))
-            {
-                Logger.LogError($"Client with ID {clientId} already exists.");
-            }
+            receiveQueue.Enqueue(new Message { PacketType = packetType, Payload = payload });
+            ProcessReceiveQueue();
         }
 
-        public void RemoveClient(int clientId)
+        public async void EnqueueSend(byte[] data)
         {
-            if (!clientQueues.TryRemove(clientId, out var clientQueue))
-            {
-                Logger.LogError($"Client with ID {clientId} does not exist.");
-                return;
-            }
-
-            clientQueue.Handler?.Disconnect();
+            sendQueue.Enqueue(data);
+            ProcessSendQueue();
         }
 
-        public void EnqueueReceive(int clientId, int packetType, byte[] payload)
+        private async void ProcessReceiveQueue()
         {
-            if (clientQueues.TryGetValue(clientId, out var clientQueue))
-            {
-                clientQueue.ReceiveQueue.Enqueue(new Message { PacketType = packetType, Payload = payload });
-                // 클라이언트 데이터 순차적으로 받는곳
-            }
-            else
-            {
-                Logger.LogError($"Client with ID {clientId} not found.");
-            }
-        }
+            if (isProcessingReceive) return;
+            isProcessingReceive = true;
 
-        public void EnqueueSend(int clientId, byte[] data)
-        {
-            if (clientQueues.TryGetValue(clientId, out var clientQueue))
-            {
-                clientQueue.SendQueue.Enqueue(data);
-                // 클라이언트에 데이터 순차적으로 보내주는 곳
-            }
-            else
-            {
-                Logger.LogError($"Client with ID {clientId} not found.");
-            }
-        }
-
-        private async void ProcessReceiveQueue(int clientId)
-        {
-            if (!clientQueues.TryGetValue(clientId, out var clientQueue)) return;
-
-            if (clientQueue.isProcessingReceive) return;
-            clientQueue.isProcessingReceive = true;
-
-            while(clientQueue.ReceiveQueue.TryDequeue(out var message))
+            while (receiveQueue.TryDequeue(out var message))
             {
                 try
                 {
-                    //
+                    await handler.HandleMessage(message.PacketType, message.Payload);
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error processing message for client {clientId}: {ex.Message}");
+                    Logger.LogError($"Error processing message for client {handler.ClientId}: {ex.Message}");
                 }
             }
 
-            clientQueue.isProcessingReceive = false;
+            isProcessingReceive = false;
         }
 
-        private async void ProcessSendQueue(int clientId)
+        private async void ProcessSendQueue()
         {
-            if (!clientQueues.TryGetValue(clientId, out var clientQueue)) return;
+            if (isProcessingSend) return;
+            isProcessingSend = true;
 
-            if (clientQueue.isProcessingSend) return;
-            clientQueue.isProcessingSend = true;
-
-            while (clientQueue.SendQueue.TryDequeue(out var data))
+            while (sendQueue.TryDequeue(out var data))
             {
-               try
+                try
                 {
-                    //
+                    await handler.SendToClient(data);
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
-                    Logger.LogError($"Error sending message to client {clientId}: {ex.Message}");
+                    Logger.LogError($"Error sending message to client {handler.ClientId}");
                 }
             }
 
-            clientQueue.isProcessingSend = false;
+            isProcessingSend = false;
         }
     }
 }
