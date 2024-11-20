@@ -98,9 +98,6 @@ namespace ResourceWar.Server
             Buffer.BlockCopy(BitConverter.GetBytes(packetType), 0, packet, 0, 2); // 패킷 타입
             Buffer.BlockCopy(BitConverter.GetBytes(payloadLength), 0, packet, 2, 4); // 페이로드 길이
             Buffer.BlockCopy(payloadBytes, 0, packet, 6, payloadLength); // 페이로드 데이터
-
-            // 송신 큐에 데이터 추가
-            messageQueue.EnqueueSend(packet);
         }
 
         private void OnClientDisconnected(int clientId)
