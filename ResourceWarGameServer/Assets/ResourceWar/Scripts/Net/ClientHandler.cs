@@ -1,13 +1,11 @@
 using Cysharp.Threading.Tasks;
-using ResourceWar.Utils;
+using Google.Protobuf;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using UnityEditor.PackageManager;
 using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
@@ -25,10 +23,9 @@ namespace ResourceWar.Server
 
         private CancellationTokenSource cts = new(); // 비동기 작업 취소 토큰
         private readonly ConcurrentQueue<Packet> receiveQueue = new(); // 수신 큐
-        private readonly ConcurrentQueue<byte[]> sendQueue = new(); // 송신 큐
+        private readonly ConcurrentQueue<Packet> sendQueue = new(); // 송신 큐
 
         private bool isProcessingReceive = false; // 수신 큐 처리 여부 플래그
-        private bool isProcessingSend = false; // 송신 큐 처리 여부 플래그
 
         public ClientHandler(int clientId, TcpClient tcpClient, Action<int> onDisconnect)
         {
@@ -43,8 +40,8 @@ namespace ResourceWar.Server
         /// </summary>
         public void StartHandling()
         {
-            _ = HandleReceivingAsync().Forget(); // 수신 처리 비동기 시작
-            _ = HandleSendingAsync().Forget(); // 송신 처리 비동기 시작
+            HandleReceivingAsync().Forget(); // 수신 처리 비동기 시작
+            HandleSendingAsync().Forget(); // 송신 처리 비동기 시작
         }
 
         /// <summary>
@@ -52,17 +49,29 @@ namespace ResourceWar.Server
         /// </summary>
         private void EnqueueReceive(Packet packet)
         {
-            receiveQueue.Enqueue(packet);
-            ProcessReceiveQueue();
+            packet.Timestamp = DateTime.UtcNow; // 수신 시점 기록
+            receiveQueue.Enqueue(packet); // 수신 큐에 시작
+            Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}, Timestamp={packet.Timestamp}");
+            ProcessReceiveQueue(); // 수신 큐  처리 시작
         }
 
         /// <summary>
         /// 송신 큐에 패킷 추가
         /// </summary>
-        public void EnqueueSend(Packet packet)
+        public void EnqueueSend<T>(ushort packetType, string token, T payload) where T : IMessage
         {
-            var data = packet.ToBytes(); // 패킷을 바이트 배열로 변환
-            sendQueue.Enqueue(data); // 송신 큐에 추가
+            var packet = new Packet
+            {
+                PacketType = packetType,
+                Token = token,
+                Payload = payload,
+                Timestamp = DateTime.UtcNow
+            };
+            sendQueue.Enqueue(packet); // 송신 큐에 추가
+
+            // Protobuf 메시지를 JSON 문자열로 변환
+            string payloadString = payload.ToString();
+            Logger.Log($"[SendQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
         }
 
         /// <summary>
@@ -99,44 +108,50 @@ namespace ResourceWar.Server
         }
 
         /// <summary>
-        /// 클라이언트로 데이터 송신
+        /// 클라이언트로 데이터를 비동기로 송신
         /// </summary>
         private async UniTaskVoid HandleSendingAsync()
         {
             while (!cts.Token.IsCancellationRequested)
             {
-                if (sendQueue.TryDequeue(out var data))
+                if (sendQueue.TryDequeue(out var packet))
                 {
                     try
                     {
+                        var data = packet.ToBytes(); // 패킷 데이터를 바이트로 변환
                         await stream.WriteAsync(data, 0, data.Length, cts.Token); // 데이터 송신
-                        Logger.Log($"Sent data to client {clientId}");
+
+                        // Protobuf 메시지를 JSON 문자열로 변환
+                        string payloadString = packet.Payload.ToString();
+                        Logger.Log($"[SendQueue] Dequeued and sent packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
                     }
                     catch (Exception ex)
                     {
                         Logger.LogError($"Error sending data to client {clientId}: {ex.Message}");
                         Disconnect();
                     }
-                    finally
-                    {
-
-                    }
                 }
                 await UniTask.Delay(10); // 송신 작업 간 짧은 대기
-            }          
+            }
         }
 
-        private async void ProcessReceiveQueue()
+        /// <summary>
+        /// 수신 큐에서 패킷을 처리
+        /// </summary>
+        private void ProcessReceiveQueue()
         {
             if (isProcessingReceive) return; // 이미 처리 중이면 중복 실행 방지
             isProcessingReceive = true;
-            
+
             while (receiveQueue.TryDequeue(out var packet))
             {
                 try
                 {
-                    Logger.Log($"Processing packet type {packet.PacketType} with payload: {packet.Payload}");
-                    // 패킷 처리 로직 (Handler)
+                    // Protobuf 메시지를 JSON 문자열로 변환
+                    string payloadString = packet.Payload.ToString();
+                    Logger.Log($"[ReceiveQueue] Dequeued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
+
+                    // 메시지 핸들러 호출 또는 추가 로직 처리
                 }
                 catch (Exception ex)
                 {
@@ -160,7 +175,8 @@ namespace ResourceWar.Server
         {
             public ushort PacketType { get; set; }
             public string Token { get; set; }
-            public string Payload { get; set; }
+            public IMessage Payload { get; set; } // Protobuf 메시지
+            public DateTime Timestamp { get; set; } // 패킷 생성 또는 송수신 시점
             
             /// <summary>
             /// 스트림에서 패킷 읽기
@@ -175,7 +191,10 @@ namespace ResourceWar.Server
                     int tokenLength = reader.ReadByte(); // 토큰 길이 읽기
                     string token = Encoding.UTF8.GetString(reader.ReadBytes(tokenLength)); // 토큰 데이터 읽기
                     int payloadLength = reader.ReadInt32(); // 페이로드 길이 읽기
-                    string payload = Encoding.UTF8.GetString(reader.ReadBytes(payloadLength)); // 페이로드 데이터 읽기
+                    byte[] payloadBytes = reader.ReadBytes(payloadLength);
+
+                    var protoMessages = ProtoMessageRegistry.GetMessage(packetType); // 패킷 타입에 맞는 Protobuf 메시지 검색
+                    IMessage payload = protoMessages?.Descriptor.Parser.ParseFrom(payloadBytes); // 페이로드 파싱
 
                     return new Packet { PacketType = packetType, Token = token, Payload = payload };
                 } catch
@@ -191,12 +210,12 @@ namespace ResourceWar.Server
             public byte[] ToBytes()
             {
                 var tokenBytes = Encoding.UTF8.GetBytes(Token); // 토큰 데이터를 바이트로 변환
-                var payloadBytes = Encoding.UTF8.GetBytes(Payload); // 페이로드 데이터를 바이트로 변환
+                var payloadBytes = Payload.ToByteArray();
 
                 using var stream = new MemoryStream(); // 메모리 스트림 생성
                 using var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true); // BinaryWriter로 데이터를 쓰기
                 writer.Write(PacketType); // 패킷 타입 쓰기
-                writer.Write(tokenBytes.Length); // 토큰 길이 쓰기
+                writer.Write((byte)tokenBytes.Length); // 토큰 길이 쓰기
                 writer.Write(tokenBytes); // 토큰 데이터 쓰기
                 writer.Write(payloadBytes.Length); // 페이로드 길이 쓰기
                 writer.Write(payloadBytes); // 페이로드 데이터 쓰기
