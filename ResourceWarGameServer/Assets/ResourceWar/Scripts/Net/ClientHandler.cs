@@ -51,7 +51,7 @@ namespace ResourceWar.Server
         {
             packet.Timestamp = DateTime.UtcNow; // 수신 시점 기록
             receiveQueue.Enqueue(packet); // 수신 큐에 시작
-            Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}, Timestamp={packet.Timestamp}");
+            //Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}, Timestamp={packet.Timestamp}");
             ProcessReceiveQueue(); // 수신 큐  처리 시작
         }
 
@@ -71,7 +71,7 @@ namespace ResourceWar.Server
 
             // Protobuf 메시지를 JSON 문자열로 변환
             string payloadString = payload.ToString();
-            Logger.Log($"[SendQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
+            //Logger.Log($"[SendQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
         }
 
         /// <summary>
@@ -131,7 +131,6 @@ namespace ResourceWar.Server
                         Disconnect();
                     }
                 }
-                await UniTask.Delay(10); // 송신 작업 간 짧은 대기
             }
         }
 
