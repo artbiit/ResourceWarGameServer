@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using Protocol;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace ResourceWar.Server
@@ -15,42 +17,18 @@ namespace ResourceWar.Server
         public static void LoadProtos()
         {
             // ProtocolReflection.Descriptor에서 메시지 디스크립터와 Enum 값을 가져옵니다.
-            var enumMappings = BuildEnumMappings();
 
-            foreach (var message in ProtocolReflection.Descriptor.MessageTypes)
+            var mappings = new Dictionary<string, IMessage>();
+            foreach (var messageDescriptor in ProtocolReflection.Descriptor.MessageTypes)
             {
-                var messageType = message.ClrType;
 
+
+                IMessage messageInstance = messageDescriptor.Parser.ParseFrom(new byte[0]);
+                mappings.Add(messageDescriptor.FullName, messageInstance);
+                Debug.Log($"Registered Protobuf message: {messageDescriptor.FullName} with Fields : {string.Join(',', messageDescriptor.Fields.InDeclarationOrder().Select(s => s.Name))}");
                 // Enum 값에서 패킷 타입을 검색
-                if (enumMappings.TryGetValue(message.Name, out var packetType))
-                {
-                    ProtoMessageRegistry.RegisterMessage((ushort)packetType, (IMessage)Activator.CreateInstance(messageType));
-                    Debug.Log($"Registered Protobuf message: {message.Name} with PacketType: {packetType}");
-                }
-                else
-                {
-                    Debug.LogWarning($"Skipping unregistered Protobuf message: {message.Name}");
-                }
             }
         }
 
-        /// <summary>
-        /// ProtocolReflection에서 Enum 타입과 값을 매핑합니다.
-        /// </summary>
-        /// <returns>Enum 이름과 숫자 값의 매핑 딕셔너리</returns>
-        private static Dictionary<string, int> BuildEnumMappings()
-        {
-            var mappings = new Dictionary<string, int>();
-
-            foreach (var enumType in ProtocolReflection.Descriptor.EnumTypes)
-            {
-                foreach (var value in enumType.Values)
-                {
-                    mappings[value.Name] = value.Number;
-                }
-            }
-
-            return mappings;
-        }
     }
 }
