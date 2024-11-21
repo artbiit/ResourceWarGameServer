@@ -1,6 +1,7 @@
 using Google.Protobuf;
 using System.Collections.Concurrent;
-
+using System.Diagnostics;
+using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
 {
@@ -22,6 +23,7 @@ namespace ResourceWar.Server
         public static void RegisterMessage<T>(ushort packetType, T message) where T : IMessage
         {
             Messages[packetType] = message;
+            Logger.Log($"테스트 중입니다. => ${message}");
         }
 
         /// <summary>
