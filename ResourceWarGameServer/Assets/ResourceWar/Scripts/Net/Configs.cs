@@ -11,7 +11,7 @@ namespace ResourceWar.Server
         PACKET_PAYLOAD_LENGTH = 4, // 페이로드 데이터 길이
     }
 
-    public enum PacketType
+    public enum PacketType : short
     {
         // 게임 상태 관련 데이터
         GAME_STATE = 1,

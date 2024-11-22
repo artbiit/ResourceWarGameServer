@@ -25,7 +25,7 @@ namespace ResourceWar.Server
             if (tcpListener == null)
             {
                 tcpListener = new TcpListener(IPAddress.Parse(bind), port); // 지정된 IP와 포트로 리스너 생성
-                Logger.Log("TcpServer initialized"); // 초기화 로그 출력
+                Logger.Log($"TcpServer initialized [{bind}:{port}]"); // 초기화 로그 출력
             }
             else
             {
@@ -43,12 +43,12 @@ namespace ResourceWar.Server
         // 클라이언트 연결 수락
         private async UniTaskVoid AcceptClientAsync()
         {
-            while (true)
+            while (tcpListener != null)
             {
                 TcpClient client = await tcpListener.AcceptTcpClientAsync();  // 새 클라이언트 연결 대기
                 int clientId = Interlocked.Increment(ref clientIdCounter); // 고유 클라이언트 ID 생성
-
                 // 클라이언트 처리 핸들러 생성
+                Logger.Log($"New Client : {clientId}");
                 var clientHandler = new ClientHandler(clientId, client, this.RemoveClient);
                 this.clients.TryAdd(clientId, clientHandler); // 클라이언트 목록에 추가
                 clientHandler.StartHandling(); // 클라이언트 데이터 처리 시작
@@ -67,7 +67,14 @@ namespace ResourceWar.Server
             if (tcpListener != null)
             {
                 tcpListener.Stop(); // TCP 리스너 정지
+                tcpListener = null;
             }
+        }
+
+        protected override void OnDestroy()
+        {
+            StopServer();
+            base.OnDestroy();
         }
     }
 }
