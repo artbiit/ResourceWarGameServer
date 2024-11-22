@@ -11,7 +11,7 @@ namespace ResourceWar.Server
         PACKET_PAYLOAD_LENGTH = 4, // 페이로드 데이터 길이
     }
 
-    public enum PacketType : short
+    public enum PacketType : ushort
     {
         // 게임 상태 관련 데이터
         GAME_STATE = 1,
@@ -22,11 +22,17 @@ namespace ResourceWar.Server
         FIELD_UNIT = 6,
         POSITION = 7,
 
-        // 회원가입 및 로그인
+        // 회원가입
         SIGN_UP_REQUEST = 8,
         SIGN_UP_RESPONSE = 9,
+
+        // 로그인
         SIGN_IN_REQUEST = 10,
         SIGN_IN_RESPONSE = 11,
+
+        // 로그아웃
+        SIGN_OUT_REQUEST = 56,
+        SIGN_OUT_RESPONSE = 57,
 
         // 토큰 재발급
         REFRESH_TOKEN_REQUEST = 12,
@@ -35,8 +41,11 @@ namespace ResourceWar.Server
         // 대기실 관련 요청 및 응답
         CREATE_ROOM_REQUEST = 14,
         CREATE_ROOM_RESPONSE = 15,
+        MATCH_START_REQUEST = 58, // 매칭 신청
+        MATCH_START_RESPONSE = 59, // 매칭 시작 여부 알림
         MATCH_CANCEL_REQUEST = 16,
-        MATCH_PROGRESS_NOTIFICATION = 17,
+        MATCH_CANCEL_RESPONSE = 60,
+        MATCH_PROGRESS_NOTIFICATION = 17, // 매칭 진행 여부 알림
 
         // 대기실 입장 및 나가기
         JOIN_ROOM_REQUEST = 18,
@@ -98,12 +107,19 @@ namespace ResourceWar.Server
         FURNACE_REQUEST = 48,
         FURNACE_RESPONSE = 49,
 
-        // 제제소
+        // 제재소
         SAWMILL_REQUEST = 50,
         SAWMILL_RESPONSE = 51,
 
         // 헬스체크
         PING_REQUEST = 52,
-        PONG_RESPONSE = 53
+        PONG_RESPONSE = 53,
+
+        // 대기실 매칭 요청
+        MATCH_REQUEST = 54,
+        MATCH_RESPONSE = 55,
+
+        // 에러
+        MISSING_FIELD = 10000, // 요청 파라미터 재점검 필요
     }
 }

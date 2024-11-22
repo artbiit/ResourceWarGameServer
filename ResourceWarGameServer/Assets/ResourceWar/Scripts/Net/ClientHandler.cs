@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
+using UnityEditor.Sprites;
 using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
@@ -67,7 +68,7 @@ namespace ResourceWar.Server
         {
             var packet = new Packet
             {
-                PacketType = packetType,
+                PacketType = (PacketType)packetType,
                 Token = token,
                 Payload = payload,
                 Timestamp = DateTime.UtcNow
@@ -182,27 +183,6 @@ namespace ResourceWar.Server
             onDisconnect?.Invoke(clientId); // 연결 해제 콜백함수 호출
         }
 
-        // 빅 엔디안으로 UInt16 읽기
-        private ushort ReadUInt16BigEndian(BinaryReader reader)
-        {
-            byte[] bytes = reader.ReadBytes(2);
-            if (BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(bytes); // 리틀 엔디안 -> 빅 엔디안 변환
-            }
-            return BitConverter.ToUInt16(bytes, 0);
-        }
-
-        // 빅 엔디안으로 Int32 읽기
-        private int ReadInt32BigEndian(BinaryReader reader)
-        {
-            byte[] bytes = reader.ReadBytes(4);
-            if (BitConverter.IsLittleEndian) { 
-            Array.Reverse(bytes); // 리틀 엔디안 -> 빅 엔디안 변환
-            }
-            return BitConverter.ToInt32(bytes, 0);
-        }
-
         private void ProcessBufferedData()
         {
             receiveBuffer.Position = 0; // 스트림의 시작점으로 이동
@@ -216,7 +196,7 @@ namespace ResourceWar.Server
                 {
                     using var reader = new BinaryReader(receiveBuffer, Encoding.UTF8, leaveOpen: true);
                     
-                    ushort packetType = ReadUInt16BigEndian(reader);
+                   /* ushort packetType = PacketUtils.ReadUInt16BigEndian(reader);
                     byte tokenLength = reader.ReadByte();
                     Logger.Log($"{packetType} {tokenLength} / {receiveBuffer.Length} / {receiveBuffer.Position} / {tokenLength}");
                     if (receiveBuffer.Length - receiveBuffer.Position < tokenLength + 4)
@@ -226,7 +206,7 @@ namespace ResourceWar.Server
                     }
 
                     string token = Encoding.UTF8.GetString(reader.ReadBytes(tokenLength));
-                    int payloadLength = ReadInt32BigEndian(reader);
+                    int payloadLength = PacketUtils.ReadInt32BigEndian(reader);
                     Logger.Log($"{receiveBuffer.Length} / {receiveBuffer.Position} / ({receiveBuffer.Length - receiveBuffer.Position}) / {payloadLength}");
                     if (receiveBuffer.Length - receiveBuffer.Position < payloadLength)
                     {
@@ -235,24 +215,22 @@ namespace ResourceWar.Server
                         break; // 데이터가 부족하면 대기
                     }
 
-                    byte[] payloadBytes = reader.ReadBytes(payloadLength);
+                    byte[] payloadBytes = reader.ReadBytes(payloadLength);*/
 
 
                     //TODO : 메세지로 변환하는 과정 필요
-                    return;
+               
                     // 패킷 생성 및 큐 추가
-               /*     var protoMessage = ProtoMessageRegistry.GetMessage(packetType);
-                    IMessage payload = protoMessage?.Descriptor.Parser.ParseFrom(payloadBytes);
-
-                    var packet = new Packet
+                    var packet  = Packet.FromStream(reader);
+                    if(packet != null) { 
+                    Logger.Log($"{packet.Payload.ToString()}");
+                        EnqueueReceive(packet);
+                    }
+                    else
                     {
-                        PacketType = packetType,
-                        Token = token,
-                        Payload = payload,
-                        Timestamp = DateTime.UtcNow
-                    };
-                    Logger.Log($"{packetType} / {token} / {payload.Descriptor.FullName}");
-                    EnqueueReceive(packet);*/
+                        Logger.Log("Packet is null");
+                    }
+                    
                 }
                 catch (Exception e) {
 
