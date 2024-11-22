@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using ResourceWar.Server.Lib;
 using System.Net.Sockets;
 using System.Net;
@@ -8,143 +5,76 @@ using Logger = ResourceWar.Server.Lib.Logger;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using System.Collections.Concurrent;
+using System.Text;
+using UnityEngine;
 using System;
-using Codice.Client.Common.GameUI;
-using UnityEditor.PackageManager;
+using System.IO;
+using UnityEngine.Assertions;
+
 namespace ResourceWar.Server
 {
     public class TcpServer : MonoSingleton<TcpServer>
     {
-        private TcpListener tcpListener;
-        private int clientIdCounter = 0;
-        private ConcurrentDictionary<int, ClientHandler> clients = new();
+        private TcpListener tcpListener; // TCP 연결을 대기하는 리스너
+        private int clientIdCounter = 0; // 클라이언트 ID를 고유하게 생성하기 위한 카운터
+        private ConcurrentDictionary<int, ClientHandler> clients = new(); // 연결된 클라이언트의 관리
+
+        // 서버 초기화
         public void Init(string bind, int port)
         {
             if (tcpListener == null)
             {
-                tcpListener = new TcpListener(IPAddress.Parse(bind), port);
-                Logger.Log("TcpServer initialized");
+                tcpListener = new TcpListener(IPAddress.Parse(bind), port); // 지정된 IP와 포트로 리스너 생성
+                Logger.Log($"TcpServer initialized [{bind}:{port}]"); // 초기화 로그 출력
             }
             else
             {
-                Logger.LogError("TcpServer is Already Initialized");
+                Logger.LogError("TcpServer is Already Initialized"); // 이미 초기화된 경우 에러 로그 출력
             }
         }
 
+        // 클라이언트 연결 대기 시작
         public void Listen()
         {
-            tcpListener.Start();
-            _ = AcceptClientAsync();
+            tcpListener.Start(); // TCP 리스너 시작
+            _ = AcceptClientAsync(); // 비동기 클라이언트 수락 시전
         }
 
+        // 클라이언트 연결 수락
         private async UniTaskVoid AcceptClientAsync()
         {
-            while (true)
+            while (tcpListener != null)
             {
-                TcpClient client = await tcpListener.AcceptTcpClientAsync();
-                int clientId = Interlocked.Increment(ref clientIdCounter);
-
+                TcpClient client = await tcpListener.AcceptTcpClientAsync();  // 새 클라이언트 연결 대기
+                int clientId = Interlocked.Increment(ref clientIdCounter); // 고유 클라이언트 ID 생성
+                // 클라이언트 처리 핸들러 생성
+                Logger.Log($"New Client : {clientId}");
                 var clientHandler = new ClientHandler(clientId, client, this.RemoveClient);
-                this.clients.TryAdd(clientId, clientHandler);
-                clientHandler.StartHandling();
+                this.clients.TryAdd(clientId, clientHandler); // 클라이언트 목록에 추가
+                clientHandler.StartHandling(); // 클라이언트 데이터 처리 시작
             }
         }
 
+        // 클라이언트 연결 제거
         private void RemoveClient(int clientId)
         {
-            clients.TryRemove(clientId, out _);
+            clients.TryRemove(clientId, out _); // 클라이언트 목록에서 제거
         }
 
+        // 서버 정지
         public void StopServer()
         {
             if (tcpListener != null)
             {
-                tcpListener.Stop();
-            }
-        }
-    }
-
-    class ClientHandler
-    {
-        private readonly int clientId;
-        private readonly TcpClient tcpClient;
-        private readonly NetworkStream stream;
-        private readonly ConcurrentQueue<string> sendQueue = new();
-        private readonly ConcurrentQueue<string> receiveQueue = new();
-        private readonly Action<int> onDisconnect;
-
-        private CancellationTokenSource cts = new();
-
-        public ClientHandler(int clientId, TcpClient tcpClient, Action<int> onDisconnect)
-        {
-            this.clientId = clientId;
-            this.tcpClient = tcpClient;
-            this.onDisconnect = onDisconnect;
-            this.stream = this.tcpClient.GetStream();
-        }
-
-        public void StartHandling()
-        {
-            _ = HandleReceivingAsync();
-            _ = HandleSendingAsync();
-        }
-
-        private async UniTaskVoid HandleReceivingAsync()
-        {
-            byte[] buffer = new byte[1024];
-            try
-            {
-                while (!cts.Token.IsCancellationRequested)
-                {
-                    int byteRead = await stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
-
-                    receiveQueue.Enqueue("여기에 패킷 파싱해서 넣어야함");
-                }
-            }
-            catch (Exception ex)
-            {
-
-                Logger.LogError($"{nameof(ClientHandler)}/{nameof(HandleReceivingAsync)} Error in receiving from client {this.clientId}: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-
-        }
-
-        private async UniTaskVoid HandleSendingAsync()
-        {
-            try
-            {
-                while (!cts.Token.IsCancellationRequested)
-                {
-                    while (sendQueue.TryDequeue(out var message))
-                    {
-                        //여기다가 전송 넣어야함
-                        //await stream.WriteAsync()
-                    }
-
-                    await UniTask.Delay(10, cancellationToken: cts.Token);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"{nameof(ClientHandler)}/{nameof(HandleSendingAsync)} Error in sending to client {this.clientId}: {ex.Message}");
-            }
-            finally
-            {
-
+                tcpListener.Stop(); // TCP 리스너 정지
+                tcpListener = null;
             }
         }
 
-
-        private void Disconnect()
+        protected override void OnDestroy()
         {
-            cts?.Cancel();
-            stream?.Close();
-            tcpClient?.Close();
-            onDisconnect?.Invoke(clientId);
+            StopServer();
+            base.OnDestroy();
         }
     }
 }
