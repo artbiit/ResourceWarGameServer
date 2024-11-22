@@ -195,10 +195,10 @@ namespace ResourceWar.Server
                 try
                 {
                     using var reader = new BinaryReader(receiveBuffer, Encoding.UTF8, leaveOpen: true);
-                    
-                   /* ushort packetType = PacketUtils.ReadUInt16BigEndian(reader);
+
+                    var packetType = (PacketType)PacketUtils.ReadUInt16BigEndian(reader);
                     byte tokenLength = reader.ReadByte();
-                    Logger.Log($"{packetType} {tokenLength} / {receiveBuffer.Length} / {receiveBuffer.Position} / {tokenLength}");
+
                     if (receiveBuffer.Length - receiveBuffer.Position < tokenLength + 4)
                     {
                         receiveBuffer.Position = startPosition;
@@ -207,22 +207,23 @@ namespace ResourceWar.Server
 
                     string token = Encoding.UTF8.GetString(reader.ReadBytes(tokenLength));
                     int payloadLength = PacketUtils.ReadInt32BigEndian(reader);
-                    Logger.Log($"{receiveBuffer.Length} / {receiveBuffer.Position} / ({receiveBuffer.Length - receiveBuffer.Position}) / {payloadLength}");
                     if (receiveBuffer.Length - receiveBuffer.Position < payloadLength)
                     {
-                        Logger.Log(startPosition);
                         receiveBuffer.Position = startPosition;
                         break; // 데이터가 부족하면 대기
                     }
 
-                    byte[] payloadBytes = reader.ReadBytes(payloadLength);*/
+                    byte[] payloadBytes = reader.ReadBytes(payloadLength);
 
 
                     //TODO : 메세지로 변환하는 과정 필요
-               
+
                     // 패킷 생성 및 큐 추가
-                    var packet  = Packet.FromStream(reader);
-                    if(packet != null) { 
+                    var protoMessages = PacketUtils.CreateMessage(packetType); // 패킷 타입에 맞는 Protobuf 메시지 검색
+                    IMessage payload = protoMessages.Descriptor.Parser.ParseFrom(payloadBytes); // 페이로드 파싱
+                    var packet = new Packet { PacketType = packetType, Payload = payload, Timestamp = DateTime.UtcNow, Token = token };
+
+                    if (packet != null) { 
                     Logger.Log($"{packet.Payload.ToString()}");
                         EnqueueReceive(packet);
                     }
