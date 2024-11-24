@@ -5,6 +5,7 @@ using Google.Protobuf;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Concurrent;
 
 namespace ResourceWar.Server
 {
@@ -123,6 +124,7 @@ namespace ResourceWar.Server
     { PacketType.MISSING_FIELD, "Protocol.S2CMissingFieldNoti" }
 };
 
+        private static ConcurrentDictionary<string, Type> CachedMessageTypes = new ConcurrentDictionary<string, Type>();
 
         /// <summary>
         /// 메시지명으로 메시지 타입을 매핑하여 IMessage 객체를 동적으로 생성합니다.
@@ -130,12 +132,7 @@ namespace ResourceWar.Server
         public static IMessage CreateMessage(string messageName)
         {
             // 메시지명을 통해 Type 찾기
-
-            Type messageType = Type.GetType(messageName);
-            if (messageType == null)
-            {
-                throw new ArgumentException($"Invalid message name: {messageName}");
-            }
+            var messageType = GetMessageType(messageName);
 
             // IMessage로 캐스팅 가능한 객체 생성
             if (Activator.CreateInstance(messageType) is not IMessage message)
@@ -188,6 +185,47 @@ namespace ResourceWar.Server
                 Array.Reverse(bytes); // 리틀 엔디안 -> 빅 엔디안 변환
             }
             return BitConverter.ToInt32(bytes, 0);
+        }
+
+        public static Type GetMessageType(PacketType packetType) => GetMessageType(GetMessageName(packetType));
+
+        public static Type GetMessageType(string messageName)
+        {
+            Type messageType = null;
+            if (CachedMessageTypes.TryGetValue(messageName, out var cachedType))
+            {
+                messageType = cachedType;
+            }
+            else
+            {
+                messageType = Type.GetType(messageName);
+                if (messageType == null)
+                {
+                    throw new ArgumentException($"Invalid message name: {messageName}");
+                }
+                CachedMessageTypes.TryAdd(messageName, messageType);
+            }
+
+           
+            return messageType;
+        }
+
+        /// <summary>
+        /// 해당 메세지가 실제 타입과 같은지 검사합니다.
+        /// </summary>
+        /// <param name="message">CreateMessage()로 생성된 메세지</param>
+        /// <param name="messageType">실제 클래스 타입</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static bool IsSameMessageType(IMessage message, PacketType packetType)
+        {
+            if (message == null )
+            {
+                throw new ArgumentNullException("Message cannot be null.");
+            }
+
+            // 메시지의 실제 타입과 비교
+            return message.GetType() == GetMessageType(packetType);
         }
     }
 }
