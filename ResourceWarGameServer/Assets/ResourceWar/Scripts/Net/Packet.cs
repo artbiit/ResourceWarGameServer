@@ -51,15 +51,35 @@ namespace ResourceWar.Server
         public byte[] ToBytes()
         {
             var tokenBytes = Encoding.UTF8.GetBytes(Token); // 토큰 데이터를 바이트로 변환
-            var payloadBytes = Payload.ToByteArray();
+            var payloadBytes = Payload.ToByteArray(); // Protobuf 페이로드를 바이트 배열로 변환
 
             using var stream = new MemoryStream(); // 메모리 스트림 생성
             using var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true); // BinaryWriter로 데이터를 쓰기
-            writer.Write((ushort)PacketType); // 패킷 타입 쓰기
-            writer.Write((byte)tokenBytes.Length); // 토큰 길이 쓰기
-            writer.Write(tokenBytes); // 토큰 데이터 쓰기
-            writer.Write(payloadBytes.Length); // 페이로드 길이 쓰기
-            writer.Write(payloadBytes); // 페이로드 데이터 쓰기
+
+            // 패킷 타입 (ushort -> 빅 엔디안)
+            byte[] packetTypeBytes = BitConverter.GetBytes((ushort)PacketType);
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(packetTypeBytes); // 리틀 엔디안 -> 빅 엔디안 변환
+            }
+            writer.Write(packetTypeBytes);
+
+            // 토큰 길이 (byte)
+            writer.Write((byte)tokenBytes.Length);
+
+            // 토큰 데이터
+            writer.Write(tokenBytes);
+
+            // 페이로드 길이 (int -> 빅 엔디안)
+            byte[] payloadLengthBytes = BitConverter.GetBytes(payloadBytes.Length);
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(payloadLengthBytes); // 리틀 엔디안 -> 빅 엔디안 변환
+            }
+            writer.Write(payloadLengthBytes);
+
+            // 페이로드 데이터
+            writer.Write(payloadBytes);
 
             return stream.ToArray(); // 스트림 내용을 바이트 배열로 반환
         }

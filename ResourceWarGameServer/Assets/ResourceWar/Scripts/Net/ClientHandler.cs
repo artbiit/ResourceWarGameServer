@@ -31,6 +31,7 @@ namespace ResourceWar.Server
 
         private readonly MemoryStream receiveBuffer = new MemoryStream();
         private bool isProcessingReceive = false; // 수신 큐 처리 여부 플래그
+        private bool isProcessingSend = false; // 송신 큐 처리 여부 플래그
         private bool disposedValue;
 
         public ClientHandler(int clientId, TcpClient tcpClient, Action<int> onDisconnect)
@@ -47,7 +48,6 @@ namespace ResourceWar.Server
         public void StartHandling()
         {
             HandleReceivingAsync().Forget(); // 수신 처리 비동기 시작
-            HandleSendingAsync().Forget(); // 송신 처리 비동기 시작
         }
 
         /// <summary>
@@ -73,8 +73,15 @@ namespace ResourceWar.Server
                 Payload = payload,
                 Timestamp = DateTime.UtcNow
             };
-            sendQueue.Enqueue(packet); // 송신 큐에 추가
+            EnqueueSend(packet);
             //Logger.Log($"[SendQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
+        }
+
+
+        public void EnqueueSend(Packet packet)
+        {
+            sendQueue.Enqueue(packet);
+            _ = ProcessSendingQueue();
         }
 
         /// <summary>
@@ -111,11 +118,16 @@ namespace ResourceWar.Server
         /// <summary>
         /// 클라이언트로 데이터를 비동기로 송신
         /// </summary>
-        private async UniTaskVoid HandleSendingAsync()
+        private async UniTaskVoid ProcessSendingQueue()
         {
-            while (!cts.Token.IsCancellationRequested)
+            if (isProcessingSend)
             {
-                if (sendQueue.TryDequeue(out var packet))
+                return;
+            }
+            isProcessingSend = true;
+
+       
+                while(sendQueue.TryDequeue(out var packet))
                 {
                     try
                     {
@@ -137,20 +149,15 @@ namespace ResourceWar.Server
                       
                     }
                 }
-                else
-                {
-                    await UniTask.DelayFrame(1);
-                }
-
-            }
+              
+                    await UniTask.NextFrame(PlayerLoopTiming.LastPreUpdate);
+                    isProcessingSend = false;
         }
 
         /// <summary>
         /// 수신 큐에서 패킷을 처리
         /// </summary>
-#pragma warning disable CS1998 // 이 비동기 메서드에는 'await' 연산자가 없으며 메서드가 동시에 실행됩니다.
         private async UniTaskVoid ProcessReceiveQueue()
-#pragma warning restore CS1998 // 이 비동기 메서드에는 'await' 연산자가 없으며 메서드가 동시에 실행됩니다.
         {
             if (isProcessingReceive) return; // 이미 처리 중이면 중복 실행 방지
             isProcessingReceive = true;
@@ -160,9 +167,14 @@ namespace ResourceWar.Server
                 try
                 {
                     // Protobuf 메시지를 JSON 문자열로 변환
-                    string payloadString = packet.Payload.ToString();
-                    Logger.Log($"[ReceiveQueue] Dequeued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
+ 
+                    //   Logger.Log($"[ReceiveQueue] Dequeued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
 
+                   var resultPacket = await MessageHandlers.Instance.ExecuteHandler(packet);
+                    if (resultPacket != null)
+                    {
+                        EnqueueSend(resultPacket);
+                    }
                     // 메시지 핸들러 호출 또는 추가 로직 처리
                 }
                 catch (Exception ex)
@@ -170,8 +182,9 @@ namespace ResourceWar.Server
                     Logger.LogError($"Error processing packet: {ex.Message}");
                 }
             }
-
+            await UniTask.NextFrame(PlayerLoopTiming.LastPreUpdate);
             isProcessingReceive = false;
+            
         }
 
         // 클라이언트 연결 해제
@@ -224,13 +237,14 @@ namespace ResourceWar.Server
                     var packet = new Packet { PacketType = packetType, Payload = payload, Timestamp = DateTime.UtcNow, Token = token };
 
                     if (packet != null) { 
-                    Logger.Log($"{packet.Payload.ToString()}");
                         EnqueueReceive(packet);
                     }
                     else
                     {
                         Logger.Log("Packet is null");
                     }
+
+             
                     
                 }
                 catch (Exception e) {
