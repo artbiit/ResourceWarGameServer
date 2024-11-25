@@ -79,6 +79,7 @@ namespace ResourceWar.Server
     // 플레이어 액션
     { PacketType.PLAYER_ACTION_REQUEST, "Protocol.C2SPlayerActionReq" },
     { PacketType.PLAYER_ACTION_RESPONSE, "Protocol.S2CPlayerActionRes" },
+    { PacketType.PLAYER_MOVE, "Protocol.C2SPlayerMove" },
 
     // 객체 관련
     { PacketType.SPAWN_OBJECT_NOTIFICATION, "Protocol.S2CSpawnObjectNoti" },
