@@ -43,11 +43,12 @@ namespace ResourceWar.Server
         }
 
         // 제작 진행
-        public void StartProcessing()
+        public virtual void StartProcessing()
         {
             if (state != WorkShopState.Ready) return;
 
             this.state = WorkShopState.InProgress;
+            // 로직 처리
         }
 
         // 진행 업데이트

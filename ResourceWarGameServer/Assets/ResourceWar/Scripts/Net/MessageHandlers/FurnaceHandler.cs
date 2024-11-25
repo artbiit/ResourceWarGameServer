@@ -62,6 +62,7 @@ namespace ResourceWar.Server
             };
             response.Payload = payload;
             response.PacketType = PacketType.FURNACE_RESPONSE;
+            
             Logger.Log($"Sending Furnace State: {payload.FurnaceStateCode}, Progress: {payload.Progress}%");
 
             return response;
