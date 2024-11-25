@@ -35,8 +35,10 @@ namespace ResourceWar.Server
 
         public async UniTaskVoid Init()
         {
+    
             GameState = State.CREATING;
             players.Clear();
+            Subscribes();
         }
 
         private void Subscribes()
