@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ResourceWar/Scenes/Init.unity
+    guid: e8fd9a888951f2b4586a7e01b4496687
+  - enabled: 1
+    path: Assets/ResourceWar/Scenes/Game.unity
+    guid: 7bc01f796f0634f4fb3a87d69c8bd207
   m_configObjects: {}
