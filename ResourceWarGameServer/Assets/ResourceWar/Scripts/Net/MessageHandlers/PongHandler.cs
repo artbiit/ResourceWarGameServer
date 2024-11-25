@@ -11,6 +11,8 @@ namespace ResourceWar.Server
         {
             var pongMessage = (C2SPongRes)packet.Payload;
             Logger.Log($"ClientTime : {pongMessage.ClientTime}");
+
+            await EventDispatcher<PacketType, Packet>.Instance.NotifyAsync(PacketType.PONG_RESPONSE, packet);
            return null;
         }
     }
