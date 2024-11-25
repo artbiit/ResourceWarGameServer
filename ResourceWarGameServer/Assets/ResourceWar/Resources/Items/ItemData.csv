@@ -1,0 +1,11 @@
+ItemCode,Name,ItemType,Prefab
+# This file contains item data for the game
+# ItemType :
+# 0 = Material
+# 1 = Equipment
+# 2 = Junk
+1000,Wood,0,Wood
+1001,SolidWood,0,SolidWood
+1010,Iron,0,Iron
+1011,Steel,0,Steel
+1100,Garbage,2,Garbage

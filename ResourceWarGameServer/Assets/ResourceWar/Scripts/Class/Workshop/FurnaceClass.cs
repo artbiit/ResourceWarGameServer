@@ -13,6 +13,11 @@ namespace ResourceWar.Server
         {
         }
 
+        public override void StartProcessing()
+        {
+            base.StartProcessing();
+        }
+
         public override void UpdateProgress(float deltaTime)
         {
             base.UpdateProgress(deltaTime);
