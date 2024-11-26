@@ -55,6 +55,9 @@ namespace ResourceWar.Server
             }
         }
 
+        public bool TryGetClient(int clientId, out ClientHandler clientHandler) => this.clients.TryGetValue(clientId, out clientHandler);
+        
+
         // 클라이언트 연결 제거
         private void RemoveClient(int clientId)
         {

@@ -14,16 +14,19 @@ public class EventDispatcherTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //디스팻처에 콜백 등록
         EventDispatcher<PacketType, Packet>.Instance.Subscribe(PacketType.PONG_RESPONSE, PongHandling);
         _ = Pong();
     }
 
 
+    //콜백에 등록된 메소드
     private async UniTask PongHandling(Packet packet)
     {
         Logger.Log($"PongHandling => {packet.Payload.ToString()}");
     }
 
+    //디스팻처 이벤트 알림
     private async UniTask Pong()
     {
         Logger.Log("Pong Start");
