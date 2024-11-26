@@ -16,6 +16,7 @@ namespace ResourceWar.Server
         public MessageHandlers() : base() {
             Handlers.Add(PacketType.PONG_RESPONSE, this.PongHandler);
             Handlers.Add(PacketType.SIGN_IN_REQUEST, this.SignInHandler);
+            Handlers.Add(PacketType.AUTHORIZE_REQUEST, this.AuthorizeRequestHandler);
         }
 
 

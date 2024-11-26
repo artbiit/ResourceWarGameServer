@@ -9,7 +9,6 @@ public class TcpServerTest : MonoBehaviour
     void Start()
     {
         TcpServer.Instance.Init("0.0.0.0", 5555);
-        TcpServer.Instance.Listen();
     }
 
     // Update is called once per frame

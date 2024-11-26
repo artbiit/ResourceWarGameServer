@@ -53,7 +53,6 @@ namespace ResourceWar.Server
             dispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
             dispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             dispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
-
         }
 
         public Player FindPlayer(string token)
@@ -143,10 +142,5 @@ namespace ResourceWar.Server
             }
             return UniTask.CompletedTask;
         }
-
-
-
-
-
     }
 }
