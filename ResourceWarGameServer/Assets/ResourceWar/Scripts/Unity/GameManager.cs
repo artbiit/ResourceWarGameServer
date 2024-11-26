@@ -33,11 +33,18 @@ namespace ResourceWar.Server
         /// </summary>
         private Dictionary<string, Player> players = new Dictionary<string, Player>();
 
+        /// <summary>
+        /// 용광로를 관리하는 딕셔너리
+        /// key: Player의 ClientId, 값: FurnaceClass 객체
+        /// </summary>
+        private Dictionary<int, FurnaceClass> furnaces = new Dictionary<int, FurnaceClass>();
+
         public async UniTaskVoid Init()
         {
 
             GameState = State.CREATING;
             players.Clear();
+            furnaces.Clear();
             Subscribes();
         }
 
@@ -54,6 +61,36 @@ namespace ResourceWar.Server
             dispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             dispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
 
+        }
+
+        /// <summary>
+        /// 용광로를 등록합니다.
+        /// 나중에 key값을 GamePlayer의 GameTeam.tema_id로 바꿔주면 끝
+        /// </summary>
+        public void RegisterFurnace(int clientId, FurnaceClass furnace)
+        {
+            if (!furnaces.ContainsKey(clientId))
+            {
+                furnaces[clientId] = furnace;
+                Logger.Log($"Furnace registered for ClientId {clientId}");
+            }
+        }
+
+        /// <summary>
+        /// 특정 클라이언틔 용광로를 가져옵니다.
+        /// 나중에 key값을 GamePlayer의 GameTeam.tema_id로 바꿔주면 끝
+        /// </summary>
+        /// <param name="clientId">key값 변경 예정</param>
+        /// <returns></returns>
+        public FurnaceClass GetFurnaceByClientId(int clientId)
+        {
+            if (furnaces.TryGetValue(clientId, out var furnace))
+            {
+                return furnace;
+            }
+
+            Logger.LogError($"Furnace not found for ClientId {clientId}");
+            return null;
         }
 
 
