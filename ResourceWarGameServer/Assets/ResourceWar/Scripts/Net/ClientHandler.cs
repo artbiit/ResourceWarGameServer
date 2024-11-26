@@ -26,7 +26,7 @@ namespace ResourceWar.Server
         private readonly Action<int> onDisconnect; // 클라이언트 연결 해제 시 호출되는 콜백
 
         private CancellationTokenSource cts = new(); // 비동기 작업 취소 토큰
-        private readonly Queue<Packet> receiveQueue = new(); // 수신 큐
+        private readonly Queue<ReceivedPacket> receiveQueue = new(); // 수신 큐
         private readonly Queue<Packet> sendQueue = new(); // 송신 큐
 
         private readonly MemoryStream receiveBuffer = new MemoryStream();
@@ -53,30 +53,12 @@ namespace ResourceWar.Server
         /// <summary>
         /// 수신 큐에 패킷 추가 및 처리 시작
         /// </summary>
-        private void EnqueueReceive(Packet packet)
+        private void EnqueueReceive(ReceivedPacket packet)
         {
-            packet.Timestamp = DateTime.UtcNow; // 수신 시점 기록
             receiveQueue.Enqueue(packet); // 수신 큐에 시작
-            Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}, Timestamp={packet.Timestamp}");
+            Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}");
             _ = ProcessReceiveQueue(); // 수신 큐  처리 시작
         }
-
-        /// <summary>
-        /// 송신 큐에 패킷 추가
-        /// </summary>
-        public void EnqueueSend(ushort packetType, string token, IMessage payload)
-        {
-            var packet = new Packet
-            {
-                PacketType = (PacketType)packetType,
-                Token = token,
-                Payload = payload,
-                Timestamp = DateTime.UtcNow
-            };
-            EnqueueSend(packet);
-            //Logger.Log($"[SendQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
-        }
-
 
         public void EnqueueSend(Packet packet)
         {
@@ -136,7 +118,7 @@ namespace ResourceWar.Server
 
                         // Protobuf 메시지를 JSON 문자열로 변환
                         string payloadString = packet.Payload.ToString();
-                        Logger.Log($"[SendQueue] Dequeued and sent packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
+                        Logger.Log($"[SendQueue] Dequeued and sent packet: Type={packet.PacketType}, Token={packet.Token}, Payload={payloadString}");
                     }
                     catch(IOException e)
                     {
@@ -234,7 +216,7 @@ namespace ResourceWar.Server
                     // 패킷 생성 및 큐 추가
                     var protoMessages = PacketUtils.CreateMessage(packetType); // 패킷 타입에 맞는 Protobuf 메시지 검색
                     IMessage payload = protoMessages.Descriptor.Parser.ParseFrom(payloadBytes); // 페이로드 파싱
-                    var packet = new Packet { PacketType = packetType, Payload = payload, Timestamp = DateTime.UtcNow, Token = token };
+                    var packet = new ReceivedPacket (this.clientId){ PacketType = packetType, Payload = payload, Token = token };
 
                     if (packet != null) { 
                         EnqueueReceive(packet);
