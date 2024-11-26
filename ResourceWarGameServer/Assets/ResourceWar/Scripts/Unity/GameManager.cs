@@ -63,6 +63,7 @@ namespace ResourceWar.Server
         /// <param name="packet"></param>
         public UniTask SendPacketForAll(Packet packet)
         {
+            packet.Token = "";
             foreach (var player in players.Values)
             {
                 if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
