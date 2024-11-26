@@ -11,7 +11,7 @@ namespace ResourceWar.Server
 {
     public partial class MessageHandlers : Singleton<MessageHandlers>
     {
-        private Dictionary<PacketType, Func<Packet, UniTask<Packet>>> Handlers = new Dictionary<PacketType, Func<Packet, UniTask<Packet>>>();
+        private Dictionary<PacketType, Func<ReceivedPacket, UniTask<Packet>>> Handlers = new();
 
         public MessageHandlers() : base() {
             Handlers.Add(PacketType.PONG_RESPONSE, this.PongHandler);
@@ -19,7 +19,7 @@ namespace ResourceWar.Server
         }
 
 
-        public async UniTask<Packet> ExecuteHandler(Packet packet)
+        public async UniTask<Packet> ExecuteHandler(ReceivedPacket packet)
         {
             Packet result = null;
 
