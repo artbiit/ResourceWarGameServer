@@ -4,6 +4,8 @@ using UnityEngine;
 using ResourceWar.Server.Lib;
 using Cysharp.Threading.Tasks;
 using Logger = ResourceWar.Server.Lib.Logger;
+using System.Linq;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace ResourceWar.Server
 {
@@ -28,16 +30,14 @@ namespace ResourceWar.Server
         public State GameState { get; private set; } = State.CREATING;
         public string GameToken { get; private set; }
         private bool subscribed = false;
-        /// <summary>
-        /// Token - Player
-        /// </summary>
-        private Dictionary<string, Player> players = new Dictionary<string, Player>();
+
+        private List<Team> teams = new List<Team>();
+
 
         public async UniTaskVoid Init()
         {
-    
             GameState = State.CREATING;
-            players.Clear();
+            teams.Clear();
             Subscribes();
         }
 
@@ -56,6 +56,14 @@ namespace ResourceWar.Server
 
         }
 
+        public Player FindPlayer(string token)
+        {
+            foreach (var team in teams)
+            {
+                if (team.Players.TryGetValue(token, out Player player)) return player;
+            }
+            return null;
+        }
 
         /// <summary>
         /// 게임 내 모든 유저에게 데이터를 보냅니다.
@@ -63,13 +71,19 @@ namespace ResourceWar.Server
         /// <param name="packet"></param>
         public UniTask SendPacketForAll(Packet packet)
         {
-            foreach (var player in players.Values)
+            packet.Token = "";
+
+            foreach (var team in teams)
             {
-                if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
+                foreach (var player in team.Players.Values)
                 {
-                    clientHandler.EnqueueSend(packet);
+                    if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
+                    {
+                        clientHandler.EnqueueSend(packet);
+                    }
                 }
             }
+
             return UniTask.CompletedTask;
         }
 
@@ -81,14 +95,16 @@ namespace ResourceWar.Server
         {
             var token = packet.Token ?? "";
             packet.Token = "";
-            if (players.ContainsKey(token))
+            if (teams.Any(a => a.ContainsPlayer(token)))
             {
-                var team = players[token].Team;
-                foreach (var player in players.Values)
+                foreach (var team in teams)
                 {
-                    if (player.Team == team && TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
+                    foreach (var player in team.Players.Values)
                     {
-                        clientHandler.EnqueueSend(packet);
+                        if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
+                        {
+                            clientHandler.EnqueueSend(packet);
+                        }
                     }
                 }
             }
@@ -97,7 +113,6 @@ namespace ResourceWar.Server
                 Logger.LogError($"{token} is unknown user");
             }
             return UniTask.CompletedTask;
-
         }
 
         /// <summary>
@@ -109,9 +124,11 @@ namespace ResourceWar.Server
         {
             var token = packet.Token ?? "";
             packet.Token = "";
-            if (players.TryGetValue(token, out var player))
+            var player = FindPlayer(token);
+
+            if (player != null)
             {
-                if(TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
+                if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
                 {
                     clientHandler.EnqueueSend(packet);
                 }
