@@ -8,10 +8,14 @@ namespace ResourceWar.Server
 {
     public class SawmillClass : WorkshopClass
     {
+        
+
         public SawmillClass(int id, int gameTeamId, int itemId, int itemAmount = 0)
             : base(id, gameTeamId, itemId, itemAmount)
         {
         }
+
+        
 
         public override void StartProcessing()
         {

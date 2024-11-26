@@ -1,71 +1,154 @@
-using ResourceWar.Server.Lib;
-using Logger = ResourceWar.Server.Lib.Logger;
-using Protocol;
 using Cysharp.Threading.Tasks;
+using Protocol;
+using ResourceWar.Server.Lib;
+using System.Collections.Generic;
+using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
 {
     public partial class MessageHandlers : Singleton<MessageHandlers>
     {
-        private FurnaceClass furnace;
+        // FurnaceClass 인스턴스를 관리하는 Dictionary
+        private readonly Dictionary<int, FurnaceClass> furnaces = new();
 
-        public void FurnaceHandler()
-        {
-            // Furnace 초기화는 게임 시작 시 호출되는 메서드에서 수행
-            InitializeFurnace();
-        }
-
-        // Furnace 초기화 메서드
-        public void InitializeFurnace()
-        {
-            furnace = new FurnaceClass(1, 0, 1001); // id: 1, teamId: 0, itemId: 1001
-            Logger.Log("Furnace initialized.");
-        }
-
-        private async UniTask<Packet> FurnaceHandler(Packet packet)
+        /// <summary>
+        /// 클라이언트가 용광로(Furnace)에 재료를 추가하는 요청을 처리합니다.
+        /// </summary>
+        /// <param name="packet">클라이언트로부터 수신된 패킷</param>
+        /// <returns>응답 패킷</returns>
+        public async UniTask<Packet> HandleAddItemToFurnace(Packet packet)
         {
             var request = (C2SFurnaceReq)packet.Payload;
-            Logger.Log($"Received Furnace Request with ItemId: {request.Item}");
 
-            // 상태에 따라 처리
-            if (furnace.GetState() == WorkShopState.Idle)
+            if (furnaces.TryGetValue((int)request.Item.ItemCode, out var furnace))
             {
-                // 재료 추가
                 furnace.AddItem();
-                Logger.Log("Furnace state changed to Ready.");
-            }
-            else if (furnace.GetState() == WorkShopState.Ready)
-            {
-                // 제작 시작
-                furnace.StartProcessing();
-                Logger.Log("Furnace state changed to InProgress.");
-            }
-            else if (furnace.GetState() == WorkShopState.InProgress)
-            {
-                // 진행 업데이트
-                furnace.UpdateProgress(0.1f); // deltaTime: 0.1초
-                Logger.Log($"Furnace progress: {furnace.GetProgress()}%");
+                Logger.Log($"Furnace {request.Item.ItemCode} received AddItem request.");
 
-                if (furnace.GetState() == WorkShopState.Completed)
+                var response = new Packet
                 {
-                    Logger.Log("Furnace state changed to Completed.");
-                }
+                    PacketType = PacketType.FURNACE_RESPONSE,
+                    Payload = new S2CFurnaceRes
+                    {
+                        FurnaceResultCode = 0 // 성공
+                    }
+                };
+                return response;
+            }
+            else
+            {
+                Logger.LogError($"Furnace {request.Item.ItemCode} not found.");
+
+                return new Packet
+                {
+                    PacketType = PacketType.FURNACE_RESPONSE,
+                    Payload = new S2CFurnaceRes
+                    {
+                        FurnaceResultCode = 1 // 실패
+                    }
+                };
+            }
+        }
+
+        /// <summary>
+        /// 클라이언트가 용광로 제작을 시작하는 요청을 처리합니다.
+        /// </summary>
+        /// <param name="packet">클라이언트로부터 수신된 패킷</param>
+        /// <returns>응답 패킷</returns>
+        public async UniTask<Packet> HandleStartFurnaceProcessing(Packet packet)
+        {
+            var request = (C2SFurnaceReq)packet.Payload;
+
+            if (furnaces.TryGetValue((int)request.Item.ItemCode, out var furnace))
+            {
+                furnace.StartProcessing();
+                Logger.Log($"Furnace {request.Item.ItemCode} started processing.");
+
+                return new Packet
+                {
+                    PacketType = PacketType.FURNACE_RESPONSE,
+                    Payload = new S2CFurnaceRes
+                    {
+                        FurnaceResultCode = 0 // 성공
+                    }
+                };
+            }
+            else
+            {
+                Logger.LogError($"Furnace {request.Item.ItemCode} not found.");
+
+                return new Packet
+                {
+                    PacketType = PacketType.FURNACE_RESPONSE,
+                    Payload = new S2CFurnaceRes
+                    {
+                        FurnaceResultCode = 1 // 실패
+                    }
+                };
+            }
+        }
+
+        /// <summary>
+        /// 용광로 상태를 클라이언트에 알리는 요청을 처리합니다.
+        /// </summary>
+        /// <param name="packet">클라이언트로부터 수신된 패킷</param>
+        /// <returns>응답 패킷</returns>
+        public async UniTask<Packet> HandleFurnaceStateRequest(Packet packet)
+        {
+            var request = (C2SFurnaceReq)packet.Payload;
+
+            if (furnaces.TryGetValue((int)request.Item.ItemCode, out var furnace))
+            {
+                var state = furnace.GetState();
+                var progress = furnace.GetProgress();
+
+                Logger.Log($"Furnace {request.Item.ItemCode} state: {state}, progress: {progress}");
+
+                return new Packet
+                {
+                    PacketType = PacketType.SYNC_FURNACE_STATE_NOTIFICATION,
+                    Payload = new S2CSyncFurnaceStateNoti
+                    {
+                        TeamIndex = (uint)furnace.GameTeamId(),
+                        FurnaceStateCode = (uint)state,
+                        Progress = progress
+                    }
+                };
+            }
+            else
+            {
+                Logger.LogError($"Furnace {request.Item.ItemCode} not found.");
+
+                return new Packet
+                {
+                    PacketType = PacketType.FURNACE_RESPONSE,
+                    Payload = new S2CFurnaceRes
+                    {
+                        FurnaceResultCode = 1 // 실패
+                    }
+                };
+            }
+        }
+
+        /// <summary>
+        /// 새로운 용광로를 등록하거나 초기화합니다.
+        /// </summary>
+        /// <param name="furnaceId">용광로 ID</param>
+        /// <param name="gameTeamId">게임 팀 ID</param>
+        /// <param name="itemId">아이템 ID</param>
+        /// <param name="itemAmount">아이템 양</param>
+        public void RegisterFurnace(int furnaceId, int gameTeamId, int itemId, int itemAmount)
+        {
+            if (furnaces.ContainsKey(furnaceId))
+            {
+                Logger.Log($"Furnace {furnaceId} already exists.");
+                return;
             }
 
-            // 클라이언트로 상태 동기화 메시지 전송
-            Packet response = new Packet();
-            S2CSyncFurnaceStateNoti payload = new S2CSyncFurnaceStateNoti
-            {
-                TeamIndex = 0, // 팀 ID (임시 값)
-                FurnaceStateCode = (uint)furnace.GetState(),
-                Progress = furnace.GetProgress()
-            };
-            response.Payload = payload;
-            response.PacketType = PacketType.FURNACE_RESPONSE;
-            
-            Logger.Log($"Sending Furnace State: {payload.FurnaceStateCode}, Progress: {payload.Progress}%");
+            var furnace = new FurnaceClass(furnaceId, gameTeamId, itemId, itemAmount);
+            furnaces[furnaceId] = furnace;
 
-            return response;
+            Logger.Log($"Furnace {furnaceId} registered for team {gameTeamId}.");
         }
     }
 }

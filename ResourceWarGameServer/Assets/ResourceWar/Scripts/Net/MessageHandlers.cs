@@ -18,7 +18,7 @@ namespace ResourceWar.Server
             Handlers.Add(PacketType.SIGN_IN_REQUEST, this.SignInHandler);
 
             //용광로
-            Handlers.Add(PacketType.FURNACE_RESPONSE, this.FurnaceHandler);
+            Handlers.Add(PacketType.FURNACE_RESPONSE, this.HandleAddItemToFurnace);
         }
 
 

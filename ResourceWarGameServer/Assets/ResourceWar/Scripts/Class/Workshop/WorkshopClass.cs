@@ -17,7 +17,7 @@ namespace ResourceWar.Server
     public abstract class WorkshopClass
     {
         private readonly int id;
-        private readonly int gameTeamId; // 어떤 팀의 것인지
+        protected readonly int gameTeamId; // 어떤 팀의 것인지
         private readonly int itemId; // 사용 가능 재료 (고정)
         private int itemAmount; // 필요할 것 같진 않음
 
@@ -35,7 +35,7 @@ namespace ResourceWar.Server
         }
 
         // 재료 넣기
-        public void AddItem()
+        public virtual void AddItem()
         {
             if (this.state != WorkShopState.Idle) return;
 
@@ -65,7 +65,7 @@ namespace ResourceWar.Server
         }
 
         // 상태 초기화
-        public void ResetWorkshop()
+        public virtual void ResetWorkshop()
         {
             this.progress = 0;
             this.state = WorkShopState.Idle;
@@ -77,5 +77,7 @@ namespace ResourceWar.Server
         {
             return this.progress;
         }
+
+        public int GameTeamId() => this.gameTeamId;
     }
 }
