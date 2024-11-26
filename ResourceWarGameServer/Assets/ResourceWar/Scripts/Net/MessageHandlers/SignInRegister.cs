@@ -9,7 +9,7 @@ public partial class MessageHandlers : Singleton<MessageHandlers>
 {
     private async UniTask<Packet> SignInHandler(Packet packet)
     {
-            Logger.Log(packet.Payload.ToString());
+        Logger.Log(packet.Payload.ToString());
         var pongMessage = (C2SSignInReq)packet.Payload;
         Packet result = new Packet();
         S2CSignInRes payload = new S2CSignInRes

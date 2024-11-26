@@ -152,7 +152,7 @@ namespace ResourceWar.Server
  
                     //   Logger.Log($"[ReceiveQueue] Dequeued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
 
-                   var resultPacket = await MessageHandlers.Instance.ExecuteHandler(packet);
+                    var resultPacket = await MessageHandlers.Instance.ExecuteHandler(packet);
                     if (resultPacket != null)
                     {
                         EnqueueSend(resultPacket);

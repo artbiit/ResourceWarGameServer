@@ -48,12 +48,40 @@ namespace ResourceWar.Server
                 return;
             }
             subscribed = true;
-
+            
             var dispatcher = EventDispatcher<GameManagerEvent, Packet>.Instance;
             dispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
             dispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             dispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
 
+        }
+
+        public void RegisterPlayer(string token, int clientId)
+        {
+            // 기존 팀 목록에서 플레이어가 등록될 팀을 찾기
+            foreach (var team in teams)
+            {
+                if (!team.ContainsPlayer(token)) // 해당 팀에 플레이어가 없다면
+                {
+                    // 새로운 Player 객체 생성
+                    var player = new Player(clientId: clientId);  // 예시로 clientId는 123으로 설정, 실제로는 token에 맞는 값을 사용
+
+                    // 플레이어를 팀에 추가
+                    team.Players[token] = player;  // Players 딕셔너리에 token을 key로 플레이어를 추가
+
+                    Logger.Log($"Player with token {token} added to an existing team.");
+                    return;
+                }
+            }
+
+            // 만약 모든 팀에 플레이어가 없으면 새로운 팀을 만들어서 추가
+            var newTeam = new Team();
+            var newPlayer = new Player(clientId: clientId); // player의 clientId는 실제로 필요에 따라 설정
+
+            newTeam.Players[token] = newPlayer;  // 새 팀에 플레이어 추가
+            teams.Add(newTeam);  // 팀 목록에 새 팀 추가
+
+            Logger.Log($"New team created and player with token {token} added.");
         }
 
         public Player FindPlayer(string token)
