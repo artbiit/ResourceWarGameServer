@@ -11,7 +11,7 @@ namespace ResourceWar.Server
     {
         public enum State
         {
-            CREATING,
+            CREATING = 0,
             DESTROY,
             LOBBY,
             LOADING,
