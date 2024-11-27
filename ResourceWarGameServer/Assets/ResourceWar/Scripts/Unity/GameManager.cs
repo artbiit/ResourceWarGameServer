@@ -94,10 +94,10 @@ namespace ResourceWar.Server
         {
             var token = packet.Token ?? "";
             packet.Token = "";
-            if (teams.Any(a => a.ContainsPlayer(token)))
+
+            var team = teams.FirstOrDefault(a => a.ContainsPlayer(token));
+            if (team != null)
             {
-                foreach (var team in teams)
-                {
                     foreach (var player in team.Players.Values)
                     {
                         if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
@@ -105,7 +105,6 @@ namespace ResourceWar.Server
                             clientHandler.EnqueueSend(packet);
                         }
                     }
-                }
             }
             else
             {
