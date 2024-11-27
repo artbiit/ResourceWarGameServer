@@ -119,7 +119,12 @@ namespace ResourceWar.Server
         MATCH_REQUEST = 54,
         MATCH_RESPONSE = 55,
 
+        //게임 서버 유저 인증을 위한 요청
+        AUTHORIZE_REQUEST = 62,
+        AUTHORIZE_RESPONSE = 63,
+
         // 에러
         MISSING_FIELD = 10000, // 요청 파라미터 재점검 필요
+        NEED_AUTHORIZE = 10001, //인증 후 다른 패킷 하도록 요청
     }
 }

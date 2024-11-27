@@ -7,7 +7,7 @@ namespace ResourceWar.Server {
     
 public partial class MessageHandlers : Singleton<MessageHandlers>
 {
-    private async UniTask<Packet> SignInHandler(Packet packet)
+    private async UniTask<Packet> SignInHandler(ReceivedPacket packet)
     {
             Logger.Log(packet.Payload.ToString());
         var pongMessage = (C2SSignInReq)packet.Payload;

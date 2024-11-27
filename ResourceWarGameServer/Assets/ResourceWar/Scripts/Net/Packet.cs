@@ -22,6 +22,7 @@ namespace ResourceWar.Server
         /// </summary>
         public byte[] ToBytes()
         {
+            Token = Token ?? "";
             var tokenBytes = Encoding.UTF8.GetBytes(Token); // 토큰 데이터를 바이트로 변환
             var payloadBytes = Payload.ToByteArray(); // Protobuf 페이로드를 바이트 배열로 변환
 

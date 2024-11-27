@@ -19,6 +19,7 @@ namespace ResourceWar.Server
 
             //용광로
             Handlers.Add(PacketType.FURNACE_RESPONSE, this.HandleAddItemToFurnace);
+            Handlers.Add(PacketType.AUTHORIZE_REQUEST, this.AuthorizeRequestHandler);
         }
 
 

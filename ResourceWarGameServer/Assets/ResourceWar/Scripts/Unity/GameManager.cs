@@ -25,57 +25,32 @@ namespace ResourceWar.Server
             SendPacketForAll = 0,
             SendPacketForTeam = 1,
             SendPacketForUser = 2,
+            AddNewPlayer = 3,
         }
 
         public State GameState { get; private set; } = State.CREATING;
         public string GameToken { get; private set; }
         private bool subscribed = false;
 
-        private List<Team> teams = new List<Team>();
-        // 팀 ID를 키로 하는 용광로 Dictionary
-        private Dictionary<int, FurnaceClass> furnaces = new Dictionary<int, FurnaceClass>();
-
-        #region 용광로
         /// <summary>
-        /// 특정 팀(TeamId)에 해당하는 용광로를 등록합니다.
+        /// 0 - Gray(팀 선택x), 1 - Blue, 2 - Red
         /// </summary>
-        /// <param name="teamId">팀 ID</param>
-        /// <param name="furnace">등록할 용광로 객체</param>
-        public void RegisterFurnace(int teamId, FurnaceClass furnace)
-        {
-            if (!furnaces.ContainsKey(teamId))
-            {
-                furnaces[teamId] = furnace;
-                Logger.Log($"Furnace registered for TeamId {teamId}");
-            }
-            else
-            {
-                Logger.LogError($"Furnace for TeamId {teamId} already exists.");
-            }
-        }
+        private Team[] teams = null;
+        private int playerCount = 0;
 
-        /// <summary>
-        /// 특정 팀(TeamId)에 해당하는 용광로를 반환합니다.
-        /// </summary>
-        /// <param name="teamId">팀 ID</param>
-        /// <returns>FurnaceClass 객체</returns>
-        public FurnaceClass GetFurnaceByTeamId(int teamId)
+        private void Awake()
         {
-            if (furnaces.TryGetValue(teamId, out var furnace))
-            {
-                return furnace;
-            }
-
-            Logger.LogError($"Furnace not found for TeamId {teamId}");
-            return null;
+            Logger.Log($"{nameof(GameManager)} is Awake");
+            _ = Init();
         }
-        #endregion
 
         public async UniTaskVoid Init()
         {
-            furnaces.Clear();
             GameState = State.CREATING;
-            teams.Clear();
+            teams = new Team[3];
+            teams[0] = new Team(0); 
+            teams[1] = new Team(1); // Blue Team
+            teams[2] = new Team(2); // Red Team
             Subscribes();
         }
 
@@ -86,13 +61,34 @@ namespace ResourceWar.Server
                 return;
             }
             subscribed = true;
+            
+            var sendDispatcher = EventDispatcher<GameManagerEvent, Packet>.Instance;
+            sendDispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
+            sendDispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
+            sendDispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
+            
+            var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
+            receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
 
-            var dispatcher = EventDispatcher<GameManagerEvent, Packet>.Instance;
-            dispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
-            dispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
-            dispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
 
         }
+
+        public UniTask RegisterPlayer(ReceivedPacket receivedPacket)
+        {
+            var token = receivedPacket.Token;
+            var clientId = receivedPacket.ClientId;
+
+            if(teams.Any(t => t.ContainsPlayer(token)))
+            {
+                throw new System.Exception($"Already exsits player[{clientId}] : {token}");
+            }
+            var player = new Player(clientId);
+            teams[0].Players.Add(token, player);
+            playerCount++;
+            Logger.Log($"Add New Player[{clientId}] : {token}");
+            return UniTask.CompletedTask;
+        }
+
 
         public Player FindPlayer(string token)
         {
