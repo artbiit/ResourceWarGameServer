@@ -172,12 +172,12 @@ namespace ResourceWar.Server
                 }
                 else
                 {
-                    Logger.LogError($"Unknown client : {player.ClientId}");
+                   return UniTask.FromException(new System.InvalidOperationException( $"Unknown client : {player.ClientId}"));
                 }
             }
             else
             {
-                Logger.LogError($"Unknown player token : {token}");
+                return UniTask.FromException(new System.InvalidOperationException($"Unknown player token : {token}"));
             }
             return UniTask.CompletedTask;
         }
