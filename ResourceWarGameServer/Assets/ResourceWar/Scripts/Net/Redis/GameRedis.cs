@@ -13,7 +13,7 @@ namespace ResourceWar.Server
         
         public static async UniTask SetGameState(GameManager.State state)
         {
-           await RedisClient.Instance.ExecuteAsync(db => db.HashSetAsync(GAME_SESSION_KEY, "state", state.ToString()));
+           await RedisClient.Instance.ExecuteAsync(db => db.HashSetAsync(GAME_SESSION_KEY, "state", (int)state));
         }
     }
 }

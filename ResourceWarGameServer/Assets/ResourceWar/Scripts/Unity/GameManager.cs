@@ -11,7 +11,7 @@ namespace ResourceWar.Server
 {
     public class GameManager : MonoBehaviour
     {
-        public enum State
+        public enum State : int
         {
             CREATING = 0,
             DESTROY,
