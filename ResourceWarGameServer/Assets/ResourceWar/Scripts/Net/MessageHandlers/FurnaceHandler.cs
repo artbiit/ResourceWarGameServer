@@ -1,74 +1,71 @@
 using Cysharp.Threading.Tasks;
 using Protocol;
 using ResourceWar.Server.Lib;
+using UnityEditor.VersionControl;
 using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
 {
     public partial class MessageHandlers : Singleton<MessageHandlers>
     {
+        /*// 아이템 데이터
+        message ItemData
+        {
+            uint32 itemCode = 1;
+            uint32 itemType = 2;
+            uint32 amount = 3;
+        }*/
         /// <summary>
         /// 클라이언트가 용광로에 재료를 추가하는 요청을 처리합니다.
+        /// 패킷이 올바르게 왔는지 검증합니다.
         /// </summary>
         public async UniTask<Packet> HandleAddItemToFurnace(ReceivedPacket packet)
         {
-            var request = (C2SFurnaceReq)packet.Payload; // 요청 데이터를 Protobuf 메시지로 변환
-            var player = GameManager.FindPlayer(packet.Token); // 플레이어 찾기
-
-            if (player == null)
+            string token = packet.Token;
+            // 패킷이 null인지 확인
+            if (packet == null || packet.Payload == null)
             {
-                Logger.LogError("Player not found for token: " + packet.Token);
-                return null; // 플레이어를 찾지 못하면 null 반환
+                return CreateErrorResponse(PacketType.FURNACE_RESPONSE, token, "Invalid packet.");
             }
 
-            var furnace = gameManager.GetFurnaceByTeamId(player.TeamId); // 팀 ID 기반 용광로 가져오기
-            if (furnace == null)
+            // 패킷 타입 검증
+            if (packet.Payload is not C2SFurnaceReq request)
             {
-                Logger.LogError($"Furnace not found for TeamId: {player.TeamId}");
-                return null; // 용광로가 없으면 null 반환
+                return CreateErrorResponse(PacketType.FURNACE_RESPONSE, token, "Invalid payload type.");
             }
 
-            furnace.AddItem(); // 재료 추가 로직 호출
-            Logger.Log($"Item added to furnace for TeamId: {player.TeamId}");
+            // 요청 데이터 검증 (예: ItemId 확인)
+            if (request.Item.ItemCode <= 0)
+            {
+                return CreateErrorResponse(PacketType.FURNACE_RESPONSE, token, "Invalid ItemId.");
+            }
 
-            // 성공 응답 패킷 생성
+            Logger.Log($"Packet validation succeeded for ItemId: {request.Item.ItemCode}");
+
+            // 패킷이 유효하다면 성공 응답 생성
             return new Packet
             {
                 PacketType = PacketType.FURNACE_RESPONSE,
-                Token = packet.Token,
-                Payload = new S2CFurnaceRes { FurnaceResultCode = 0 }
+                Token = token,
+                Payload = new S2CFurnaceRes { FurnaceResultCode = (uint)WorkShopResultCode.SUCCESS }
             };
         }
 
         /// <summary>
-        /// 용광로 진행 상태를 일정 주기로 클라이언트에 알립니다.
+        /// 오류 응답을 생성합니다.
         /// </summary>
-        /// <param name="furnace">진행 상태를 알릴 대상 용광로</param>
-        public void StartNotifyingFurnaceState(FurnaceClass furnace)
+        private Packet CreateErrorResponse(PacketType packetType, string token = "", string errorMessage = "아무튼 실패")
         {
-            furnace.StartProcessing(); // 용광로 진행 시작
-            NotifyFurnaceStateAsync(furnace).Forget(); // 비동기 상태 알림
-        }
-
-        private async UniTaskVoid NotifyFurnaceStateAsync(FurnaceClass furnace)
-        {
-            while (furnace.GetState() == WorkShopState.InProgress) // 상태가 진행 중인 경우
+            Logger.LogError(errorMessage);
+            return new Packet
             {
-                var progressPacket = new Packet
-                {
-                    PacketType = PacketType.SYNC_FURNACE_STATE_NOTIFICATION,
-                    Token = furnace.CurrentToken, // 클라이언트에서 받은 Token 값 사용
-                    Payload = new S2CSyncFurnaceStateNoti
-                    {
-                        TeamIndex = (uint)furnace.GameTeamId(),
-                        FurnaceStateCode = (uint)furnace.GetState(),
-                        Progress = furnace.GetProgress()
-                    }
-                };
-
-                await gameManager.SendPacketForTeam(progressPacket);
-                await UniTask.Delay(furnace.UpdateInterval); // 지정된 간격만큼 대기
-            }
+                PacketType = packetType,
+                Token = token,
+                Payload = new S2CFurnaceRes
+                {   
+                    FurnaceResultCode = (uint)WorkShopResultCode.FAIL,
+                }
+            };
         }
     }
 }

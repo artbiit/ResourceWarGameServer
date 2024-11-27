@@ -7,77 +7,42 @@ using UnityEngine;
 
 namespace ResourceWar.Server
 {
-    public enum WorkShopState
-    {
-        Idle,
-        Ready,
-        InProgress,
-        Completed
-    }
     public abstract class WorkshopClass
     {
-        private readonly int id;
-        protected readonly int gameTeamId; // 어떤 팀의 것인지
-        private readonly int itemId; // 사용 가능 재료 (고정)
-        private int itemAmount; // 필요할 것 같진 않음
+        protected int TeamId { get; private set; }
+        protected float Progress { get; set; }
+        protected bool IsProcessing { get; set; }
 
-        protected float progress;
-        protected WorkShopState state;
-
-        protected WorkshopClass(int id, int gameTeamId, int itemId, int itemAmount = 0)
+        public WorkshopClass(int teamId)
         {
-            this.id = id;
-            this.gameTeamId = gameTeamId;
-            this.itemId = itemId;
-            this.itemAmount = itemAmount;
-            this.state = WorkShopState.Idle;
-            this.progress = 0;
+            TeamId = teamId;
+            Progress = 0;
+            IsProcessing = false;
         }
 
-        // 재료 넣기
-        public virtual void AddItem()
-        {
-            if (this.state != WorkShopState.Idle) return;
-
-            this.state = WorkShopState.Ready;
-        }
-
-        // 제작 진행
+        /// <summary>
+        /// 작업을 시작합니다.
+        /// </summary>
         public virtual void StartProcessing()
         {
-            if (state != WorkShopState.Ready) return;
-
-            this.state = WorkShopState.InProgress;
-            // 로직 처리
+            if (IsProcessing) return;
+            IsProcessing = true;
         }
 
-        // 진행 업데이트
-        public virtual void UpdateProgress(float deltaTime)
+        /// <summary>
+        /// 현재 진행률을 반환합니다.
+        /// </summary>
+        public virtual float GetProgress()
         {
-            if (state != WorkShopState.InProgress) return;
-
-            this.progress += deltaTime * 10; // 초당 10%진행
-            if (this.progress >= 100)
-            {
-                this.progress = 100;
-                this.state = WorkShopState.Completed;
-            }
+            return Progress;
         }
 
-        // 상태 초기화
-        public virtual void ResetWorkshop()
+        /// <summary>
+        /// 작업을 중단합니다.
+        /// </summary>
+        public virtual void StopProcessing()
         {
-            this.progress = 0;
-            this.state = WorkShopState.Idle;
+            IsProcessing = false;
         }
-
-        public WorkShopState GetState() => this.state;
-
-        public float GetProgress()
-        {
-            return this.progress;
-        }
-
-        public int GameTeamId() => this.gameTeamId;
     }
 }

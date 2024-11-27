@@ -8,14 +8,10 @@ namespace ResourceWar.Server
     public class Player 
     {
         public readonly int ClientId;
-        public readonly int TeamId;
 
-        public Player(int clientId, int teamId)
+        public Player(int clientId)
         {
             this.ClientId = clientId;
-            this.TeamId = teamId;
         }
-
-        public int GetTeamId() => this.TeamId;
     }
 }
