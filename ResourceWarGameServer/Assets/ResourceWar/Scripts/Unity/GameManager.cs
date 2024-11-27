@@ -45,13 +45,20 @@ namespace ResourceWar.Server
         }
         public async UniTaskVoid Init()
         {
-            GameState = State.CREATING;
+      
             teams = new Team[3];
             for (int i = 0; i < teams.Length; i++)
             {
                 teams[i] = new Team();
             }
             Subscribes();
+            await SetState(State.LOBBY);
+        }
+
+        public async UniTask SetState(State state)
+        {
+            this.GameState = state;
+            await GameRedis.SetGameState(state);
         }
 
         private void Subscribes()
@@ -66,7 +73,7 @@ namespace ResourceWar.Server
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
-            
+             
             var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
 
