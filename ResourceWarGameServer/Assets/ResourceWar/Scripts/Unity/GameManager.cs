@@ -53,7 +53,6 @@ namespace ResourceWar.Server
             dispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
             dispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             dispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
-
         }
 
         public void RegisterPlayer(string token, int clientId)
@@ -171,10 +170,5 @@ namespace ResourceWar.Server
             }
             return UniTask.CompletedTask;
         }
-
-
-
-
-
     }
 }

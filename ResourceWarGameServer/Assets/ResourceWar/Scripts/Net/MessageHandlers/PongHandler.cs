@@ -7,10 +7,10 @@ namespace ResourceWar.Server
 {
     public partial class MessageHandlers : Singleton<MessageHandlers>
     {
-        private async UniTask<Packet> PongHandler(Packet packet)
+        private async UniTask<Packet> PongHandler(ReceivedPacket packet)
         {
-           await EventDispatcher<PacketType, Packet>.Instance.NotifyAsync(PacketType.PONG_RESPONSE, packet);
-           return null;
+            await EventDispatcher<PacketType, Packet>.Instance.NotifyAsync(PacketType.PONG_RESPONSE, packet);
+            return null;
         }
     }
 }

@@ -25,6 +25,7 @@ namespace ResourceWar.Server
             if (tcpListener == null)
             {
                 tcpListener = new TcpListener(IPAddress.Parse(bind), port); // 지정된 IP와 포트로 리스너 생성
+                TcpServer.Instance.Listen();
                 Logger.Log($"TcpServer initialized [{bind}:{port}]"); // 초기화 로그 출력
             }
             else
@@ -36,6 +37,11 @@ namespace ResourceWar.Server
         // 클라이언트 연결 대기 시작
         public void Listen()
         {
+            if (tcpListener.Server.IsBound)
+            {
+                Logger.LogWarning("TCP Listener is already started.");
+                return;
+            }
             tcpListener.Start(); // TCP 리스너 시작
             _ = AcceptClientAsync(); // 비동기 클라이언트 수락 시전
         }
@@ -45,6 +51,7 @@ namespace ResourceWar.Server
         {
             while (tcpListener != null)
             {
+   
                 TcpClient client = await tcpListener.AcceptTcpClientAsync();  // 새 클라이언트 연결 대기
                 int clientId = Interlocked.Increment(ref clientIdCounter); // 고유 클라이언트 ID 생성
                 // 클라이언트 처리 핸들러 생성
