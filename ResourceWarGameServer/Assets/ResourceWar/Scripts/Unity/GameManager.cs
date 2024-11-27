@@ -1,9 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ResourceWar.Server.Lib;
 using Cysharp.Threading.Tasks;
 using Logger = ResourceWar.Server.Lib.Logger;
 using System.Linq;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace ResourceWar.Server
 {
@@ -23,19 +25,32 @@ namespace ResourceWar.Server
             SendPacketForAll = 0,
             SendPacketForTeam = 1,
             SendPacketForUser = 2,
+            AddNewPlayer = 3,
         }
 
         public State GameState { get; private set; } = State.CREATING;
         public string GameToken { get; private set; }
         private bool subscribed = false;
 
-        private List<Team> teams = new List<Team>();
+        /// <summary>
+        /// 0 - Gray(팀 선택x), 1 - Blue, 2 - Red
+        /// </summary>
+        private Team[] teams = null;
+        private int playerCount = 0;
 
-
+        private void Awake()
+        {
+            Logger.Log($"{nameof(GameManager)} is Awake");
+            _ = Init();
+        }
         public async UniTaskVoid Init()
         {
             GameState = State.CREATING;
-            teams.Clear();
+            teams = new Team[3];
+            for (int i = 0; i < teams.Length; i++)
+            {
+                teams[i] = new Team();
+            }
             Subscribes();
         }
 
@@ -46,12 +61,34 @@ namespace ResourceWar.Server
                 return;
             }
             subscribed = true;
+            
+            var sendDispatcher = EventDispatcher<GameManagerEvent, Packet>.Instance;
+            sendDispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
+            sendDispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
+            sendDispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
+            
+            var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
+            receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
 
-            var dispatcher = EventDispatcher<GameManagerEvent, Packet>.Instance;
-            dispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
-            dispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
-            dispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
+
         }
+
+        public UniTask RegisterPlayer(ReceivedPacket receivedPacket)
+        {
+            var token = receivedPacket.Token;
+            var clientId = receivedPacket.ClientId;
+
+            if(teams.Any(t => t.ContainsPlayer(token)))
+            {
+                throw new System.Exception($"Already exsits player[{clientId}] : {token}");
+            }
+            var player = new Player(clientId);
+            teams[0].Players.Add(token, player);
+            playerCount++;
+            Logger.Log($"Add New Player[{clientId}] : {token}");
+            return UniTask.CompletedTask;
+        }
+
 
         public Player FindPlayer(string token)
         {
@@ -92,10 +129,10 @@ namespace ResourceWar.Server
         {
             var token = packet.Token ?? "";
             packet.Token = "";
-
-            var team = teams.FirstOrDefault(a => a.ContainsPlayer(token));
-            if (team != null)
+            if (teams.Any(a => a.ContainsPlayer(token)))
             {
+                foreach (var team in teams)
+                {
                     foreach (var player in team.Players.Values)
                     {
                         if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
@@ -103,6 +140,7 @@ namespace ResourceWar.Server
                             clientHandler.EnqueueSend(packet);
                         }
                     }
+                }
             }
             else
             {
