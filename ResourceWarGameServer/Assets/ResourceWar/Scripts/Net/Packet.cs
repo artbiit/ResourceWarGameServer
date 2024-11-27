@@ -17,7 +17,6 @@ namespace ResourceWar.Server
         public string Token { get; set; }
         public IMessage Payload { get; set; } // Protobuf 메시지
 
-
         /// <summary>
         /// 패킷 데이터를 바이트 배열로 반환
         /// </summary>

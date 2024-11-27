@@ -32,13 +32,44 @@ namespace ResourceWar.Server
         private bool subscribed = false;
 
         private List<Team> teams = new List<Team>();
+        // 팀 ID를 키로 하는 용광로 Dictionary
+        private Dictionary<int, FurnaceClass> furnaces = new Dictionary<int, FurnaceClass>();
 
+        #region 용광로
+        /// <summary>
+        /// 특정 팀(TeamId)에 해당하는 용광로를 등록합니다.
+        /// </summary>
+        /// <param name="teamId">팀 ID</param>
+        /// <param name="furnace">등록할 용광로 객체</param>
+        public void RegisterFurnace(int teamId, FurnaceClass furnace)
+        {
+            if (!furnaces.ContainsKey(teamId))
+            {
+                furnaces[teamId] = furnace;
+                Logger.Log($"Furnace registered for TeamId {teamId}");
+            }
+            else
+            {
+                Logger.LogError($"Furnace for TeamId {teamId} already exists.");
+            }
+        }
 
         /// <summary>
-        /// 용광로를 관리하는 딕셔너리
-        /// key: Player의 ClientId, 값: FurnaceClass 객체
+        /// 특정 팀(TeamId)에 해당하는 용광로를 반환합니다.
         /// </summary>
-        private Dictionary<int, FurnaceClass> furnaces = new Dictionary<int, FurnaceClass>();
+        /// <param name="teamId">팀 ID</param>
+        /// <returns>FurnaceClass 객체</returns>
+        public FurnaceClass GetFurnaceByTeamId(int teamId)
+        {
+            if (furnaces.TryGetValue(teamId, out var furnace))
+            {
+                return furnace;
+            }
+
+            Logger.LogError($"Furnace not found for TeamId {teamId}");
+            return null;
+        }
+        #endregion
 
         public async UniTaskVoid Init()
         {
@@ -61,36 +92,6 @@ namespace ResourceWar.Server
             dispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             dispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
 
-        }
-
-        /// <summary>
-        /// 용광로를 등록합니다.
-        /// 나중에 key값을 GamePlayer의 GameTeam.tema_id로 바꿔주면 끝
-        /// </summary>
-        public void RegisterFurnace(int clientId, FurnaceClass furnace)
-        {
-            if (!furnaces.ContainsKey(clientId))
-            {
-                furnaces[clientId] = furnace;
-                Logger.Log($"Furnace registered for ClientId {clientId}");
-            }
-        }
-
-        /// <summary>
-        /// 특정 클라이언틔 용광로를 가져옵니다.
-        /// 나중에 key값을 GamePlayer의 GameTeam.tema_id로 바꿔주면 끝
-        /// </summary>
-        /// <param name="clientId">key값 변경 예정</param>
-        /// <returns></returns>
-        public FurnaceClass GetFurnaceByClientId(int clientId)
-        {
-            if (furnaces.TryGetValue(clientId, out var furnace))
-            {
-                return furnace;
-            }
-
-            Logger.LogError($"Furnace not found for ClientId {clientId}");
-            return null;
         }
 
         public Player FindPlayer(string token)
