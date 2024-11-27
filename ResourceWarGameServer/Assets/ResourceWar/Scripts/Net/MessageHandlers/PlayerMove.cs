@@ -47,7 +47,7 @@ namespace ResourceWar.Server
 
         
 
-        private void NotifyClient(string message, PlayerStates playerState, string token)
+        private async void NotifyClient(string message, PlayerStates playerState, string token)
         {
             var protoPlayerState = new Protocol.PlayerState
             {
@@ -72,9 +72,8 @@ namespace ResourceWar.Server
                 }
             };
             Logger.Log(packet);
-            EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance
-                .NotifyAsync(GameManager.GameManagerEvent.SendPacketForAll, packet)
-                .Forget();
+            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance
+                .NotifyAsync(GameManager.GameManagerEvent.SendPacketForAll, packet);
         }
     }
 }
