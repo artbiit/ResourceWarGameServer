@@ -11,9 +11,19 @@ namespace ResourceWar.Server
         private static readonly string ALIVE_GAMESSESIONS_KEY = "GameSessions";
         private static readonly string LOBBY_QUEUE_KEY = "Lobby";
         
-        public static async UniTask SetGameState(GameManager.State state)
+        public static async UniTask<bool> SetGameState(GameManager.State state)
         {
-           await RedisClient.Instance.ExecuteAsync(db => db.HashSetAsync(GAME_SESSION_KEY, "state", (int)state));
+           return await RedisClient.Instance.ExecuteAsync(db => db.HashSetAsync(GAME_SESSION_KEY, "state", (int)state));
         }
+
+        public static async UniTask<long> RemoveFromLobby(string gameCode)
+        {
+            return await RedisClient.Instance.ExecuteAsync(db => db.ListRemoveAsync(LOBBY_QUEUE_KEY, gameCode));
+        }
+
+
+
+
+        
     }
 }
