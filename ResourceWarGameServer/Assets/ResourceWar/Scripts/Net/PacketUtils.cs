@@ -119,9 +119,13 @@ namespace ResourceWar.Server
     // 대기실 매칭 요청
     { PacketType.MATCH_REQUEST, "Protocol.C2SMatchReq" },
     { PacketType.MATCH_RESPONSE, "Protocol.S2CMatchRes" },
-
+    //게임 서버 연결 후 인증
+    { PacketType.AUTHORIZE_REQUEST, "Protocol.C2SAuthorizeReq" },
+    { PacketType.AUTHORIZE_RESPONSE, "Protocol.S2CAuthorizeRes" },
     // 에러
-    { PacketType.MISSING_FIELD, "Protocol.S2CMissingFieldNoti" }
+    { PacketType.MISSING_FIELD, "Protocol.S2CMissingFieldNoti" },
+    { PacketType.NEED_AUTHORIZE, "Protocol.S2CNeedAuthorizeNoti" }
+
 };
 
         private static ConcurrentDictionary<string, Type> CachedMessageTypes = new ConcurrentDictionary<string, Type>();

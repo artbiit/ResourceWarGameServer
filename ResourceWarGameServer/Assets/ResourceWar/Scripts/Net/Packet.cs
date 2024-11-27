@@ -16,40 +16,14 @@ namespace ResourceWar.Server
         public PacketType PacketType { get; set; }
         public string Token { get; set; }
         public IMessage Payload { get; set; } // Protobuf 메시지
-        public DateTime Timestamp { get; set; } // 패킷 생성 또는 송수신 시점
 
-        /// <summary>
-        /// 스트림에서 패킷 읽기
-        /// </summary>
-        public static Packet FromStream(BinaryReader reader)
-        {
-            // 데이터 읽기 위한 BinaryReader
-            try
-            {
-                PacketType packetType = (PacketType)PacketUtils.ReadUInt16BigEndian(reader); // 패킷 타입 읽기
-                int tokenLength = reader.ReadByte(); // 토큰 길이 읽기
-                string token = Encoding.UTF8.GetString(reader.ReadBytes(tokenLength)); // 토큰 데이터 읽기
-                int payloadLength = PacketUtils.ReadInt32BigEndian(reader); // 페이로드 길이 읽기
-                byte[] payloadBytes = reader.ReadBytes(payloadLength);
-
-                var protoMessages = PacketUtils.CreateMessage(packetType); // 패킷 타입에 맞는 Protobuf 메시지 검색
-                IMessage payload = protoMessages.Descriptor.Parser.ParseFrom(payloadBytes); // 페이로드 파싱
-
-                return new Packet { PacketType = packetType, Token = token, Payload = payload };
-            }
-            catch(Exception e) 
-            {
-                Logger.LogError(e);
-                return null; // 데이터가 부족하거나 잘못된 경우 null 반환 (반드시 형식을 맞춰 보내야함)
-            }
-        }
 
         /// <summary>
         /// 패킷 데이터를 바이트 배열로 반환
         /// </summary>
-
         public byte[] ToBytes()
         {
+            Token = Token ?? "";
             var tokenBytes = Encoding.UTF8.GetBytes(Token); // 토큰 데이터를 바이트로 변환
             var payloadBytes = Payload.ToByteArray(); // Protobuf 페이로드를 바이트 배열로 변환
 
@@ -82,6 +56,18 @@ namespace ResourceWar.Server
             writer.Write(payloadBytes);
 
             return stream.ToArray(); // 스트림 내용을 바이트 배열로 반환
+        }
+    }
+
+    /// <summary>
+    /// 수신시 생성할 패킷 클래스
+    /// </summary>
+    public class ReceivedPacket : Packet
+    {
+        public readonly int ClientId;
+        public ReceivedPacket(int clientId) : base()
+        {
+            this.ClientId = clientId;
         }
     }
 }

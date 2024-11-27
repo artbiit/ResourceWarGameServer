@@ -4,6 +4,8 @@ using UnityEngine;
 using ResourceWar.Server.Lib;
 using Cysharp.Threading.Tasks;
 using Logger = ResourceWar.Server.Lib.Logger;
+using System.Linq;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace ResourceWar.Server
 {
@@ -23,21 +25,32 @@ namespace ResourceWar.Server
             SendPacketForAll = 0,
             SendPacketForTeam = 1,
             SendPacketForUser = 2,
+            AddNewPlayer = 3,
         }
 
         public State GameState { get; private set; } = State.CREATING;
         public string GameToken { get; private set; }
         private bool subscribed = false;
-        /// <summary>
-        /// Token - Player
-        /// </summary>
-        private Dictionary<string, Player> players = new Dictionary<string, Player>();
 
+        /// <summary>
+        /// 0 - Gray(팀 선택x), 1 - Blue, 2 - Red
+        /// </summary>
+        private Team[] teams = null;
+        private int playerCount = 0;
+
+        private void Awake()
+        {
+            Logger.Log($"{nameof(GameManager)} is Awake");
+            _ = Init();
+        }
         public async UniTaskVoid Init()
         {
-    
             GameState = State.CREATING;
-            players.Clear();
+            teams = new Team[3];
+            for (int i = 0; i < teams.Length; i++)
+            {
+                teams[i] = new Team();
+            }
             Subscribes();
         }
 
@@ -48,14 +61,43 @@ namespace ResourceWar.Server
                 return;
             }
             subscribed = true;
+            
+            var sendDispatcher = EventDispatcher<GameManagerEvent, Packet>.Instance;
+            sendDispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
+            sendDispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
+            sendDispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
+            
+            var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
+            receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
 
-            var dispatcher = EventDispatcher<GameManagerEvent, Packet>.Instance;
-            dispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
-            dispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
-            dispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
 
         }
 
+        public UniTask RegisterPlayer(ReceivedPacket receivedPacket)
+        {
+            var token = receivedPacket.Token;
+            var clientId = receivedPacket.ClientId;
+
+            if(teams.Any(t => t.ContainsPlayer(token)))
+            {
+                throw new System.Exception($"Already exsits player[{clientId}] : {token}");
+            }
+            var player = new Player(clientId);
+            teams[0].Players.Add(token, player);
+            playerCount++;
+            Logger.Log($"Add New Player[{clientId}] : {token}");
+            return UniTask.CompletedTask;
+        }
+
+
+        public Player FindPlayer(string token)
+        {
+            foreach (var team in teams)
+            {
+                if (team.Players.TryGetValue(token, out Player player)) return player;
+            }
+            return null;
+        }
 
         /// <summary>
         /// 게임 내 모든 유저에게 데이터를 보냅니다.
@@ -63,13 +105,19 @@ namespace ResourceWar.Server
         /// <param name="packet"></param>
         public UniTask SendPacketForAll(Packet packet)
         {
-            foreach (var player in players.Values)
+            packet.Token = "";
+
+            foreach (var team in teams)
             {
-                if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
+                foreach (var player in team.Players.Values)
                 {
-                    clientHandler.EnqueueSend(packet);
+                    if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
+                    {
+                        clientHandler.EnqueueSend(packet);
+                    }
                 }
             }
+
             return UniTask.CompletedTask;
         }
 
@@ -81,14 +129,16 @@ namespace ResourceWar.Server
         {
             var token = packet.Token ?? "";
             packet.Token = "";
-            if (players.ContainsKey(token))
+            if (teams.Any(a => a.ContainsPlayer(token)))
             {
-                var team = players[token].Team;
-                foreach (var player in players.Values)
+                foreach (var team in teams)
                 {
-                    if (player.Team == team && TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
+                    foreach (var player in team.Players.Values)
                     {
-                        clientHandler.EnqueueSend(packet);
+                        if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
+                        {
+                            clientHandler.EnqueueSend(packet);
+                        }
                     }
                 }
             }
@@ -97,7 +147,6 @@ namespace ResourceWar.Server
                 Logger.LogError($"{token} is unknown user");
             }
             return UniTask.CompletedTask;
-
         }
 
         /// <summary>
@@ -109,9 +158,11 @@ namespace ResourceWar.Server
         {
             var token = packet.Token ?? "";
             packet.Token = "";
-            if (players.TryGetValue(token, out var player))
+            var player = FindPlayer(token);
+
+            if (player != null)
             {
-                if(TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
+                if (TcpServer.Instance.TryGetClient(player.ClientId, out var clientHandler))
                 {
                     clientHandler.EnqueueSend(packet);
                 }
@@ -126,10 +177,5 @@ namespace ResourceWar.Server
             }
             return UniTask.CompletedTask;
         }
-
-
-
-
-
     }
 }

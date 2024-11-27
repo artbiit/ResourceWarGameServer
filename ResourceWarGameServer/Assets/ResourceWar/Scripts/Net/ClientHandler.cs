@@ -1,15 +1,13 @@
 using Cysharp.Threading.Tasks;
 using Google.Protobuf;
+using Protocol;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
-using UnityEditor.Sprites;
+using UnityEngine.Experimental.AI;
 using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
@@ -20,19 +18,25 @@ namespace ResourceWar.Server
     /// </summary>
     public class ClientHandler : IDisposable
     {
+        public string Token { get; private set; }
         private readonly int clientId; // 클라이언트 ID
         private readonly TcpClient tcpClient; // 클라이언트 소켓
         private readonly NetworkStream stream; // 클라이언트와의 데이터 송수신 스트림
         private readonly Action<int> onDisconnect; // 클라이언트 연결 해제 시 호출되는 콜백
 
         private CancellationTokenSource cts = new(); // 비동기 작업 취소 토큰
-        private readonly Queue<Packet> receiveQueue = new(); // 수신 큐
+        private readonly Queue<ReceivedPacket> receiveQueue = new(); // 수신 큐
         private readonly Queue<Packet> sendQueue = new(); // 송신 큐
 
         private readonly MemoryStream receiveBuffer = new MemoryStream();
         private bool isProcessingReceive = false; // 수신 큐 처리 여부 플래그
         private bool isProcessingSend = false; // 송신 큐 처리 여부 플래그
         private bool disposedValue;
+        /// <summary>
+        /// 인증된 클라이언트인지 검사
+        /// </summary>
+        public bool IsAuthorized { get; private set; } = false;
+
 
         public ClientHandler(int clientId, TcpClient tcpClient, Action<int> onDisconnect)
         {
@@ -53,30 +57,12 @@ namespace ResourceWar.Server
         /// <summary>
         /// 수신 큐에 패킷 추가 및 처리 시작
         /// </summary>
-        private void EnqueueReceive(Packet packet)
+        private void EnqueueReceive(ReceivedPacket packet)
         {
-            packet.Timestamp = DateTime.UtcNow; // 수신 시점 기록
             receiveQueue.Enqueue(packet); // 수신 큐에 시작
-            Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}, Timestamp={packet.Timestamp}");
+            Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}");
             _ = ProcessReceiveQueue(); // 수신 큐  처리 시작
         }
-
-        /// <summary>
-        /// 송신 큐에 패킷 추가
-        /// </summary>
-        public void EnqueueSend(ushort packetType, string token, IMessage payload)
-        {
-            var packet = new Packet
-            {
-                PacketType = (PacketType)packetType,
-                Token = token,
-                Payload = payload,
-                Timestamp = DateTime.UtcNow
-            };
-            EnqueueSend(packet);
-            //Logger.Log($"[SendQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
-        }
-
 
         public void EnqueueSend(Packet packet)
         {
@@ -101,7 +87,8 @@ namespace ResourceWar.Server
                         receiveBuffer.Write(buffer, 0, bytesRead);
                         ProcessBufferedData();
                     }
-                }catch(IOException e)
+                }
+                catch (IOException e)
                 {
                     Logger.LogError($"HandleReceivingAsync[{clientId}] {e.Message}");
                     Disconnect();
@@ -110,7 +97,7 @@ namespace ResourceWar.Server
                 {
                     receiveBuffer.SetLength(0);
                     Logger.LogError($"Error receiving data: {ex.Message}");
-                    
+
                 }
             }
         }
@@ -126,32 +113,32 @@ namespace ResourceWar.Server
             }
             isProcessingSend = true;
 
-       
-                while(sendQueue.TryDequeue(out var packet))
-                {
-                    try
-                    {
-                        var data = packet.ToBytes(); // 패킷 데이터를 바이트로 변환
-                        await stream.WriteAsync(data, 0, data.Length, cts.Token); // 데이터 송신
 
-                        // Protobuf 메시지를 JSON 문자열로 변환
-                        string payloadString = packet.Payload.ToString();
-                        Logger.Log($"[SendQueue] Dequeued and sent packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
-                    }
-                    catch(IOException e)
-                    {
-                        Logger.LogError($"HandleSendingAsync[{clientId}] {e.Message}");
-                        Disconnect();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError($"Error sending data to client {clientId}: {ex.Message}");
-                      
-                    }
+            while (sendQueue.TryDequeue(out var packet))
+            {
+                try
+                {
+                    var data = packet.ToBytes(); // 패킷 데이터를 바이트로 변환
+                    await stream.WriteAsync(data, 0, data.Length, cts.Token); // 데이터 송신
+
+                    // Protobuf 메시지를 JSON 문자열로 변환
+                    string payloadString = packet.Payload.ToString();
+                    Logger.Log($"[SendQueue] Dequeued and sent packet: Type={packet.PacketType}, Token={packet.Token}, Payload={payloadString}");
                 }
-              
-                    await UniTask.NextFrame(PlayerLoopTiming.LastPreUpdate);
-                    isProcessingSend = false;
+                catch (IOException e)
+                {
+                    Logger.LogError($"HandleSendingAsync[{clientId}] {e.Message}");
+                    Disconnect();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error sending data to client {clientId}, {ex.StackTrace}");
+
+                }
+            }
+
+            await UniTask.NextFrame(PlayerLoopTiming.LastPreUpdate);
+            isProcessingSend = false;
         }
 
         /// <summary>
@@ -161,19 +148,39 @@ namespace ResourceWar.Server
         {
             if (isProcessingReceive) return; // 이미 처리 중이면 중복 실행 방지
             isProcessingReceive = true;
-
+            int needAuthCount = 0;
             while (receiveQueue.TryDequeue(out var packet))
             {
                 try
                 {
                     // Protobuf 메시지를 JSON 문자열로 변환
- 
+
                     //   Logger.Log($"[ReceiveQueue] Dequeued packet: Type={packet.PacketType}, Token={packet.Token}, Timestamp={packet.Timestamp}, Payload={payloadString}");
 
-                   var resultPacket = await MessageHandlers.Instance.ExecuteHandler(packet);
-                    if (resultPacket != null)
+                    if (IsAuthorized == false && packet.PacketType != PacketType.AUTHORIZE_REQUEST)
                     {
-                        EnqueueSend(resultPacket);
+                        if(needAuthCount <= 3) { 
+                        var needAuthNoti = new Packet
+                        {
+                            PacketType = PacketType.NEED_AUTHORIZE,
+                            Payload = new S2CNeedAuthorizeNoti(),
+                            Token = "",
+                        };
+                        EnqueueSend(needAuthNoti);
+                        }
+                        else
+                        {
+                            throw new Exception($"Authorize failed : {clientId}");
+                        }
+                        needAuthCount++;
+                    }
+                    else
+                    {
+                        var resultPacket = await MessageHandlers.Instance.ExecuteHandler(packet);
+                        if (resultPacket != null)
+                        {
+                            EnqueueSend(resultPacket);
+                        }
                     }
                     // 메시지 핸들러 호출 또는 추가 로직 처리
                 }
@@ -184,7 +191,7 @@ namespace ResourceWar.Server
             }
             await UniTask.NextFrame(PlayerLoopTiming.LastPreUpdate);
             isProcessingReceive = false;
-            
+
         }
 
         // 클라이언트 연결 해제
@@ -227,16 +234,13 @@ namespace ResourceWar.Server
                     }
 
                     byte[] payloadBytes = reader.ReadBytes(payloadLength);
-
-
-                    //TODO : 메세지로 변환하는 과정 필요
-
                     // 패킷 생성 및 큐 추가
                     var protoMessages = PacketUtils.CreateMessage(packetType); // 패킷 타입에 맞는 Protobuf 메시지 검색
                     IMessage payload = protoMessages.Descriptor.Parser.ParseFrom(payloadBytes); // 페이로드 파싱
-                    var packet = new Packet { PacketType = packetType, Payload = payload, Timestamp = DateTime.UtcNow, Token = token };
+                    var packet = new ReceivedPacket(this.clientId) { PacketType = packetType, Payload = payload, Token = token };
 
-                    if (packet != null) { 
+                    if (packet != null)
+                    {
                         EnqueueReceive(packet);
                     }
                     else
@@ -244,10 +248,11 @@ namespace ResourceWar.Server
                         Logger.Log("Packet is null");
                     }
 
-             
-                    
+
+
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
 
                     Logger.LogError(e);
                     // 잘못된 데이터가 있으면 남은 데이터 대기
@@ -296,6 +301,11 @@ namespace ResourceWar.Server
         //     Dispose(disposing: false);
         // }
 
+        public void Authorized()
+        {
+            Logger.Log($"Client[{clientId}] authorized.");
+            IsAuthorized = true;
+        }
         void IDisposable.Dispose()
         {
             // 이 코드를 변경하지 마세요. 'Dispose(bool disposing)' 메서드에 정리 코드를 입력합니다.
