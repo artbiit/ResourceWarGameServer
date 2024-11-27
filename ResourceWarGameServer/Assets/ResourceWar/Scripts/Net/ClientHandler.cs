@@ -35,7 +35,7 @@ namespace ResourceWar.Server
         /// <summary>
         /// 인증된 클라이언트인지 검사
         /// </summary>
-        public bool IsAuthorized { get; private set; } = false;
+        public bool IsAuthorized { get; private set; } = true;
 
 
         public ClientHandler(int clientId, TcpClient tcpClient, Action<int> onDisconnect)
@@ -60,7 +60,7 @@ namespace ResourceWar.Server
         private void EnqueueReceive(ReceivedPacket packet)
         {
             receiveQueue.Enqueue(packet); // 수신 큐에 시작
-            Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}");
+            Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}, clientId = {packet.ClientId}");
             _ = ProcessReceiveQueue(); // 수신 큐  처리 시작
         }
 
