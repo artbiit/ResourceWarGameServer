@@ -75,12 +75,16 @@ namespace ResourceWar.Server
 
         public UniTask RegisterPlayer(ReceivedPacket receivedPacket)
         {
+            if(playerCount >= 4)
+            {
+                return UniTask.FromException(new System.InvalidOperationException("Player count has reached its maximum limit."));
+            }
             var token = receivedPacket.Token;
             var clientId = receivedPacket.ClientId;
 
             if(teams.Any(t => t.ContainsPlayer(token)))
             {
-                throw new System.Exception($"Already exsits player[{clientId}] : {token}");
+               return UniTask.FromException(new System.InvalidOperationException($"Already exsits player[{clientId}] : {token}"));
             }
             var player = new Player(clientId);
             teams[0].Players.Add(token, player);

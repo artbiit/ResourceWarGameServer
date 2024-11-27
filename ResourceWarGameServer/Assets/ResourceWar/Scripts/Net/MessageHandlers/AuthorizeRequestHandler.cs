@@ -53,6 +53,7 @@ namespace ResourceWar.Server
             if (resultCode == AuthorizeResultCode.SUCCESS)
             {
                 clientHandler.Authorized();
+                await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.AddNewPlayer, packet);
             }
             result.Payload = payload;
             return result;
