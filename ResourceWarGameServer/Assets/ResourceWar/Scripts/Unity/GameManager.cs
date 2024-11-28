@@ -5,7 +5,6 @@ using ResourceWar.Server.Lib;
 using Cysharp.Threading.Tasks;
 using Logger = ResourceWar.Server.Lib.Logger;
 using System.Linq;
-using static UnityEditor.Experimental.GraphView.GraphView;
 using Protocol;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -34,6 +33,7 @@ namespace ResourceWar.Server
             SendPacketForTeam = 1,
             SendPacketForUser = 2,
             AddNewPlayer = 3,
+            ClientRemove = 4,
         }
 
         // 현재 게임 상태를 저장
@@ -99,6 +99,36 @@ namespace ResourceWar.Server
             // 플레이어 등록 관련이벤트 등록
             var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
+
+            //
+            var innterDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
+            innterDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
+        }
+
+        public async UniTask ClientRemove(int clientId)
+        {
+            if (GameState == State.LOBBY)
+            {
+                await PlayerRedis.RemovePlayerInfo(GameToken, clientId);
+                // 현재 플레이어 목록에서도 날려야함
+                foreach (var team in teams)
+                {
+                    var playerToRemove = team.Players.FirstOrDefault(p => p.Value.ClientId == clientId);
+                    if (!playerToRemove.Equals(default(KeyValuePair<string, Player>)))
+                    {
+                        team.Players.Remove(playerToRemove.Key);
+                        playerCount--;
+                        Logger.Log($"플레이어 {clientId}가 팀에서 제거되었습니다.");
+                        break;
+                    }
+                }
+            }
+            else
+            {
+
+            }
+
+            await NotifyRoomState();
         }
 
         /// <summary>

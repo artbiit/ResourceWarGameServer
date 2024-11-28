@@ -66,9 +66,10 @@ namespace ResourceWar.Server
         
 
         // 클라이언트 연결 제거
-        private void RemoveClient(int clientId)
+        private async void RemoveClient(int clientId)
         {
             clients.TryRemove(clientId, out _); // 클라이언트 목록에서 제거
+            await EventDispatcher<GameManager.GameManagerEvent, int>.Instance.NotifyAsync(GameManager.GameManagerEvent.ClientRemove, clientId);
         }
 
         // 서버 정지
