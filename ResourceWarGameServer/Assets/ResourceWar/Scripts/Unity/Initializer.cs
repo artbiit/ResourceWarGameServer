@@ -20,7 +20,7 @@ namespace ResourceWar.Server
             Logger.Log("-------------DataLayer Initialized-------------");
             TcpServer.Instance.Init(DotEnv.Get<string>("SERVER_BIND"), DotEnv.Get<int>("SERVER_PORT"));
             Logger.Log("-------------Initializer-------------");
-            //SceneManager.LoadScene("Game");
+            SceneManager.LoadScene("Game");
         }
        
     }
