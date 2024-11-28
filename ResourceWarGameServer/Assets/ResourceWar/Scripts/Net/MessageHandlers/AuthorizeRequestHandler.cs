@@ -46,10 +46,9 @@ namespace ResourceWar.Server
                 }
             }
 
-            var payload = new S2CAuthorizeRes { AuthorizeResultCode = (uint)resultCode };
+            var payload = new S2CAuthorizeRes { AuthorizeResultCode = (uint)resultCode };;
             result.Payload = payload;
             result.Token = "";
-            Logger.Log($"{resultCode}");
             if (resultCode == AuthorizeResultCode.SUCCESS)
             {
                 clientHandler.Authorized();
