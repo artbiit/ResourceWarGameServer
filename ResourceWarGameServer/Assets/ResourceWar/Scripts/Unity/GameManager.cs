@@ -105,6 +105,10 @@ namespace ResourceWar.Server
             innterDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
         }
 
+        /// <summary>
+        /// 클라이언트 제거 처리.
+        /// </summary>
+        /// <param name="clientId">제거할 클라이언트 ID</param>
         public async UniTask ClientRemove(int clientId)
         {
             if (GameState == State.LOBBY)
@@ -175,6 +179,9 @@ namespace ResourceWar.Server
             await NotifyRoomState();
         }
 
+        /// <summary>
+        /// 모든 유저에게 현재 방 상태를 알림.
+        /// </summary>
         public async UniTask NotifyRoomState()
         {
             var players = await PlayerRedis.GetAllPlayersInfo(GameToken);
