@@ -81,6 +81,7 @@ namespace ResourceWar.Server
 
         public UniTask RegisterPlayer(ReceivedPacket receivedPacket)
         {
+            Logger.Log($"RegisterPlayer: {receivedPacket.Payload.ToString()}");
             if(playerCount >= 4)
             {
                 return UniTask.FromException(new System.InvalidOperationException("Player count has reached its maximum limit."));

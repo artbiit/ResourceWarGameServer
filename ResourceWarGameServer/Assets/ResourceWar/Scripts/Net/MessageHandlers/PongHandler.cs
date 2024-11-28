@@ -9,7 +9,9 @@ namespace ResourceWar.Server
     {
         private async UniTask<Packet> PongHandler(ReceivedPacket packet)
         {
-            await EventDispatcher<PacketType, Packet>.Instance.NotifyAsync(PacketType.PONG_RESPONSE, packet);
+            
+            C2SPongRes pong = (C2SPongRes)packet.Payload;
+            await EventDispatcher<(int, int ), long>.Instance.NotifyAsync((packet.ClientId, int.MaxValue + packet.ClientId), pong.ClientTime);
             return null;
         }
     }

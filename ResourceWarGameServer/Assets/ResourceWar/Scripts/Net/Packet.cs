@@ -14,7 +14,7 @@ namespace ResourceWar.Server
     public class Packet 
     {
         public PacketType PacketType { get; set; }
-        public string Token { get; set; }
+        public string Token { get; set; }  = string.Empty;
         public IMessage Payload { get; set; } // Protobuf 메시지
 
 
