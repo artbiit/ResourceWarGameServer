@@ -157,12 +157,9 @@ namespace ResourceWar.Server
 
         public Protocol.Position Correction(Vector3 position, string token)
         {
-            var info = FindPlayer(token);
-            Logger.Log($"스피드는 : {info.playerSpeed}, 레이턴시는 : {info.playerLatency}");
-            info.position = info.playerLatency * info.playerSpeed * position / 1000;
-            Logger.Log($"위치는 : {info.position}");
-            FindPlayer(token).position += info.position;
-            Logger.Log($"움직인 결과는 : {FindPlayer(token).position}, 움직인 거리는 : {info.position}, 토큰은 : {token}");
+            Logger.Log($"스피드는 : {FindPlayer(token).playerSpeed}, 레이턴시는 : {FindPlayer(token).playerLatency}");
+            FindPlayer(token).position += FindPlayer(token).playerLatency * FindPlayer(token).playerSpeed * position / 1000;
+            Logger.Log($"움직인 결과는 : {FindPlayer(token).position}, 토큰은 : {token}");
             return PositionExtensions.FromVector(position);
         }
 
