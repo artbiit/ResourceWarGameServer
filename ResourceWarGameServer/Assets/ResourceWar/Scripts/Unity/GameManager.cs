@@ -10,14 +10,7 @@ namespace ResourceWar.Server
 {
     public class GameManager : MonoBehaviour
     {
-        public enum State : int
-        {
-            CREATING = 0,
-            DESTROY,
-            LOBBY,
-            LOADING,
-            PLAYING
-        }
+       
 
         public enum GameManagerEvent
         {
@@ -27,7 +20,7 @@ namespace ResourceWar.Server
             AddNewPlayer = 3,
         }
 
-        public State GameState { get; private set; } = State.CREATING;
+        public ServerState GameState { get; private set; } = ServerState.CREATING;
         public string GameToken { get; private set; }
         private bool subscribed = false;
 
@@ -51,10 +44,10 @@ namespace ResourceWar.Server
                 teams[i] = new Team();
             }
             Subscribes();
-            await SetState(State.LOBBY);
+            await SetState(ServerState.LOBBY);
         }
 
-        public async UniTask SetState(State state)
+        public async UniTask SetState(ServerState state)
         {
             this.GameState = state;
             await GameRedis.SetGameState(state);
