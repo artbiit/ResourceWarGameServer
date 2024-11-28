@@ -6,6 +6,8 @@ using Cysharp.Threading.Tasks;
 using Logger = ResourceWar.Server.Lib.Logger;
 using System.Linq;
 using static UnityEditor.Experimental.GraphView.GraphView;
+using Protocol;
+using UnityEngine.UIElements;
 
 namespace ResourceWar.Server
 {
@@ -26,6 +28,8 @@ namespace ResourceWar.Server
             SendPacketForTeam = 1,
             SendPacketForUser = 2,
             AddNewPlayer = 3,
+            UpdatePlayerSendTime = 4,
+            UpdatePlayerReceiveTime = 5,
         }
 
         public State GameState { get; private set; } = State.CREATING;
@@ -66,9 +70,11 @@ namespace ResourceWar.Server
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
-            
+            sendDispatcher.Subscribe(GameManagerEvent.UpdatePlayerSendTime, UpdatePlayerSendTime);
+
             var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
+            receivedDispatcher.Subscribe(GameManagerEvent.UpdatePlayerReceiveTime, UpdatePlayerReceiveTime);
 
 
         }
@@ -78,7 +84,7 @@ namespace ResourceWar.Server
             var token = receivedPacket.Token;
             var clientId = receivedPacket.ClientId;
 
-            if(teams.Any(t => t.ContainsPlayer(token)))
+            if (teams.Any(t => t.ContainsPlayer(token)))
             {
                 throw new System.Exception($"Already exsits player[{clientId}] : {token}");
             }
@@ -89,7 +95,28 @@ namespace ResourceWar.Server
             return UniTask.CompletedTask;
         }
 
-        
+        public UniTask UpdatePlayerSendTime(Packet packet)
+        {
+            if (packet.Payload is S2CPingReq pingpacket)
+            {
+                FindPlayer(packet.Token).lastSendTime = pingpacket.ServerTime;
+            }
+            
+            return UniTask.CompletedTask;
+        }
+
+        public UniTask UpdatePlayerReceiveTime(ReceivedPacket receivedPacket)
+        {
+            if (receivedPacket.Payload is C2SPongRes pingpacket)
+            {
+                FindPlayer(receivedPacket.Token).playerLatency = pingpacket.ClientTime - FindPlayer(receivedPacket.Token).lastSendTime;
+                Logger.Log($"플레이어 레이턴시 : {FindPlayer(receivedPacket.Token).playerLatency}");
+            }
+            
+            return UniTask.CompletedTask;
+        }
+
+
 
         public Player FindPlayer(string token)
         {

@@ -29,6 +29,8 @@ namespace ResourceWar.Server
 
             await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.AddNewPlayer, packet);
             PlayerSyncNotify("플레이어 이동중인가?", (uint)packet.ClientId, 1, position, 1, packet.Token);
+
+            var sendTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var pingpacket = new Packet
             {
                 PacketType = PacketType.PING_REQUEST,
@@ -36,12 +38,13 @@ namespace ResourceWar.Server
                 //Token = "",
                 Payload = new Protocol.S2CPingReq
                 {
-                    ServerTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                    ServerTime = sendTime
                 }
             };
-
-            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForUser, pingpacket);
             
+            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForUser, pingpacket);
+            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.UpdatePlayerSendTime, pingpacket);
+
             return null;
         }
 

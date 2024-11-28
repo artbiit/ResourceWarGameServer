@@ -10,6 +10,9 @@ namespace ResourceWar.Server
         public string playerName;
         public Vector3 position;
         public int avartarItem;
+        public long playerLatency = 0;
+        public long lastSendTime = 0;
+        
 
         public Player(int clientId)
         {
