@@ -18,6 +18,7 @@ namespace ResourceWar.Server
             Handlers.Add(PacketType.SIGN_IN_REQUEST, this.SignInHandler);
             Handlers.Add(PacketType.PLAYER_MOVE, this.PlayerMove);
             Handlers.Add(PacketType.AUTHORIZE_REQUEST, this.AuthorizeRequestHandler);
+            Handlers.Add(PacketType.JOIN_ROOM_REQUEST, this.PlayerJoinRoom);
         }
 
 

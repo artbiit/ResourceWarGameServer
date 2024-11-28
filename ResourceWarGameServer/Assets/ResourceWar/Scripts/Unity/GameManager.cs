@@ -30,6 +30,7 @@ namespace ResourceWar.Server
             AddNewPlayer = 3,
             UpdatePlayerSendTime = 4,
             UpdatePlayerReceiveTime = 5,
+            PlayerSync = 6,
         }
 
         public State GameState { get; private set; } = State.CREATING;
@@ -75,6 +76,7 @@ namespace ResourceWar.Server
             var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
             receivedDispatcher.Subscribe(GameManagerEvent.UpdatePlayerReceiveTime, UpdatePlayerReceiveTime);
+            receivedDispatcher.Subscribe(GameManagerEvent.PlayerSync, PlayerSync);
 
 
         }
@@ -92,6 +94,43 @@ namespace ResourceWar.Server
             teams[0].Players.Add(token, player);
             playerCount++;
             Logger.Log($"Add New Player[{clientId}] : {token}");
+            return UniTask.CompletedTask;
+        }
+
+        public async UniTask PlayerSync(ReceivedPacket receivedPacket)
+        {
+            Protocol.Position position = new();
+            if (receivedPacket.Payload is C2SPlayerMove playerMove)
+            {
+                position = playerMove.Position;
+            }
+            await PlayerSyncNotify((uint)receivedPacket.ClientId, 1, PositionExtensions.ToVector3(position).normalized, 1, receivedPacket.Token);
+            return;
+        }
+
+        private UniTask PlayerSyncNotify(uint ClientId, byte ActionType, Vector3 position, uint EquippedItem, string token)
+        {
+            Logger.Log($"기존 포지션은 : {position}");
+            var protoPlayerState = new Protocol.PlayerState
+            {
+                PlayerId = ClientId,
+                ActionType = ActionType,
+                Position = Correction(position, token),
+                EquippedItem = EquippedItem
+            };
+
+            var packet = new Packet
+            {
+                PacketType = PacketType.SYNC_PLAYERS_NOTIFICATION,
+
+                //Token = "", // 특정 클라이언트에게 전송 시 설정
+                Payload = new Protocol.S2CSyncPlayersNoti
+                {
+                    PlayerStates = { protoPlayerState },
+                }
+            };
+            Logger.Log(packet);
+            SendPacketForAll(packet);
             return UniTask.CompletedTask;
         }
 
@@ -116,7 +155,16 @@ namespace ResourceWar.Server
             return UniTask.CompletedTask;
         }
 
-
+        public Protocol.Position Correction(Vector3 position, string token)
+        {
+            var info = FindPlayer(token);
+            Logger.Log($"스피드는 : {info.playerSpeed}, 레이턴시는 : {info.playerLatency}");
+            info.position = info.playerLatency * info.playerSpeed * position / 1000;
+            Logger.Log($"위치는 : {info.position}");
+            FindPlayer(token).position += info.position;
+            Logger.Log($"움직인 결과는 : {FindPlayer(token).position}, 움직인 거리는 : {info.position}, 토큰은 : {token}");
+            return PositionExtensions.FromVector(position);
+        }
 
         public Player FindPlayer(string token)
         {

@@ -8,17 +8,17 @@ namespace ResourceWar.Server
     {
         public readonly int ClientId;
         public string playerName;
-        public Vector3 position;
+        public Vector3 position = Vector3.zero;
         public int avartarItem;
         public long playerLatency = 0;
         public long lastSendTime = 0;
+        public int playerSpeed = 100;
         
 
         public Player(int clientId)
         {
             this.ClientId = clientId;
             this.playerName = clientId.ToString();
-            this.position = PositionExtensions.ToVector3();
             this.avartarItem = 1;
         }
     }
