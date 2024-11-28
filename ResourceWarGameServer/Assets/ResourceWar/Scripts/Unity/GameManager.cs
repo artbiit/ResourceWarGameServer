@@ -20,7 +20,7 @@ namespace ResourceWar.Server
             AddNewPlayer = 3,
         }
 
-        public ServerState GameState { get; private set; } = ServerState.CREATING;
+        public GameSessionState GameState { get; private set; } = GameSessionState.CREATING;
         public string GameToken { get; private set; }
         private bool subscribed = false;
 
@@ -44,10 +44,10 @@ namespace ResourceWar.Server
                 teams[i] = new Team();
             }
             Subscribes();
-            await SetState(ServerState.LOBBY);
+            await SetState(GameSessionState.LOBBY);
         }
 
-        public async UniTask SetState(ServerState state)
+        public async UniTask SetState(GameSessionState state)
         {
             this.GameState = state;
             await GameRedis.SetGameState(state);

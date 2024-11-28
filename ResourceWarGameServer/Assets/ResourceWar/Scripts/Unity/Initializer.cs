@@ -23,7 +23,7 @@ namespace ResourceWar.Server
         private async UniTask Init()
         {
             Logger.Log("-------------Initializer-------------");
-            await GameRedis.SetGameState(ServerState.CREATING);
+            await GameRedis.SetGameState(GameSessionState.CREATING);
             Logger.Log("Start DataLayer");
             DotEnv.Config();
             var (postgresqlResult, redisResult) = await UniTask.WhenAll(TryInitialize(PostogresqlInit), TryInitialize(RedisInit));
@@ -32,12 +32,12 @@ namespace ResourceWar.Server
                 Logger.Log("-------------DataLayer Initialized-------------");
                 TcpServer.Instance.Init(DotEnv.Get<string>("SERVER_BIND"), DotEnv.Get<int>("SERVER_PORT"));
                 Logger.Log("-------------Initializer-------------");
-                await GameRedis.SetGameState(ServerState.LOBBY);
+                await GameRedis.SetGameState(GameSessionState.LOBBY);
             }
             else
             {
                 Logger.LogError("-------------DataLayer Initialize Failed-------------");
-                await GameRedis.SetGameState(ServerState.ERROR);
+                await GameRedis.SetGameState(GameSessionState.ERROR);
 #if UNITY_EDITOR
                 Application.Quit(1);
 #endif

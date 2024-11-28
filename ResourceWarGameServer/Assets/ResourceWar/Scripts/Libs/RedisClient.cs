@@ -123,7 +123,7 @@ namespace ResourceWar.Server
         /// <summary>
         /// 객체를 Redis 해시에 저장
         /// </summary>
-        public UniTask SaveObjectToHash<T>(string key, T obj)
+        public UniTask SaveObjectToHash<T>(string key, T obj, int ttl = 0)
         {
             return ExecuteAsync(async db =>
             {
@@ -133,11 +133,28 @@ namespace ResourceWar.Server
 
                 foreach (var property in properties)
                 {
-                    var value = property.GetValue(obj)?.ToString() ?? string.Empty;
-                    hashEntries[index++] = new HashEntry(property.Name, value);
+                    var value = property.GetValue(obj);
+                    string stringValue;
+
+                    // Enum 타입 처리
+                    if (value is Enum enumValue)
+                    {
+                        stringValue = enumValue.ToString();
+                    }
+                    else
+                    {
+                        stringValue = value?.ToString() ?? string.Empty;
+                    }
+
+                    hashEntries[index++] = new HashEntry(property.Name, stringValue);
                 }
 
                 await db.HashSetAsync(key, hashEntries);
+
+                if (ttl > 0)
+                {
+                    await db.KeyExpireAsync(key, TimeSpan.FromSeconds(ttl));
+                }
             });
         }
 
@@ -162,7 +179,17 @@ namespace ResourceWar.Server
                     var entry = Array.Find(hashEntries, x => x.Name == property.Name);
                     if (entry.Name.HasValue)
                     {
-                        var value = Convert.ChangeType(entry.Value.ToString(), property.PropertyType);
+                        object value;
+
+                        if (property.PropertyType.IsEnum) // Enum 타입 처리
+                        {
+                            value = Enum.Parse(property.PropertyType, entry.Value.ToString());
+                        }
+                        else
+                        {
+                            value = Convert.ChangeType(entry.Value.ToString(), property.PropertyType);
+                        }
+
                         property.SetValue(obj, value);
                     }
                 }
@@ -170,6 +197,7 @@ namespace ResourceWar.Server
                 return obj;
             });
         }
+
 
         public void Disconnect()
         {

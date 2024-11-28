@@ -11,13 +11,13 @@ namespace ResourceWar.Server
         FAIL = 2,
     }
 
-    public enum ServerState : int
+    public enum GameSessionState : int
     {
         CREATING = 0,
         DESTROY,
         LOBBY,
         LOADING,
         PLAYING,
-        ERROR = 1,
+        ERROR = 100,
     }
 }
