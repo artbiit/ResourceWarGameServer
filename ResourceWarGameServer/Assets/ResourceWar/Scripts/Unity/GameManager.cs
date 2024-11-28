@@ -8,6 +8,7 @@ using System.Linq;
 using static UnityEditor.Experimental.GraphView.GraphView;
 using Protocol;
 using Google.Protobuf;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ResourceWar.Server
 {
@@ -109,6 +110,7 @@ namespace ResourceWar.Server
         /// <returns></returns>
         public async UniTask RegisterPlayer(ReceivedPacket receivedPacket)
         {
+            Logger.Log("RegisterPlayer => 여긴가 1");
             if (playerCount >= 4)
             {
                 throw new System.InvalidOperationException("Player count has reached its maximum limit.");
@@ -116,7 +118,7 @@ namespace ResourceWar.Server
 
             var token = receivedPacket.Token;
             var clientId = receivedPacket.ClientId;
-
+            Logger.Log("여긴가 2");
             if (teams.Any(t => t.ContainsPlayer(token)))
             {
                 throw new System.InvalidOperationException($"Already exists player[{clientId}] : {token}");
@@ -128,14 +130,17 @@ namespace ResourceWar.Server
             playerCount++;
             Logger.Log($"Add New Player[{clientId}] : {token}");
 
+            // 이름을 가져와야하는데 어디서 가져올지 고민중
+            /*var userSession = await UserRedis.GetUserSession(token);
             var userName = await PlayerRedis.GetUserName(GameToken, clientId);
-
+*/
+            Logger.Log("여긴가 3");
             // Redis에 플레이어 정보 저장
             // AratarI는 어딘가에서 가져와야하는데 아직 모름
             await PlayerRedis.AddPlayerInfo(
                 gameToken: GameToken,
                 clientId: clientId,
-                userName: userName,
+                userName: "테스트용",
                 isReady: false, // Default values
                 connected: true,
                 loadProgress: 0,
@@ -149,6 +154,7 @@ namespace ResourceWar.Server
 
         public async UniTask NotifyRoomState()
         {
+            Logger.Log("여긴가 4");
             var players = await PlayerRedis.GetAllPlayersInfo(GameToken);
 
             var syncRoomNoti = new S2CSyncRoomNoti
