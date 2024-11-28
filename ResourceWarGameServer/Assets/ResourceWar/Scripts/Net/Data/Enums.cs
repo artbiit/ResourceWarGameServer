@@ -17,6 +17,7 @@ namespace ResourceWar.Server
         DESTROY,
         LOBBY,
         LOADING,
-        PLAYING
+        PLAYING,
+        ERROR = 1,
     }
 }
