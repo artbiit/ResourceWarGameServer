@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Nanoid</id>
+    <version>3.1.0</version>
+    <title>.NET Nanoid</title>
+    <authors>codeyu</authors>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/codeyu/nanoid-net</projectUrl>
+    <description>A tiny, secure, URL-friendly, unique string ID generator for .NET Core.</description>
+    <releaseNotes>3.1.0
+      - Various improvements and fixes. by @SasLuca, @Petteroe
+      - Target .NET Framework 4.8 and .NET 8.netstandard2.x no longer being available. by @oddeirik</releaseNotes>
+    <copyright>Copyright 2020 © codeyu</copyright>
+    <tags>Nanoid UUID</tags>
+    <repository type="git" url="https://github.com/codeyu/nanoid-net" commit="8457084db4fa979df06484b1602b7747902330d9" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.8" />
+      <group targetFramework="net8.0" />
+      <group targetFramework=".NETStandard2.0" />
+    </dependencies>
+  </metadata>
+</package>
