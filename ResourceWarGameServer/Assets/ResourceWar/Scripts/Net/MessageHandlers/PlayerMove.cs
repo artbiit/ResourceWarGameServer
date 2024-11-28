@@ -1,15 +1,10 @@
 using Cysharp.Threading.Tasks;
 using Protocol;
 using ResourceWar.Server.Lib;
+using System;
+using UnityEditor.PackageManager;
 using Logger = ResourceWar.Server.Lib.Logger;
 
-public struct PlayerStates
-{
-    public uint PlayerId;
-    public byte ActionType;
-    public Position Position;
-    public uint EquippedItem;
-}
 
 namespace ResourceWar.Server
 {
@@ -30,36 +25,41 @@ namespace ResourceWar.Server
 
                 Logger.Log($"Player Position: X = {x}, Y = {y}, Z = {z}");
             }
-
-            PlayerStates playerState = new()
-            {
-                PlayerId = (uint)packet.ClientId,
-                ActionType = 1,
-                Position = position,
-                EquippedItem = 1,
-            };
             Logger.Log($"패킷 토큰은 : {packet.Token},클라아이디는 : {packet.ClientId}");
 
-           await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.AddNewPlayer, packet);
-            NotifyClient("플레이어 이동중인가?", playerState, packet.Token);
+            await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.AddNewPlayer, packet);
+            PlayerSyncNotify("플레이어 이동중인가?", (uint)packet.ClientId, 1, position, 1, packet.Token);
+            var pingpacket = new Packet
+            {
+                PacketType = PacketType.PING_REQUEST,
+
+                //Token = "",
+                Payload = new Protocol.S2CPingReq
+                {
+                    ServerTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                }
+            };
+
+            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForUser, pingpacket);
+            
             return null;
         }
 
         
 
-        private async void NotifyClient(string message, PlayerStates playerState, string token)
+        private async void PlayerSyncNotify(string message, uint ClientId, byte ActionType, Position position, uint EquippedItem, string token)
         {
             var protoPlayerState = new Protocol.PlayerState
             {
-                PlayerId = playerState.PlayerId,
-                ActionType = playerState.ActionType,
+                PlayerId = ClientId,
+                ActionType = ActionType,
                 Position = new Protocol.Position
                 {
-                    X = playerState.Position.X,
-                    Y = playerState.Position.Y,
-                    Z = playerState.Position.Z
+                    X = position.X,
+                    Y = position.Y,
+                    Z = position.Z
                 },
-                EquippedItem = playerState.EquippedItem
+                EquippedItem = EquippedItem
             };
 
             var packet = new Packet
