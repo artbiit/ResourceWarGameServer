@@ -1,124 +1,135 @@
 using Cysharp.Threading.Tasks;
+using log4net.Repository.Hierarchy;
 using Protocol;
 using ResourceWar.Server.Lib;
-using System;
+using StackExchange.Redis;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
-using UnityEditor.PackageManager;
-using UnityEngine;
 using Logger = ResourceWar.Server.Lib.Logger;
+
 namespace ResourceWar.Server
 {
-    public class Player : IDisposable
+    public class Player
     {
-        
-        public  int ClientId {get; private set;}
-        private readonly string hashCode;
-        private bool disposedValue;
-       
-        private S2CPingReq pingReq = new S2CPingReq();
-        private Packet pingPacket = new Packet
-        {
-            PacketType = PacketType.PING_REQUEST,
-        };
+        public  int ClientId;
 
-        private long latency = 0L;
-        private long roundTripTime = 0L;
+        public string UserName { get; set; }
+        public bool IsReady { get; set; }
+        public bool IsConnected { get; set; }
+        public int LoadProgress { get; set; }
+        public int TeamId { get; set; }
+        public int AvatarId { get; set; }
+
+        public long Latency { get; private set; }
+        public long RoundTripTime { get; private set; }
 
         private Queue<long> pingQueue = new();
+        private string hashCode;
+        CancellationToken pingToken;
+
         public Player(int clientId)
         {
-          //  Logger.Log($"New Player : {clientId}");
-            this.ClientId = clientId;
+            IsReady = false;
+            IsConnected = true;
+            LoadProgress = 0;
+            TeamId = 0;
             this.hashCode = this.GetHashCode().ToString();
-            pingPacket.Payload = pingReq;
-            IntervalManager.Instance.AddTask(hashCode, PingReq, 1.0f);
-            EventDispatcher<(int, int), long>.Instance.Subscribe((this.ClientId, int.MaxValue + this.ClientId), PongRes);
+            Connected(clientId);
+           
         }
 
-        /// <summary>
-        /// 연결이 끊겼다 다시 접속되었을 경우 클라이언트 아이디를 수정할 필요가 있음
-        /// </summary>
-        /// <param name="clientId"></param>
-        public void SetClientId(int clientId)
+        public void Connected(int clientId)
         {
-            Logger.LogWarning($"Player change clientId {this.ClientId} -> {clientId}");
+            Logger.Log($"Player is reconnected {this.ClientId} -> {clientId}");
             this.ClientId = clientId;
+            this.IsConnected = true;
+            EventDispatcher<(int, int), long>.Instance.Subscribe((this.ClientId, int.MaxValue + this.ClientId), PongRes);
+            pingToken = IntervalManager.Instance.AddTask(hashCode, PingReq, 1.0f);
         }
 
-        /// <summary>
-        /// 클라에 핑 보내기
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public async UniTask PingReq(CancellationToken token)
+        public void Disconnected()
         {
-            if(TcpServer.Instance.TryGetClient(this.ClientId, out var clientHandler))
+            Logger.Log($"Player[{this.ClientId} is disconnected");
+            if (pingToken != null)
             {
-                var serverTime = UnixTime.Now(); 
-                pingReq.ServerTime = serverTime; 
-                clientHandler.EnqueueSend(pingPacket);
-                if(pingQueue.Count < 3)
-                {
-                    pingQueue.Enqueue(serverTime);
-                }
+                IntervalManager.Instance.CancelTask(pingToken);
             }
+            EventDispatcher<(int, int), long>.Instance.Unsubcribe((this.ClientId, int.MaxValue + this.ClientId), PongRes);
+            this.IsConnected = false;
+        }
+
+
+        private async UniTask PingReq(CancellationToken token)
+        {
+            if(token.IsCancellationRequested) return;
+
+            if(pingQueue.Count > 3)
+            {
+                Logger.LogWarning($"Player[{ClientId}] PingQueue reached maxmum count.");
+            }
+            if (TcpServer.Instance.TryGetClient(ClientId, out var client))
+            {
+                var serverTime = UnixTime.Now();
+                Packet pingPacket = new Packet
+                {
+                    PacketType = PacketType.PING_REQUEST,
+                    Payload = new S2CPingReq { ServerTime = serverTime },
+                    Token = string.Empty,
+                };
+                client.EnqueueSend(pingPacket);
+                pingQueue.Enqueue(serverTime);
+            }
+            else
+            {   //연결이 끊겨도 여기서 발생함.
+                Logger.LogError($"Player[{ClientId}] failed get TcpClient");
+            }
+
             await UniTask.CompletedTask;
         }
 
-        /// <summary>
-        /// 클라에서 온 퐁 메세지 처리
-        /// </summary>
-        /// <param name="clientTime"></param>
-        /// <returns></returns>
-        public async UniTask PongRes(long clientTime)
+        private async UniTask PongRes(long clientTime)
         {
             if(clientTime <= 0)
             {
-                Logger.LogError($"Player[{this.ClientId}] received zero! : {clientTime}");
+                Logger.LogError($"Player[{ClientId}] pong time is less than or same zero");
                 clientTime = UnixTime.Now();
             }
-            if(this.pingQueue.TryPeek(out var serverTime)) { 
-            this.roundTripTime = clientTime - serverTime;
-            this.latency = this.roundTripTime / 2L;
-         //   Logger.Log($"Pong[{this.ClientId}] Pong! RTT : {this.roundTripTime} / Latency : {this.latency}");
-            }
-            else
-            {
-                Logger.LogError($"Player[{this.ClientId}] received pong but pingQueue empty");
-            }
 
+            var serverTime = pingQueue.Dequeue();
+            this.RoundTripTime = clientTime - serverTime;
+            this.Latency = this.RoundTripTime / 2L;
+
+            Logger.Log($"Player[{this.ClientId}] Pong! RTT : {this.RoundTripTime} / Latency : {this.Latency}");
             await UniTask.CompletedTask;
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    IntervalManager.Instance.CancelAllTasksByKey(hashCode);
-                    EventDispatcher<(int, int), long>.Instance.Unsubcribe((this.ClientId, int.MaxValue + this.ClientId), PongRes);
-                }
 
-                // TODO: 비관리형 리소스(비관리형 개체)를 해제하고 종료자를 재정의합니다.
-                // TODO: 큰 필드를 null로 설정합니다.
-                disposedValue = true;
-            }
+        public static Player FromRedisData(int clientId, HashEntry[] redisValues)
+        {
+            return new Player(clientId)
+            {
+                UserName = (redisValues.First(x => x.Name == "user_name").Value).ToString(),
+                IsReady = bool.Parse(redisValues.First(x => x.Name == "is_ready").Value),
+                IsConnected = bool.Parse(redisValues.First(x => x.Name == "connected").Value),
+                LoadProgress = int.Parse(redisValues.First(x => x.Name == "load_progress").Value),
+                TeamId = int.Parse(redisValues.First(x => x.Name == "team_id").Value),
+                AvatarId = int.Parse(redisValues.First(x => x.Name == "avatar_id").Value)
+            };
         }
 
-        // // TODO: 비관리형 리소스를 해제하는 코드가 'Dispose(bool disposing)'에 포함된 경우에만 종료자를 재정의합니다.
-        // ~Player()
-        // {
-        //     // 이 코드를 변경하지 마세요. 'Dispose(bool disposing)' 메서드에 정리 코드를 입력합니다.
-        //     Dispose(disposing: false);
-        // }
-        void IDisposable.Dispose()
+        public HashEntry[] ToRedisHashEntries()
         {
-            // 이 코드를 변경하지 마세요. 'Dispose(bool disposing)' 메서드에 정리 코드를 입력합니다.
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            return new HashEntry[]
+            {
+                new HashEntry("user_name", UserName.ToString()),
+                new HashEntry("is_ready", IsReady.ToString()),
+                new HashEntry("connected", IsConnected.ToString()),
+                new HashEntry("load_progress", LoadProgress.ToString()),
+                new HashEntry("team_id", TeamId.ToString()),
+                new HashEntry("avatar_id", AvatarId.ToString())
+            };
         }
     }
 }
