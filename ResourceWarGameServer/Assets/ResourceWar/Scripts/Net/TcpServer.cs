@@ -26,7 +26,7 @@ namespace ResourceWar.Server
             {
                 tcpListener = new TcpListener(IPAddress.Parse(bind), port); // 지정된 IP와 포트로 리스너 생성
                 TcpServer.Instance.Listen();
-                Logger.Log($"TcpServer initialized [{bind}:{port}]"); // 초기화 로그 출력
+                Logger.Log($"TcpServer initialized [{tcpListener.LocalEndpoint}]"); // 초기화 로그 출력
             }
             else
             {
