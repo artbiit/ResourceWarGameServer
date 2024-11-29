@@ -26,7 +26,7 @@ namespace ResourceWar.Server
             {
                 tcpListener = new TcpListener(IPAddress.Parse(bind), port); // 지정된 IP와 포트로 리스너 생성
                 TcpServer.Instance.Listen();
-                Logger.Log($"TcpServer initialized [{bind}:{port}]"); // 초기화 로그 출력
+                Logger.Log($"TcpServer initialized [{tcpListener.LocalEndpoint}]"); // 초기화 로그 출력
             }
             else
             {
@@ -43,6 +43,7 @@ namespace ResourceWar.Server
                 return;
             }
             tcpListener.Start(); // TCP 리스너 시작
+            Logger.Log($"서버 시작함"); // 초기화 로그 출력
             _ = AcceptClientAsync(); // 비동기 클라이언트 수락 시전
         }
 
@@ -66,9 +67,10 @@ namespace ResourceWar.Server
         
 
         // 클라이언트 연결 제거
-        private void RemoveClient(int clientId)
+        private async void RemoveClient(int clientId)
         {
             clients.TryRemove(clientId, out _); // 클라이언트 목록에서 제거
+            await EventDispatcher<GameManager.GameManagerEvent, int>.Instance.NotifyAsync(GameManager.GameManagerEvent.ClientRemove, clientId);
         }
 
         // 서버 정지

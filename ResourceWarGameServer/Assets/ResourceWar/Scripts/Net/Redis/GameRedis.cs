@@ -1,7 +1,10 @@
 using Cysharp.Threading.Tasks;
+using StackExchange.Redis;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
 {
@@ -20,9 +23,6 @@ namespace ResourceWar.Server
         {
             return await RedisClient.Instance.ExecuteAsync(db => db.ListRemoveAsync(LOBBY_QUEUE_KEY, gameCode));
         }
-
-
-
 
         
     }

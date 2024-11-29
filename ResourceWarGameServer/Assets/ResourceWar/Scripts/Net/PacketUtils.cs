@@ -79,6 +79,7 @@ namespace ResourceWar.Server
     // 플레이어 액션
     { PacketType.PLAYER_ACTION_REQUEST, "Protocol.C2SPlayerActionReq" },
     { PacketType.PLAYER_ACTION_RESPONSE, "Protocol.S2CPlayerActionRes" },
+    { PacketType.PLAYER_MOVE, "Protocol.C2SPlayerMove" },
 
     // 객체 관련
     { PacketType.SPAWN_OBJECT_NOTIFICATION, "Protocol.S2CSpawnObjectNoti" },
@@ -113,8 +114,8 @@ namespace ResourceWar.Server
     { PacketType.SAWMILL_RESPONSE, "Protocol.S2CSawmillRes" },
 
     // 헬스체크
-    { PacketType.PING_REQUEST, "Protocol.C2SPingReq" },
-    { PacketType.PONG_RESPONSE, "Protocol.S2CPongRes" },
+    { PacketType.PING_REQUEST, "Protocol.S2CPingReq" },
+    { PacketType.PONG_RESPONSE, "Protocol.C2SPongRes" },
 
     // 대기실 매칭 요청
     { PacketType.MATCH_REQUEST, "Protocol.C2SMatchReq" },

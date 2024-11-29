@@ -4,20 +4,10 @@ using UnityEngine;
 
 namespace ResourceWar.Server
 {
-   public enum AuthorizeResultCode : uint
+    public enum AuthorizeResultCode : uint
     {
         SUCCESS = 0,
         ALREADY_AUTHORIZED = 1,
         FAIL = 2,
-    }
-
-    public enum GameSessionState : int
-    {
-        CREATING = 0,
-        DESTROY,
-        LOBBY,
-        LOADING,
-        PLAYING,
-        ERROR = 100,
     }
 }

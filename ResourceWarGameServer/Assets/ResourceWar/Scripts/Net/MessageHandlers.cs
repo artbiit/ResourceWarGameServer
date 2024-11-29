@@ -16,7 +16,9 @@ namespace ResourceWar.Server
         public MessageHandlers() : base() {
             Handlers.Add(PacketType.PONG_RESPONSE, this.PongHandler);
             Handlers.Add(PacketType.SIGN_IN_REQUEST, this.SignInHandler);
+            Handlers.Add(PacketType.PLAYER_MOVE, this.PlayerMove);
             Handlers.Add(PacketType.AUTHORIZE_REQUEST, this.AuthorizeRequestHandler);
+            Handlers.Add(PacketType.JOIN_ROOM_REQUEST, this.PlayerJoinRoom);
         }
 
 
@@ -26,7 +28,6 @@ namespace ResourceWar.Server
 
             if (Handlers.TryGetValue(packet.PacketType, out var handler))
             {
-                Logger.Log(handler.ToString());
                 result = await handler(packet);
                 //null이면 반환할 데이터 없음을 의미
                 if (result != null && !PacketUtils.IsSameMessageType(result.Payload, result.PacketType))
