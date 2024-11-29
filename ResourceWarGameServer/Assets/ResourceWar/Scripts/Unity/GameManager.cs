@@ -111,23 +111,31 @@ namespace ResourceWar.Server
         {
             if (GameState == State.LOBBY)
             {
-               // await PlayerRedis.RemovePlayerInfo(GameToken, clientId);
-                // 현재 플레이어 목록에서도 날려야함
-                foreach (var team in teams)
+               if (TryGetPlayer(clientId, out Player player))
                 {
-                    var playerToRemove = team.Players.FirstOrDefault(p => p.Value.ClientId == clientId);
-                    if (!playerToRemove.Equals(default(KeyValuePair<string, Player>)))
+                    //Redis에서 플레이어 정보 제거
+                    await PlayerRedis.RemovePlayerInfo(GameToken, clientId);
+
+                    //팀에서 플레이어 제거
+                    var team = teams.FirstOrDefault(t => t.Players.ContainsValue(player));
+                    if (team != null)
                     {
-                        team.Players.Remove(playerToRemove.Key);
+                        team.Players.Remove(player.UserName);
                         playerCount--;
+
+                        player.Disconnected();
+
                         Logger.Log($"플레이어 {clientId}가 팀에서 제거되었습니다.");
-                        break;
                     }
+                }
+                else
+                {
+                    Logger.LogWarning($"플레이어 {clientId}를 찾을 수 없습니다.");
                 }
             }
             else
             {
-
+                Logger.Log($"현재 상태가 LOBBY가 아니므로 제거 작업이 무시되었습니다. 현재 상태: {GameState}");
             }
 
             await NotifyRoomState();
