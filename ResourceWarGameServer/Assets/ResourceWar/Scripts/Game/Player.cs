@@ -22,7 +22,13 @@ namespace ResourceWar.Server
         public int TeamId { get; set; }
         public int AvatarId { get; set; }
 
+        /// <summary>
+        /// ms 단위 지연시간
+        /// </summary>
         public long Latency { get; private set; }
+        /// <summary>
+        /// ms 단위 RTT
+        /// </summary>
         public long RoundTripTime { get; private set; }
 
         private Queue<long> pingQueue = new();
@@ -62,11 +68,10 @@ namespace ResourceWar.Server
         {
             if(token.IsCancellationRequested) return;
 
-            if(pingQueue.Count > 3)
+            if(pingQueue.Count > 10)
             {
                 Logger.LogWarning($"Player[{ClientId}] PingQueue reached maxmum count.");
-            }
-            if (TcpServer.Instance.TryGetClient(ClientId, out var client))
+            }else if (TcpServer.Instance.TryGetClient(ClientId, out var client))
             {
                 var serverTime = UnixTime.Now();
                 Packet pingPacket = new Packet
