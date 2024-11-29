@@ -116,13 +116,19 @@ namespace ResourceWar.Server
             {
                if (TryGetPlayer(clientId, out Player player) && TryGetTeam(clientId, out Team team))
                {
+                    Logger.Log("여기인가요? 1번");
                     //Redis에서 플레이어 정보 제거
                     await PlayerRedis.RemovePlayerInfo(GameToken, clientId);
 
+                    
+
+                    Logger.Log("여기인가요? 2번");
                     //인메모리 팀에서 플레이어 제거
+                    Logger.Log($"여기인가요? {player.UserName}");
                     team.Players.Remove(player.UserName);
                     playerCount--;
-
+                    Logger.Log("여기인가요? 3번");
+                    // 연결 끊어주고
                     player.Disconnected();
 
                     Logger.Log($"플레이어 {clientId}가 팀에서 제거되었습니다.");
@@ -141,6 +147,7 @@ namespace ResourceWar.Server
             {
                 // 해당 GameSession파괴
             }
+            Logger.Log("여기인가요? 4번");
             await NotifyRoomState();
         }
 
@@ -241,6 +248,8 @@ namespace ResourceWar.Server
 
             // 이름을 가져와야하는데 어디서 가져올지 고민중
             var userName = await UserRedis.GetNickName(token);
+            player.UserName = userName;
+            player.TeamId = 3;
             // Redis에 플레이어 정보 저장
             // AratarI는 어딘가에서 가져와야하는데 아직 모름
             await PlayerRedis.AddPlayerInfo(
@@ -267,10 +276,6 @@ namespace ResourceWar.Server
             var token = receivedPacket.Token;
             
             var clientId = receivedPacket.ClientId;
-            if (teams.Any(t => t.ContainsPlayer(token)))
-            {
-                throw new System.InvalidOperationException($"Already exists player[{clientId}] : {token}");
-            }
 
             var quitLobby = new S2CQuitRoomNoti
             {
@@ -289,6 +294,7 @@ namespace ResourceWar.Server
             await SendPacketForAll(packet);
             // 방에서 제거하는 코드
             await EventDispatcher<GameManager.GameManagerEvent, int>.Instance.NotifyAsync(GameManager.GameManagerEvent.ClientRemove, clientId);
+            /*await ClientRemove(clientId);*/
         }
 
         /// <summary>
@@ -296,7 +302,10 @@ namespace ResourceWar.Server
         /// </summary>
         public async UniTask NotifyRoomState()
         {
+            Logger.Log("여기인가요? 15번");
+
             var players = await PlayerRedis.GetAllPlayersInfo(GameToken);
+            Logger.Log("여기인가요? 16번");
 
             var syncRoomNoti = new S2CSyncRoomNoti
             {
