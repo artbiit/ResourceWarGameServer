@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Logger = ResourceWar.Server.Lib.Logger;
 using System.Linq;
 using Protocol;
+using Google.Protobuf.Collections;
 
 namespace ResourceWar.Server
 {
@@ -56,7 +57,7 @@ namespace ResourceWar.Server
         }
         public async UniTaskVoid Init()
         {
-      
+
             teams = new Team[3];
             for (int i = 0; i < teams.Length; i++)
             {
@@ -88,21 +89,21 @@ namespace ResourceWar.Server
                 return;
             }
             subscribed = true;
-            
+
             // 패킷 전송 관련 이벤트 등록
             var sendDispatcher = EventDispatcher<GameManagerEvent, Packet>.Instance;
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
-             
+
             // 플레이어 등록 관련이벤트 등록
-            var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
+            var receivedDispatcher = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
             receivedDispatcher.Subscribe(GameManagerEvent.QuitLobby, QuitLobby);
             //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
             innerDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
-            
+
         }
 
         /// <summary>
@@ -114,16 +115,18 @@ namespace ResourceWar.Server
         {
             if (GameState == State.LOBBY)
             {
-               if (TryGetPlayer(clientId, out Player player) && TryGetTeam(clientId, out Team team))
-               {
-                    //인메모리 팀에서 플레이어 제거
-                    team.Players.Remove(player);
-
-                    // 연결 끊어주고
-                    player.Disconnected();
-                    playerCount--;
-
-                    Logger.Log($"플레이어 {clientId}가 팀에서 제거되었습니다.");
+                if (TryGetTeam(clientId, out Team team))
+                {
+                   if(team.TryRemoveByClient(clientId))
+                    {
+                        //인메모리 팀에서 플레이어 제거
+                        playerCount--;
+                        Logger.Log($"플레이어 {clientId}가 팀에서 제거되었습니다.");
+                    }
+                    else
+                    {
+                        Logger.LogError($"ClientRemove. Could not found player[{clientId}] in team");
+                    }
                 }
                 else
                 {
@@ -166,7 +169,7 @@ namespace ResourceWar.Server
         {
             foreach (var currentTeam in teams)
             {
-                foreach( var player in currentTeam.Players.Values)
+                foreach (var player in currentTeam.Players.Values)
                 {
                     if (player.ClientId == clinetId)
                     {
@@ -185,9 +188,9 @@ namespace ResourceWar.Server
         {
             foreach (var team in teams)
             {
-                foreach(var teamPlayer in team.Players.Values)
+                foreach (var teamPlayer in team.Players.Values)
                 {
-                    if(teamPlayer.ClientId == clientId)
+                    if (teamPlayer.ClientId == clientId)
                     {
                         player = teamPlayer;
                         return true;
@@ -213,25 +216,30 @@ namespace ResourceWar.Server
             return false;
         }
 
-        public List<Player> GetAllPlayers()
+        /// <summary>
+        /// TeamIndex, UserToken, Player 매개 변수로 순환함
+        /// </summary>
+        /// <param name="action"></param>
+        public void LoopAllPlayers(System.Action<int, string, Player> action)
         {
-            var allPlayers = new List<Player>();
 
-            foreach(var team in teams)
+            for (int i = 0; i < teams.Length; i++)
             {
-                allPlayers.AddRange(team.Players.Values);
+                var team = teams[i];
+                foreach (var playerPair in team.Players)
+                {
+                    action?.Invoke(i, playerPair.Key, playerPair.Value);
+                }
             }
 
-            Logger.Log($"총 {allPlayers.Count}명의 플레이어가 로드되었습니다.");
-            return allPlayers;
         }
 
         public int? GetPlayerTeamIndex(int clientId)
         {
 
-            for (int i = 0; i <teams.Length; i++)
+            for (int i = 0; i < teams.Length; i++)
             {
-                foreach(var player in teams[i].Players.Values)
+                foreach (var player in teams[i].Players.Values)
                 {
                     if (player.ClientId == clientId)
                     {
@@ -270,7 +278,7 @@ namespace ResourceWar.Server
             {
                 throw new System.InvalidOperationException($"Invalid nickName for token: {token}");
             }
-            
+
 
             // 플레이어 객체 생성 및 팀 0에 추가
             var player = new Player(clientId, nickName);
@@ -279,9 +287,9 @@ namespace ResourceWar.Server
 
             Logger.Log($"Add New Player[{clientId}] : {token}");
 
-            
+
             player.Nickname = nickName;
-            
+
             // Notify all players in the same lobby
             await NotifyRoomState();
         }
@@ -293,7 +301,7 @@ namespace ResourceWar.Server
         public async UniTask QuitLobby(ReceivedPacket receivedPacket)
         {
             var token = receivedPacket.Token;
-            
+
             var clientId = receivedPacket.ClientId;
 
             var quitLobby = new S2CQuitRoomNoti
@@ -307,7 +315,7 @@ namespace ResourceWar.Server
                 Token = "",
                 Payload = quitLobby
             };
-            
+
             Logger.Log($"QUIT_ROOM_NOTIFICATION => {packet}");
             // 방 나가기했다는 Noti
             await SendPacketForAll(packet);
@@ -321,34 +329,28 @@ namespace ResourceWar.Server
         /// </summary>
         public async UniTask NotifyRoomState()
         {
-            var players = GetAllPlayers();
 
-            var syncRoomNoti = new S2CSyncRoomNoti
+            S2CSyncRoomNoti s2CSyncRoomNoti = new S2CSyncRoomNoti();
+
+            LoopAllPlayers((teamIndex, token, player) =>
             {
-                Players =
+                s2CSyncRoomNoti.Players.Add(new PlayerRoomInfo
                 {
-                    players.Select(p =>
-                    {
+                    PlayerId = (uint)player.ClientId,
+                    PlayerName = player.Nickname,
+                    AvartarItem = (uint)player.AvatarId,
+                    TeamIndex = (uint)teamIndex,
+                    Ready = player.IsReady,
+                });
 
-                    var playerTeamIndex = GetPlayerTeamIndex(p.ClientId);
-                        return new PlayerRoomInfo
-                        {
-                            PlayerId = (uint)p.ClientId,
-                            PlayerName = p.Nickname,
-                            AvartarItem = (uint)p.AvatarId,
-                            TeamIndex = (uint)(playerTeamIndex ?? 0),
-                            Ready = p.IsReady,
-                        };
+            });
 
-                    })
-                }
-            };
 
             var packet = new Packet
             {
                 PacketType = PacketType.SYNC_ROOM_NOTIFICATION,
                 Token = "",
-                Payload = syncRoomNoti
+                Payload = s2CSyncRoomNoti
             };
 
             Logger.Log($"SYNC_ROOM_NOTIFICATION => {packet}");
@@ -438,7 +440,7 @@ namespace ResourceWar.Server
                 }
                 else
                 {
-                   return UniTask.FromException(new System.InvalidOperationException( $"Unknown client : {player.ClientId}"));
+                    return UniTask.FromException(new System.InvalidOperationException($"Unknown client : {player.ClientId}"));
                 }
             }
             else
