@@ -15,7 +15,7 @@ public class EventDispatcherTest : MonoBehaviour
     void Start()
     {
         //디스팻처에 콜백 등록
-        EventDispatcher<PacketType, Packet>.Instance.Subscribe(PacketType.PONG_RESPONSE, PongHandling);
+        EventDispatcher<PacketType, Packet>.Instance.Subscribe(PacketType.PLAYER_MOVE, PongHandling);
         _ = Pong();
     }
 
@@ -30,7 +30,7 @@ public class EventDispatcherTest : MonoBehaviour
     private async UniTask Pong()
     {
         Logger.Log("Pong Start");
-        await EventDispatcher<PacketType, Packet>.Instance.NotifyAsync(PacketType.PONG_RESPONSE, new Packet {
+        await EventDispatcher<PacketType, Packet>.Instance.NotifyAsync(PacketType.PLAYER_MOVE, new Packet {
 
             PacketType = PacketType.PONG_RESPONSE,
             Payload = new C2SPongRes { ClientTime = DateTime.UtcNow.Ticks },

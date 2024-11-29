@@ -16,10 +16,11 @@ namespace ResourceWar.Server
         public MessageHandlers() : base() {
             Handlers.Add(PacketType.PONG_RESPONSE, this.PongHandler);
             Handlers.Add(PacketType.SIGN_IN_REQUEST, this.SignInHandler);
+            Handlers.Add(PacketType.PLAYER_MOVE, this.PlayerMove);
             Handlers.Add(PacketType.AUTHORIZE_REQUEST, this.AuthorizeRequestHandler);
-
             //로비 관련
             Handlers.Add(PacketType.QUIT_ROOM_REQUEST, this.QuitRoomHandler);
+            Handlers.Add(PacketType.JOIN_ROOM_REQUEST, this.PlayerJoinRoom);
         }
 
 
