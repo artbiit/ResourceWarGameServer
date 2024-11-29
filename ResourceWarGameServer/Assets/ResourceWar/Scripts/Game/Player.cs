@@ -52,10 +52,7 @@ namespace ResourceWar.Server
         public void Disconnected()
         {
             Logger.Log($"Player[{this.ClientId} is disconnected");
-            if (pingToken != null)
-            {
-                IntervalManager.Instance.CancelTask(pingToken);
-            }
+            IntervalManager.Instance.CancelTask(pingToken);
             EventDispatcher<(int, int), long>.Instance.Unsubcribe((this.ClientId, int.MaxValue + this.ClientId), PongRes);
             this.IsConnected = false;
         }
