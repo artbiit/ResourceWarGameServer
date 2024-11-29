@@ -28,7 +28,6 @@ namespace ResourceWar.Server
                 }
             };
             await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForUser, pingpacket);
-            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.UpdatePlayerSendTime, pingpacket);
             return null;
         }
     }

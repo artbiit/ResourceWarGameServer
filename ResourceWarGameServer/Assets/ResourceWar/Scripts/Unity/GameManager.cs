@@ -32,9 +32,7 @@ namespace ResourceWar.Server
             SendPacketForUser = 2,
             AddNewPlayer = 3,
             ClientRemove = 4,
-            UpdatePlayerSendTime = 5,
-            UpdatePlayerReceiveTime = 6,
-            PlayerSync = 7,
+            PlayerSync = 5,
         }
 
         // 현재 게임 상태를 저장
@@ -96,31 +94,13 @@ namespace ResourceWar.Server
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
-            sendDispatcher.Subscribe(GameManagerEvent.UpdatePlayerSendTime, UpdatePlayerSendTime);
 
             var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
-            receivedDispatcher.Subscribe(GameManagerEvent.UpdatePlayerReceiveTime, UpdatePlayerReceiveTime);
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerSync, PlayerSync);
 
             var innterDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
             innterDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
-        }
-
-        public UniTask RegisterPlayer(ReceivedPacket receivedPacket)
-        {
-            var token = receivedPacket.Token;
-            var clientId = receivedPacket.ClientId;
-
-            if (teams.Any(t => t.ContainsPlayer(token)))
-            {
-                throw new System.Exception($"Already exsits player[{clientId}] : {token}");
-            }
-            var player = new Player(clientId);
-            teams[0].Players.Add(token, player);
-            playerCount++;
-            Logger.Log($"Add New Player[{clientId}] : {token}");
-            return UniTask.CompletedTask;
         }
 
         public async UniTask PlayerSync(ReceivedPacket receivedPacket)
@@ -130,7 +110,7 @@ namespace ResourceWar.Server
             {
                 position = playerMove.Position;
             }
-            await PlayerSyncNotify((uint)receivedPacket.ClientId, 1, PositionExtensions.ToVector3(position).normalized, 1, receivedPacket.Token);
+            await PlayerSyncNotify((uint)receivedPacket.ClientId, 1, position.ToVector3(), 1, receivedPacket.Token);
             return;
         }
 
@@ -160,36 +140,12 @@ namespace ResourceWar.Server
             return UniTask.CompletedTask;
         }
 
-        public UniTask UpdatePlayerSendTime(Packet packet)
-        {
-            if (packet.Payload is S2CPingReq pingpacket)
-            {
-                FindPlayer(packet.Token).lastSendTime = pingpacket.ServerTime;
-            }
-            
-            return UniTask.CompletedTask;
-        }
-
-        public UniTask UpdatePlayerReceiveTime(ReceivedPacket receivedPacket)
-        {
-            if (receivedPacket.Payload is C2SPongRes pingpacket)
-            {
-                // 밑에 함수는 lastSendTime만 전달에서 플레이어 안에서 처리를 한다
-                FindPlayer(receivedPacket.Token).LatencyCheck(pingpacket.ClientTime - FindPlayer(receivedPacket.Token).lastSendTime);
-                Logger.Log($"플레이어 레이턴시 : {FindPlayer(receivedPacket.Token).playerLatency}");
-            }
-            
-            return UniTask.CompletedTask;
-        }
-
         public Protocol.Position Correction(Vector3 position, string token)
         {
             //속도 검사하는 로직이 빠져있고
             //이동 가능한 위치인지도 빠져있다.
-            Logger.Log($"스피드는 : {FindPlayer(token).playerSpeed}, 레이턴시는 : {FindPlayer(token).playerLatency}");
             // 밑에 함수는 포지션만 전달에서 플레이어 안에서 처리를 한다
-            FindPlayer(token).ChangePosition(FindPlayer(token).playerLatency * FindPlayer(token).playerSpeed * position / 1000);
-            Logger.Log($"움직인 결과는 : {FindPlayer(token).position}, 토큰은 : {token}");
+            FindPlayer(token).ChangePosition(position);
             return position.FromVector();
 
         }

@@ -43,6 +43,7 @@ namespace ResourceWar.Server
                 return;
             }
             tcpListener.Start(); // TCP 리스너 시작
+            Logger.Log($"서버 시작함"); // 초기화 로그 출력
             _ = AcceptClientAsync(); // 비동기 클라이언트 수락 시전
         }
 

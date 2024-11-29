@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
 using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
@@ -48,14 +49,14 @@ namespace ResourceWar.Server
             Connected(clientId);
            
         }
-        public void ChangePosition(Vector3 position)
+        public Vector3 ChangePosition(Vector3 position)
         {
-            this.position += position;
-        }
-
-        public void LatencyCheck(long latency)
-        {
-            this.playerLatency = latency;
+            Vector3 positionDifference = this.position - position;
+            float distance = positionDifference.magnitude;
+            Logger.Log($"이동 전 위치는 : {this.position}");
+            this.position = Vector3.Lerp(position, this.position, Time.deltaTime * this.playerSpeed);
+            Logger.Log($"이동 후 위치는 : {this.position}");
+            return this.position;
         }
 
         public void Connected(int clientId)
