@@ -133,6 +133,39 @@ namespace ResourceWar.Server
             await NotifyRoomState();
         }
 
+
+        private bool TryGetPlayer(int clientId, out Player player)
+        {
+            foreach (var team in teams)
+            {
+                foreach(var teamPlayer in team.Players.Values)
+                {
+                    if(teamPlayer.ClientId == clientId)
+                    {
+                        player = teamPlayer;
+                        return true;
+                    }
+                }
+            }
+            player = null;
+            return false;
+        }
+
+        private bool TryGetPlayer(string token, out Player player)
+        {
+            foreach (var team in teams)
+            {
+                if (team.Players.ContainsKey(token))
+                {
+                    player = team.Players[token];
+                    return true;
+                }
+            }
+
+            player = null;
+            return false;
+        }
+
         /// <summary>
         /// 새로운 플레이어 등록
         /// </summary>
