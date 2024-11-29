@@ -48,7 +48,7 @@ namespace ResourceWar.Server
         }
         public async UniTaskVoid Init()
         {
-            GameState = State.CREATING;
+            GameState = GameSessionState.CREATING;
             teams = new Team[3];
             for (int i = 0; i < teams.Length; i++)
             {
@@ -147,7 +147,7 @@ namespace ResourceWar.Server
         /// <param name="clientId">제거할 클라이언트 ID</param>
         public async UniTask ClientRemove(int clientId)
         {
-            if (GameState == State.LOBBY)
+            if (GameState == GameSessionState.LOBBY)
             {
                // await PlayerRedis.RemovePlayerInfo(GameToken, clientId);
                 // 현재 플레이어 목록에서도 날려야함

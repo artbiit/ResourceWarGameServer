@@ -27,4 +27,13 @@ namespace ResourceWar.Server
         GARBAGE = 5,
     }
 
+    public enum GameSessionState : int
+    {
+        CREATING = 0,
+        DESTROY,
+        LOBBY,
+        LOADING,
+        PLAYING,
+        ERROR = -1,
+    }
 }
