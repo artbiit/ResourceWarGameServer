@@ -9,6 +9,11 @@ namespace ResourceWar.Server
         public bool isPrivate { get; set; }
 
         /// <summary>
+        /// 방장의 게임 토큰
+        /// </summary>
+        public string roomMaster { get; set; }
+
+        /// <summary>
         /// 게임 세션 상태
         /// </summary>
         public GameSessionState state { get; set; }

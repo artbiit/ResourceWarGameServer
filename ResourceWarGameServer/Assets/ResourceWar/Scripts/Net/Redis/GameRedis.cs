@@ -24,6 +24,16 @@ namespace ResourceWar.Server
             return await RedisClient.Instance.ExecuteAsync(db => db.ListRemoveAsync(LOBBY_QUEUE_KEY, gameCode));
         }
 
+        public static async UniTask<GameSessionInfo> GetGameSessionInfo(string gameCode)
+        {
+            return await RedisClient.Instance.LoadObjectFromHash<GameSessionInfo>($"{GAME_SESSION_KEY}:{gameCode}");
+        }
+
+        public static async UniTask SetGameSessionInfo(string gameCode, GameSessionInfo gameSessionInfo)
+        {
+             await RedisClient.Instance.SaveObjectToHash<GameSessionInfo>($"{GAME_SESSION_KEY}:{gameCode}", gameSessionInfo, 7200);
+        }
+
         
     }
 }

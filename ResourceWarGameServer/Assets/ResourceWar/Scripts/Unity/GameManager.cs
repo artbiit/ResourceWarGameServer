@@ -30,7 +30,7 @@ namespace ResourceWar.Server
 
         public GameSessionState GameState { get; private set; } = GameSessionState.CREATING;
         // 게임의 고유 토큰 (서버가 게임 세션을 식별하기 위해 사용)
-        public string GameToken { get; private set; }
+        public string GameToken { get; private set; } = NanoidDotNet.Nanoid.Generate();
         // 이벤트 구독 여부를 확인하는 플래그
         private bool subscribed = false;
 
@@ -48,7 +48,7 @@ namespace ResourceWar.Server
         }
         public async UniTaskVoid Init()
         {
-            GameState = GameSessionState.CREATING;
+            await SetState(GameSessionState.CREATING);
             teams = new Team[3];
             for (int i = 0; i < teams.Length; i++)
             {
