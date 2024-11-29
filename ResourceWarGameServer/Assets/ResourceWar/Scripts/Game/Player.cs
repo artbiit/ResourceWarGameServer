@@ -91,12 +91,6 @@ namespace ResourceWar.Server
 
         private async UniTask PongRes(long clientTime)
         {
-            if(clientTime <= 0)
-            {
-                Logger.LogError($"Player[{ClientId}] pong time is less than or same zero");
-                clientTime = UnixTime.Now();
-            }
-
             var serverTime = pingQueue.Dequeue();
             this.RoundTripTime = clientTime - serverTime;
             this.Latency = this.RoundTripTime / 2L;
