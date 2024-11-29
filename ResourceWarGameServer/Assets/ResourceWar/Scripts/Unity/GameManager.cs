@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Logger = ResourceWar.Server.Lib.Logger;
 using System.Linq;
 using Protocol;
+using Google.Protobuf.Collections;
 
 namespace ResourceWar.Server
 {
@@ -32,6 +33,7 @@ namespace ResourceWar.Server
             SendPacketForUser = 2,
             AddNewPlayer = 3,
             ClientRemove = 4,
+            QuitLobby = 5,
             PlayerSync = 5,
         }
 
@@ -56,6 +58,7 @@ namespace ResourceWar.Server
         }
         public async UniTaskVoid Init()
         {
+
             GameState = State.CREATING;
             teams = new Team[3];
             for (int i = 0; i < teams.Length; i++)
@@ -88,19 +91,23 @@ namespace ResourceWar.Server
                 return;
             }
             subscribed = true;
-            
+
             // 패킷 전송 관련 이벤트 등록
             var sendDispatcher = EventDispatcher<GameManagerEvent, Packet>.Instance;
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
 
-            var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
+            // 플레이어 등록 관련이벤트 등록
+            var receivedDispatcher = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
+            receivedDispatcher.Subscribe(GameManagerEvent.QuitLobby, QuitLobby);
+             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerSync, PlayerSync);
-
-            var innterDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
-            innterDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
+            
+            //
+            var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
+            innerDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
         }
 
         public async UniTask PlayerSync(ReceivedPacket receivedPacket)
@@ -152,32 +159,79 @@ namespace ResourceWar.Server
 
         /// <summary>
         /// 클라이언트 제거 처리.
+        /// 팀 목록에서도 제거
         /// </summary>
         /// <param name="clientId">제거할 클라이언트 ID</param>
         public async UniTask ClientRemove(int clientId)
         {
             if (GameState == State.LOBBY)
             {
-               // await PlayerRedis.RemovePlayerInfo(GameToken, clientId);
-                // 현재 플레이어 목록에서도 날려야함
-                foreach (var team in teams)
+                if (TryGetTeam(clientId, out Team team))
                 {
-                    var playerToRemove = team.Players.FirstOrDefault(p => p.Value.ClientId == clientId);
-                    if (!playerToRemove.Equals(default(KeyValuePair<string, Player>)))
+                   if(team.TryRemoveByClient(clientId))
                     {
-                        team.Players.Remove(playerToRemove.Key);
+                        //인메모리 팀에서 플레이어 제거
                         playerCount--;
                         Logger.Log($"플레이어 {clientId}가 팀에서 제거되었습니다.");
-                        break;
                     }
+                    else
+                    {
+                        Logger.LogError($"ClientRemove. Could not found player[{clientId}] in team");
+                    }
+                }
+                else
+                {
+                    Logger.LogWarning($"플레이어 {clientId}를 찾을 수 없습니다.");
                 }
             }
             else
             {
-
+                Logger.Log($"현재 상태가 LOBBY가 아니므로 제거 작업이 무시되었습니다. 현재 상태: {GameState}");
             }
 
+            if (!IsRemainedTeamPlayers())
+            {
+                // 해당 GameSession파괴
+            }
+            Logger.Log("여기인가요? 4번");
             await NotifyRoomState();
+        }
+
+        /// <summary>
+        /// Teams에 Player가 한명이라도 남아 있는지 체크
+        /// </summary>
+        /// <returns></returns>
+        private bool IsRemainedTeamPlayers()
+        {
+            foreach (var team in teams)
+            {
+                if (team.HasPlayers())
+                {
+                    Logger.Log($"Team에 플레이어가 남아 있습니다.");
+                    return true;
+                }
+            }
+
+            Logger.Log("모든 팀에서 플레이어가 제거되었습니다.");
+            return false;
+        }
+
+        private bool TryGetTeam(int clinetId, out Team team)
+        {
+            foreach (var currentTeam in teams)
+            {
+                foreach (var player in currentTeam.Players.Values)
+                {
+                    if (player.ClientId == clinetId)
+                    {
+                        team = currentTeam;
+                        return true;
+                    }
+                }
+            }
+
+            team = null;
+            return false;
         }
 
 
@@ -185,9 +239,9 @@ namespace ResourceWar.Server
         {
             foreach (var team in teams)
             {
-                foreach(var teamPlayer in team.Players.Values)
+                foreach (var teamPlayer in team.Players.Values)
                 {
-                    if(teamPlayer.ClientId == clientId)
+                    if (teamPlayer.ClientId == clientId)
                     {
                         player = teamPlayer;
                         return true;
@@ -214,7 +268,45 @@ namespace ResourceWar.Server
         }
 
         /// <summary>
+        /// TeamIndex, UserToken, Player 매개 변수로 순환함
+        /// </summary>
+        /// <param name="action"></param>
+        public void LoopAllPlayers(System.Action<int, string, Player> action)
+        {
+
+            for (int i = 0; i < teams.Length; i++)
+            {
+                var team = teams[i];
+                foreach (var playerPair in team.Players)
+                {
+                    action?.Invoke(i, playerPair.Key, playerPair.Value);
+                }
+            }
+
+        }
+
+        public int? GetPlayerTeamIndex(int clientId)
+        {
+
+            for (int i = 0; i < teams.Length; i++)
+            {
+                foreach (var player in teams[i].Players.Values)
+                {
+                    if (player.ClientId == clientId)
+                    {
+                        Logger.Log($"Player[{clientId})는 Team[{i}]에 속해 있습니다.");
+                        return i;
+                    }
+                }
+            }
+
+            Logger.LogWarning($"Player[{clientId}]를 찾을 수 없습니다.");
+            return null;
+        }
+
+        /// <summary>
         /// 새로운 플레이어 등록
+        /// 해결 완료
         /// </summary>
         /// <param name="receivedPacket">등록 요청 데이터를 포함한 패킷</param>
         /// <returns></returns>
@@ -232,29 +324,55 @@ namespace ResourceWar.Server
                 throw new System.InvalidOperationException($"Already exists player[{clientId}] : {token}");
             }
 
+            var nickName = await UserRedis.GetNickName(token);
+            if (string.IsNullOrEmpty(nickName))
+            {
+                throw new System.InvalidOperationException($"Invalid nickName for token: {token}");
+            }
+
+
             // 플레이어 객체 생성 및 팀 0에 추가
-            var player = new Player(clientId);
+            var player = new Player(clientId, nickName);
             teams[0].Players.Add(token, player);
             playerCount++;
+
             Logger.Log($"Add New Player[{clientId}] : {token}");
 
-            // 이름을 가져와야하는데 어디서 가져올지 고민중
-            var userName = await UserRedis.GetNickName(token);
-            // Redis에 플레이어 정보 저장
-            // AratarI는 어딘가에서 가져와야하는데 아직 모름
-            await PlayerRedis.AddPlayerInfo(
-                gameToken: GameToken,
-                clientId: clientId,
-                userName: userName,
-                isReady: false, // Default values
-                connected: true,
-                loadProgress: 0,
-                teamId: 0,
-                avatarId: 1
-            );
+
+            player.Nickname = nickName;
 
             // Notify all players in the same lobby
             await NotifyRoomState();
+        }
+
+        /// <summary>
+        /// 방나가기 요청이 들어왔을 때 실행되는 알림
+        /// </summary>
+        /// <param name="receivedPacket"></param>
+        public async UniTask QuitLobby(ReceivedPacket receivedPacket)
+        {
+            var token = receivedPacket.Token;
+
+            var clientId = receivedPacket.ClientId;
+
+            var quitLobby = new S2CQuitRoomNoti
+            {
+                PlayerId = (uint)clientId
+            };
+
+            var packet = new Packet
+            {
+                PacketType = PacketType.QUIT_ROOM_NOTIFICATION,
+                Token = "",
+                Payload = quitLobby
+            };
+
+            Logger.Log($"QUIT_ROOM_NOTIFICATION => {packet}");
+            // 방 나가기했다는 Noti
+            await SendPacketForAll(packet);
+
+            // 방에서 제거하는 코드
+            await ClientRemove(clientId);
         }
 
         /// <summary>
@@ -262,30 +380,31 @@ namespace ResourceWar.Server
         /// </summary>
         public async UniTask NotifyRoomState()
         {
-            var players = await PlayerRedis.GetAllPlayersInfo(GameToken);
 
-            var syncRoomNoti = new S2CSyncRoomNoti
+            S2CSyncRoomNoti s2CSyncRoomNoti = new S2CSyncRoomNoti();
+
+            LoopAllPlayers((teamIndex, token, player) =>
             {
-                Players =
+                s2CSyncRoomNoti.Players.Add(new PlayerRoomInfo
                 {
-                    players.Select(p => new PlayerRoomInfo
-                    {
-                        PlayerId = (uint)p.ClientId,
-                        PlayerName = p.UserName,
-                        AvartarItem = (uint)p.AvatarId,
-                        TeamIndex = (uint)p.TeamId,
-                        Ready = p.IsReady,
-                    })
-                }
-            };
+                    PlayerId = (uint)player.ClientId,
+                    PlayerName = player.Nickname,
+                    AvartarItem = (uint)player.AvatarId,
+                    TeamIndex = (uint)teamIndex,
+                    Ready = player.IsReady,
+                });
+
+            });
+
 
             var packet = new Packet
             {
                 PacketType = PacketType.SYNC_ROOM_NOTIFICATION,
                 Token = "",
-                Payload = syncRoomNoti
+                Payload = s2CSyncRoomNoti
             };
 
+            Logger.Log($"SYNC_ROOM_NOTIFICATION => {packet}");
             await SendPacketForAll(packet);
         }
 
@@ -372,7 +491,7 @@ namespace ResourceWar.Server
                 }
                 else
                 {
-                   return UniTask.FromException(new System.InvalidOperationException( $"Unknown client : {player.ClientId}"));
+                    return UniTask.FromException(new System.InvalidOperationException($"Unknown client : {player.ClientId}"));
                 }
             }
             else
