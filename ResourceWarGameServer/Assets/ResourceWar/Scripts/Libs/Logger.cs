@@ -109,19 +109,19 @@ namespace ResourceWar.Server.Lib
         public static void Log(object message)
         {
             WriteToBuffer(FormatLogMessage(LogLevel.Log, message));
-            UnityLog(message);
+            WrappedLog(message);
+
         }
 
         public static void Log(object message, UnityEngine.Object context)
         {
             WriteToBuffer(FormatLogMessage(LogLevel.Log, message));
-            UnityLog(message, context);
+            WrappedLog(message, context);
         }
-#if !UNITY_EDITOR
-        [System.Diagnostics.Conditional("ENABLE_LOG")]
-#endif
-        private static void UnityLog(object message, UnityEngine.Object context = null)
+
+        private static void WrappedLog(object message, UnityEngine.Object context = null)
         {
+#if UNITY_EDITOR
             if (context == null)
             {
                 UnityEngine.Debug.Log(message);
@@ -130,25 +130,38 @@ namespace ResourceWar.Server.Lib
             {
                 UnityEngine.Debug.Log(message, context);
             }
+#else
+    // 일반 로그를 기본 색상으로 출력
+    Console.ForegroundColor = ConsoleColor.White; // 가독성을 위해 명시적 설정
+    if (context == null)
+    {
+        Console.WriteLine($"[{LogType.Log}] {message}");
+    }
+    else
+    {
+        Console.WriteLine($"[{LogType.Log}] {message} (Context: {context?.name ?? "Unknown"})");
+    }
+    Console.ResetColor(); // 다른 로그에 영향을 주지 않도록 색상 복구
+#endif
+
         }
 
         // LogWarning
         public static void LogWarning(object message)
         {
             WriteToBuffer(FormatLogMessage(LogLevel.WARNING, message));
-            UnityLogWarning(message);
+            WrappedLogWarning(message);
         }
 
         public static void LogWarning(object message, UnityEngine.Object context)
         {
             WriteToBuffer(FormatLogMessage(LogLevel.WARNING, message));
-            UnityLogWarning(message, context);
+            WrappedLogWarning(message, context);
         }
-#if !UNITY_EDITOR
-        [System.Diagnostics.Conditional("ENABLE_LOG")]
-#endif
-        private static void UnityLogWarning(object message, UnityEngine.Object context = null)
+
+        private static void WrappedLogWarning(object message, UnityEngine.Object context = null)
         {
+#if UNITY_EDITOR
             if (context == null)
             {
                 UnityEngine.Debug.LogWarning(message);
@@ -157,25 +170,37 @@ namespace ResourceWar.Server.Lib
             {
                 UnityEngine.Debug.LogWarning(message, context);
             }
+#else
+    Console.ForegroundColor = ConsoleColor.Yellow;
+    if (context == null)
+    {
+        Console.WriteLine($"[{LogType.Warning}] {message}");
+    }
+    else
+    {
+        Console.WriteLine($"[{LogType.Warning}] {message} (Context: {context?.name ?? "Unknown"})");
+    }
+    Console.ResetColor(); 
+#endif
+
         }
 
         // LogError
         public static void LogError(object message)
         {
             WriteToBuffer(FormatLogMessage(LogLevel.ERROR, message));
-            UnityLogError(message);
+            WrappedLogError(message);
         }
 
         public static void LogError(object message, UnityEngine.Object context)
         {
             WriteToBuffer(FormatLogMessage(LogLevel.ERROR, message));
-            UnityLogError(message, context);
+            WrappedLogError(message, context);
         }
-#if !UNITY_EDITOR
-        [System.Diagnostics.Conditional("ENABLE_LOG")]
-#endif
-        private static void UnityLogError(object message, UnityEngine.Object context = null)
+
+        private static void WrappedLogError(object message, UnityEngine.Object context = null)
         {
+#if UNITY_EDITOR
             if (context == null)
             {
                 UnityEngine.Debug.LogError(message);
@@ -184,23 +209,29 @@ namespace ResourceWar.Server.Lib
             {
                 UnityEngine.Debug.LogError(message, context);
             }
+#else
+             Console.ForegroundColor = ConsoleColor.Red;
+             Console.WriteLine($"[{LogType.Error}]{message}");
+             Console.ResetColor();
+#endif
+
+
         }
 
         // LogAssertion
         public static void LogAssertion(object message)
         {
-            UnityLogAssertion(message);
+            WrappedLogAssertion(message);
         }
 
         public static void LogAssertion(object message, UnityEngine.Object context)
         {
-            UnityLogAssertion(message, context);
+            WrappedLogAssertion(message, context);
         }
-#if !UNITY_EDITOR
-        [System.Diagnostics.Conditional("ENABLE_LOG")]
-#endif
-        private static void UnityLogAssertion(object message, UnityEngine.Object context = null)
+        private static void WrappedLogAssertion(object message, UnityEngine.Object context = null)
         {
+
+#if UNITY_EDITOR
             if (context == null)
             {
                 UnityEngine.Debug.LogAssertion(message);
@@ -209,6 +240,12 @@ namespace ResourceWar.Server.Lib
             {
                 UnityEngine.Debug.LogAssertion(message, context);
             }
+
+#else
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"[{LogType.Assert}] {message}");
+            Console.ResetColor();
+#endif
         }
 
         // LogException
@@ -223,11 +260,9 @@ namespace ResourceWar.Server.Lib
             WriteToBuffer(FormatLogMessage(LogLevel.EXCEPTION, exception.ToString()));
             UnityLogException(exception, context);
         }
-#if !UNITY_EDITOR
-        [System.Diagnostics.Conditional("ENABLE_LOG")]
-#endif
         private static void UnityLogException(Exception exception, UnityEngine.Object context = null)
         {
+#if UNITY_EDITOR
             if (context == null)
             {
                 UnityEngine.Debug.LogException(exception);
@@ -236,6 +271,18 @@ namespace ResourceWar.Server.Lib
             {
                 UnityEngine.Debug.LogException(exception, context);
             }
+#else
+
+    Console.ForegroundColor = ConsoleColor.Red; 
+    Console.WriteLine($"[{LogType.Exception}] {exception.Message}");
+    Console.WriteLine($"[{LogType.Exception}] StackTrace: {exception.StackTrace}");
+    if (context != null)
+    {
+        Console.WriteLine($"[CONTEXT] {context?.name ?? "Unknown"}");
+    }
+    Console.ResetColor(); 
+#endif
+
         }
 
         public static void Dispose(bool disposing)
@@ -256,7 +303,7 @@ namespace ResourceWar.Server.Lib
         {
             if (!Directory.Exists(LogDirectory))
             {
-                UnityLogWarning("로그 폴더가 존재하지 않습니다.");
+                WrappedLogWarning("로그 폴더가 존재하지 않습니다.");
                 return;
             }
 
@@ -268,7 +315,7 @@ namespace ResourceWar.Server.Lib
         {
             if (!File.Exists(currentLogFileName))
             {
-                UnityLogWarning("현재 로그 파일이 존재하지 않습니다.");
+                WrappedLogWarning("현재 로그 파일이 존재하지 않습니다.");
                 return;
             }
 

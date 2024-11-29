@@ -28,7 +28,6 @@ namespace ResourceWar.Server
 
             if (Handlers.TryGetValue(packet.PacketType, out var handler))
             {
-                Logger.Log(handler.ToString());
                 result = await handler(packet);
                 //null이면 반환할 데이터 없음을 의미
                 if (result != null && !PacketUtils.IsSameMessageType(result.Payload, result.PacketType))

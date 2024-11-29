@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
 using Protocol;
 using ResourceWar.Server.Lib;
+using StackExchange.Redis;
+using UnityEditor.PackageManager;
 using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
@@ -9,10 +11,13 @@ namespace ResourceWar.Server
     {
         private async UniTask<Packet> PongHandler(ReceivedPacket packet)
         {
-            //Logger.Log("받은 패킷 : " + packet.Payload);
-            await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.UpdatePlayerReceiveTime, packet);
-            await EventDispatcher<PacketType, Packet>.Instance.NotifyAsync(PacketType.PONG_RESPONSE, packet);
-            
+            C2SPongRes pong = (C2SPongRes)packet.Payload;
+            if (pong.ClientTime <= 0)
+            {                
+                Logger.LogError($"Player[{packet.ClientId}] pong time is less than or same zero");
+                pong.ClientTime = UnixTime.Now();
+            }
+            await EventDispatcher<(int, int ), long>.Instance.NotifyAsync((packet.ClientId, int.MaxValue + packet.ClientId), pong.ClientTime);
             return null;
         }
     }
