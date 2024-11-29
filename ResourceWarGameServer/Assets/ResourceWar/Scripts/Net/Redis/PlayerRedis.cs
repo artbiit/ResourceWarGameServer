@@ -47,56 +47,5 @@ namespace ResourceWar.Server
             await RedisClient.Instance.ExecuteAsync(db => db.ListRightPushAsync(playerListKey, clientId.ToString()));
         }
 
-       public static async UniTask<List<Player>> GetAllPlayersInfo(string gameToken)
-        {
-            string playerListKey = string.Format(PLAYER_LIST_KEY_FORMAT, gameToken);
-            var playerIds = await RedisClient.Instance.ExecuteAsync(db => db.ListRangeAsync(playerListKey));
-
-            var players = new List<Player>();
-            foreach (var id in playerIds)
-            {
-                string playerKey = string.Format(PLAYER_KEY_FORMAT, gameToken, id);
-
-                var fields = await RedisClient.Instance.ExecuteAsync(db => db.HashGetAllAsync(playerKey));
-                if (fields.Length > 0)
-                {
-                    players.Add(Player.FromRedisData(int.Parse(id), fields));
-                }
-            }
-
-            return players;
-        }
-
-        public static async UniTask RemovePlayerInfo(string gameToken, int clientId)
-        {
-            string playerKey = string.Format(PLAYER_KEY_FORMAT, gameToken, clientId);
-            string playerListKey = string.Format(PLAYER_LIST_KEY_FORMAT, gameToken);
-
-            await RedisClient.Instance.ExecuteAsync(db => db.KeyDeleteAsync(playerKey));
-            await RedisClient.Instance.ExecuteAsync(db => db.ListRemoveAsync(playerListKey, clientId.ToString()));
-        }
-
-        /// <summary>
-        /// 특정 user_name을 가져옵니다.
-        /// </summary>
-        /// <param name="gameToken">게임 토큰</param>
-        /// <param name="clientId">클라이언트 ID</param>
-        /// <returns>user_name</returns>
-        public static async UniTask<string> GetUserName(string gameToken, int clientId)
-        {
-            string playerKey = string.Format(PLAYER_KEY_FORMAT, gameToken, clientId);
-
-            // Redis에서 user_name 필드 가져오기
-            var userName = await RedisClient.Instance.ExecuteAsync(db => db.HashGetAsync(playerKey, "user_name"));
-            if (userName.IsNullOrEmpty)
-            {
-                Logger.Log($"UserName을 찾을 수 없습니다. GameToken: {gameToken}, ClientId: {clientId}");
-                return null;
-            }
-
-            Logger.Log($"UserName: {userName} (GameToken: {gameToken}, ClientId: {clientId})");
-            return userName.ToString();
-        }
-
     }
 }

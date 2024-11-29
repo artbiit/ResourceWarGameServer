@@ -116,20 +116,12 @@ namespace ResourceWar.Server
             {
                if (TryGetPlayer(clientId, out Player player) && TryGetTeam(clientId, out Team team))
                {
-                    Logger.Log("여기인가요? 1번");
-                    //Redis에서 플레이어 정보 제거
-                    await PlayerRedis.RemovePlayerInfo(GameToken, clientId);
-
-                    
-
-                    Logger.Log("여기인가요? 2번");
                     //인메모리 팀에서 플레이어 제거
-                    Logger.Log($"여기인가요? {player.UserName}");
-                    team.Players.Remove(player.UserName);
-                    playerCount--;
-                    Logger.Log("여기인가요? 3번");
+                    team.Players.Remove(player);
+
                     // 연결 끊어주고
                     player.Disconnected();
+                    playerCount--;
 
                     Logger.Log($"플레이어 {clientId}가 팀에서 제거되었습니다.");
                 }
@@ -157,15 +149,16 @@ namespace ResourceWar.Server
         /// <returns></returns>
         private bool IsRemainedTeamPlayers()
         {
-            for (int i = 0; i < teams.Length; i++)
+            foreach (var team in teams)
             {
-                if (teams[i].HasPlayers())
+                if (team.HasPlayers())
                 {
-                    Logger.Log($"팀 {i}에는 플레이어가 남아 있습니다.");
+                    Logger.Log($"Team에 플레이어가 남아 있습니다.");
                     return true;
                 }
             }
-            Logger.Log($"로비에 플레이어가 남아 있지 않습니다.");
+
+            Logger.Log("모든 팀에서 플레이어가 제거되었습니다.");
             return false;
         }
 
@@ -220,11 +213,43 @@ namespace ResourceWar.Server
             return false;
         }
 
+        public List<Player> GetAllPlayers()
+        {
+            var allPlayers = new List<Player>();
+
+            foreach(var team in teams)
+            {
+                allPlayers.AddRange(team.Players.Values);
+            }
+
+            Logger.Log($"총 {allPlayers.Count}명의 플레이어가 로드되었습니다.");
+            return allPlayers;
+        }
+
+        public int? GetPlayerTeamIndex(int clientId)
+        {
+
+            for (int i = 0; i <teams.Length; i++)
+            {
+                foreach(var player in teams[i].Players.Values)
+                {
+                    if (player.ClientId == clientId)
+                    {
+                        Logger.Log($"Player[{clientId})는 Team[{i}]에 속해 있습니다.");
+                        return i;
+                    }
+                }
+            }
+
+            Logger.LogWarning($"Player[{clientId}]를 찾을 수 없습니다.");
+            return null;
+        }
+
         /// <summary>
         /// 새로운 플레이어 등록
+        /// 해결 완료
         /// </summary>
         /// <param name="receivedPacket">등록 요청 데이터를 포함한 패킷</param>
-        /// TeamIndex = 3,4,5 // 3이 Gray팀
         /// <returns></returns>
         public async UniTask RegisterPlayer(ReceivedPacket receivedPacket)
         {
@@ -240,29 +265,23 @@ namespace ResourceWar.Server
                 throw new System.InvalidOperationException($"Already exists player[{clientId}] : {token}");
             }
 
+            var nickName = await UserRedis.GetNickName(token);
+            if (string.IsNullOrEmpty(nickName))
+            {
+                throw new System.InvalidOperationException($"Invalid nickName for token: {token}");
+            }
+            
+
             // 플레이어 객체 생성 및 팀 0에 추가
-            var player = new Player(clientId);
+            var player = new Player(clientId, nickName);
             teams[0].Players.Add(token, player);
             playerCount++;
+
             Logger.Log($"Add New Player[{clientId}] : {token}");
 
-            // 이름을 가져와야하는데 어디서 가져올지 고민중
-            var userName = await UserRedis.GetNickName(token);
-            player.UserName = userName;
-            player.TeamId = 3;
-            // Redis에 플레이어 정보 저장
-            // AratarI는 어딘가에서 가져와야하는데 아직 모름
-            await PlayerRedis.AddPlayerInfo(
-                gameToken: GameToken,
-                clientId: clientId,
-                userName: userName,
-                isReady: true, // Default values
-                connected: true,
-                loadProgress: 0,
-                teamId: 3,
-                avatarId: 1
-            );
-            Logger.Log("여기들어와?");
+            
+            player.Nickname = nickName;
+            
             // Notify all players in the same lobby
             await NotifyRoomState();
         }
@@ -292,9 +311,9 @@ namespace ResourceWar.Server
             Logger.Log($"QUIT_ROOM_NOTIFICATION => {packet}");
             // 방 나가기했다는 Noti
             await SendPacketForAll(packet);
+
             // 방에서 제거하는 코드
-            await EventDispatcher<GameManager.GameManagerEvent, int>.Instance.NotifyAsync(GameManager.GameManagerEvent.ClientRemove, clientId);
-            /*await ClientRemove(clientId);*/
+            await ClientRemove(clientId);
         }
 
         /// <summary>
@@ -302,22 +321,25 @@ namespace ResourceWar.Server
         /// </summary>
         public async UniTask NotifyRoomState()
         {
-            Logger.Log("여기인가요? 15번");
-
-            var players = await PlayerRedis.GetAllPlayersInfo(GameToken);
-            Logger.Log("여기인가요? 16번");
+            var players = GetAllPlayers();
 
             var syncRoomNoti = new S2CSyncRoomNoti
             {
                 Players =
                 {
-                    players.Select(p => new PlayerRoomInfo
+                    players.Select(p =>
                     {
-                        PlayerId = (uint)p.ClientId,
-                        PlayerName = p.UserName,
-                        AvartarItem = (uint)p.AvatarId,
-                        TeamIndex = (uint)p.TeamId,
-                        Ready = p.IsReady,
+
+                    var playerTeamIndex = GetPlayerTeamIndex(p.ClientId);
+                        return new PlayerRoomInfo
+                        {
+                            PlayerId = (uint)p.ClientId,
+                            PlayerName = p.Nickname,
+                            AvartarItem = (uint)p.AvatarId,
+                            TeamIndex = (uint)(playerTeamIndex ?? 0),
+                            Ready = p.IsReady,
+                        };
+
                     })
                 }
             };
