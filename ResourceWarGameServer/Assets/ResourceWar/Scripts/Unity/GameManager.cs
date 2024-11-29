@@ -32,6 +32,7 @@ namespace ResourceWar.Server
             SendPacketForUser = 2,
             AddNewPlayer = 3,
             ClientRemove = 4,
+            PlayerSync = 5,
         }
 
         // 현재 게임 상태를 저장
@@ -55,7 +56,7 @@ namespace ResourceWar.Server
         }
         public async UniTaskVoid Init()
         {
-      
+            GameState = State.CREATING;
             teams = new Team[3];
             for (int i = 0; i < teams.Length; i++)
             {
@@ -93,14 +94,60 @@ namespace ResourceWar.Server
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForTeam, SendPacketForTeam);
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForUser, SendPacketForUser);
-             
-            // 플레이어 등록 관련이벤트 등록
+
             var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
+            receivedDispatcher.Subscribe(GameManagerEvent.PlayerSync, PlayerSync);
 
-            //
             var innterDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
             innterDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
+        }
+
+        public async UniTask PlayerSync(ReceivedPacket receivedPacket)
+        {
+            Protocol.Position position = new();
+            if (receivedPacket.Payload is C2SPlayerMove playerMove)
+            {
+                position = playerMove.Position;
+            }
+            await PlayerSyncNotify((uint)receivedPacket.ClientId, 1, position.ToVector3(), 1, receivedPacket.Token);
+            return;
+        }
+
+        private UniTask PlayerSyncNotify(uint ClientId, byte ActionType, Vector3 position, uint EquippedItem, string token)
+        {
+            Logger.Log($"기존 포지션은 : {position}");
+            var protoPlayerState = new Protocol.PlayerState
+            {
+                PlayerId = ClientId,
+                ActionType = ActionType,
+                Position = Correction(position, token),
+                EquippedItem = EquippedItem
+            };
+
+            var packet = new Packet
+            {
+                PacketType = PacketType.SYNC_PLAYERS_NOTIFICATION,
+
+                //Token = "", // 특정 클라이언트에게 전송 시 설정
+                Payload = new Protocol.S2CSyncPlayersNoti
+                {
+                    PlayerStates = { protoPlayerState },
+                }
+            };
+            Logger.Log(packet);
+            SendPacketForAll(packet);
+            return UniTask.CompletedTask;
+        }
+
+        public Protocol.Position Correction(Vector3 position, string token)
+        {
+            //속도 검사하는 로직이 빠져있고
+            //이동 가능한 위치인지도 빠져있다.
+            // 밑에 함수는 포지션만 전달에서 플레이어 안에서 처리를 한다
+            FindPlayer(token).ChangePosition(position);
+            return position.FromVector();
+
         }
 
         /// <summary>

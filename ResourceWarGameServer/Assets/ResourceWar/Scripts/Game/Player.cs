@@ -7,12 +7,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
 using Logger = ResourceWar.Server.Lib.Logger;
 
 namespace ResourceWar.Server
 {
     public class Player
     {
+
         public  int ClientId;
 
         public string UserName { get; set; }
@@ -21,6 +23,8 @@ namespace ResourceWar.Server
         public int LoadProgress { get; set; }
         public int TeamId { get; set; }
         public int AvatarId { get; set; }
+        public int playerSpeed = 100;
+        public Vector3 position = Vector3.zero;
 
         /// <summary>
         /// ms 단위 지연시간
@@ -44,6 +48,15 @@ namespace ResourceWar.Server
             this.hashCode = this.GetHashCode().ToString();
             Connected(clientId);
            
+        }
+        public Vector3 ChangePosition(Vector3 position)
+        {
+            Vector3 positionDifference = this.position - position;
+            float distance = positionDifference.magnitude;
+            Logger.Log($"이동 전 위치는 : {this.position}");
+            this.position = Vector3.Lerp(position, this.position, Time.deltaTime * this.playerSpeed);
+            Logger.Log($"이동 후 위치는 : {this.position}");
+            return this.position;
         }
 
         public void Connected(int clientId)

@@ -78,6 +78,7 @@ namespace ResourceWar.Server
         // 플레이어 액션
         PLAYER_ACTION_REQUEST = 34,
         PLAYER_ACTION_RESPONSE = 35,
+        PLAYER_MOVE = 61,
 
         // 객체 관련
         SPAWN_OBJECT_NOTIFICATION = 36,
