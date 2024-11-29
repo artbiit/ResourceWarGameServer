@@ -111,22 +111,18 @@ namespace ResourceWar.Server
         {
             if (GameState == State.LOBBY)
             {
-               if (TryGetPlayer(clientId, out Player player))
-                {
+               if (TryGetPlayer(clientId, out Player player) && TryGetTeam(clientId, out Team team))
+               {
                     //Redis에서 플레이어 정보 제거
                     await PlayerRedis.RemovePlayerInfo(GameToken, clientId);
 
                     //팀에서 플레이어 제거
-                    var team = teams.FirstOrDefault(t => t.Players.ContainsValue(player));
-                    if (team != null)
-                    {
-                        team.Players.Remove(player.UserName);
-                        playerCount--;
+                    team.Players.Remove(player.UserName);
+                    playerCount--;
 
-                        player.Disconnected();
+                    player.Disconnected();
 
-                        Logger.Log($"플레이어 {clientId}가 팀에서 제거되었습니다.");
-                    }
+                    Logger.Log($"플레이어 {clientId}가 팀에서 제거되었습니다.");
                 }
                 else
                 {
@@ -139,6 +135,24 @@ namespace ResourceWar.Server
             }
 
             await NotifyRoomState();
+        }
+
+        private bool TryGetTeam(int clinetId, out Team team)
+        {
+            foreach (var currentTeam in teams)
+            {
+                foreach( var player in currentTeam.Players.Values)
+                {
+                    if (player.ClientId == clinetId)
+                    {
+                        team = currentTeam;
+                        return true;
+                    }
+                }
+            }
+
+            team = null;
+            return false;
         }
 
 
