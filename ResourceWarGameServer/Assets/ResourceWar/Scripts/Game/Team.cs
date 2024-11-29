@@ -11,11 +11,11 @@ namespace ResourceWar.Server
 
         public bool ContainsPlayer(string token) => Players.ContainsKey(token);
 
-        public void LoopTeamPlayers(System.Func<string, Player, bool> action)
+        public void LoopTeamPlayers(System.Func<string, Player, bool> func)
         {
             foreach (var playerPair in Players)
             {
-                if(!action.Invoke(playerPair.Key, playerPair.Value))
+                if(!func.Invoke(playerPair.Key, playerPair.Value))
                 {
                     break;
                 }
