@@ -52,7 +52,7 @@ namespace ResourceWar.Server
             this.ClientId = clientId;
             this.IsConnected = true;
             EventDispatcher<(int, int), long>.Instance.Subscribe((this.ClientId, int.MaxValue + this.ClientId), PongRes);
-            pingToken = IntervalManager.Instance.AddTask(hashCode, PingReq, 1.0f);
+           /* pingToken = IntervalManager.Instance.AddTask(hashCode, PingReq, 1.0f);*/
         }
 
         public void Disconnected()

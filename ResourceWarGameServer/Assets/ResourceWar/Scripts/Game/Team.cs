@@ -9,5 +9,10 @@ namespace ResourceWar.Server
         public readonly Dictionary<string, Player> Players = new();
 
         public bool ContainsPlayer(string token) => Players.ContainsKey(token);
+
+        public bool HasPlayers()
+        {
+            return Players.Count > 0;
+        }
     }
 }

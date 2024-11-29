@@ -32,6 +32,7 @@ namespace ResourceWar.Server
             SendPacketForUser = 2,
             AddNewPlayer = 3,
             ClientRemove = 4,
+            QuitLobby = 5,
         }
 
         // 현재 게임 상태를 저장
@@ -97,14 +98,16 @@ namespace ResourceWar.Server
             // 플레이어 등록 관련이벤트 등록
             var receivedDispatcher  = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
-
+            receivedDispatcher.Subscribe(GameManagerEvent.QuitLobby, QuitLobby);
             //
-            var innterDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
-            innterDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
+            var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
+            innerDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
+            
         }
 
         /// <summary>
         /// 클라이언트 제거 처리.
+        /// 팀 목록에서도 제거
         /// </summary>
         /// <param name="clientId">제거할 클라이언트 ID</param>
         public async UniTask ClientRemove(int clientId)
@@ -116,7 +119,7 @@ namespace ResourceWar.Server
                     //Redis에서 플레이어 정보 제거
                     await PlayerRedis.RemovePlayerInfo(GameToken, clientId);
 
-                    //팀에서 플레이어 제거
+                    //인메모리 팀에서 플레이어 제거
                     team.Players.Remove(player.UserName);
                     playerCount--;
 
@@ -134,7 +137,29 @@ namespace ResourceWar.Server
                 Logger.Log($"현재 상태가 LOBBY가 아니므로 제거 작업이 무시되었습니다. 현재 상태: {GameState}");
             }
 
+            if (!IsRemainedTeamPlayers())
+            {
+                // 해당 GameSession파괴
+            }
             await NotifyRoomState();
+        }
+
+        /// <summary>
+        /// Teams에 Player가 한명이라도 남아 있는지 체크
+        /// </summary>
+        /// <returns></returns>
+        private bool IsRemainedTeamPlayers()
+        {
+            for (int i = 0; i < teams.Length; i++)
+            {
+                if (teams[i].HasPlayers())
+                {
+                    Logger.Log($"팀 {i}에는 플레이어가 남아 있습니다.");
+                    return true;
+                }
+            }
+            Logger.Log($"로비에 플레이어가 남아 있지 않습니다.");
+            return false;
         }
 
         private bool TryGetTeam(int clinetId, out Team team)
@@ -192,6 +217,7 @@ namespace ResourceWar.Server
         /// 새로운 플레이어 등록
         /// </summary>
         /// <param name="receivedPacket">등록 요청 데이터를 포함한 패킷</param>
+        /// TeamIndex = 3,4,5 // 3이 Gray팀
         /// <returns></returns>
         public async UniTask RegisterPlayer(ReceivedPacket receivedPacket)
         {
@@ -221,15 +247,48 @@ namespace ResourceWar.Server
                 gameToken: GameToken,
                 clientId: clientId,
                 userName: userName,
-                isReady: false, // Default values
+                isReady: true, // Default values
                 connected: true,
                 loadProgress: 0,
-                teamId: 0,
+                teamId: 3,
                 avatarId: 1
             );
-
+            Logger.Log("여기들어와?");
             // Notify all players in the same lobby
             await NotifyRoomState();
+        }
+
+        /// <summary>
+        /// 방나가기 요청이 들어왔을 때 실행되는 알림
+        /// </summary>
+        /// <param name="receivedPacket"></param>
+        public async UniTask QuitLobby(ReceivedPacket receivedPacket)
+        {
+            var token = receivedPacket.Token;
+            
+            var clientId = receivedPacket.ClientId;
+            if (teams.Any(t => t.ContainsPlayer(token)))
+            {
+                throw new System.InvalidOperationException($"Already exists player[{clientId}] : {token}");
+            }
+
+            var quitLobby = new S2CQuitRoomNoti
+            {
+                PlayerId = (uint)clientId
+            };
+
+            var packet = new Packet
+            {
+                PacketType = PacketType.QUIT_ROOM_NOTIFICATION,
+                Token = "",
+                Payload = quitLobby
+            };
+            
+            Logger.Log($"QUIT_ROOM_NOTIFICATION => {packet}");
+            // 방 나가기했다는 Noti
+            await SendPacketForAll(packet);
+            // 방에서 제거하는 코드
+            await EventDispatcher<GameManager.GameManagerEvent, int>.Instance.NotifyAsync(GameManager.GameManagerEvent.ClientRemove, clientId);
         }
 
         /// <summary>
@@ -261,6 +320,7 @@ namespace ResourceWar.Server
                 Payload = syncRoomNoti
             };
 
+            Logger.Log($"SYNC_ROOM_NOTIFICATION => {packet}");
             await SendPacketForAll(packet);
         }
 
