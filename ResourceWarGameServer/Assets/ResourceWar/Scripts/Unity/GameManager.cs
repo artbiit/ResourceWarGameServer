@@ -148,7 +148,8 @@ namespace ResourceWar.Server
         {
             if (receivedPacket.Payload is C2SPongRes pingpacket)
             {
-                FindPlayer(receivedPacket.Token).playerLatency = pingpacket.ClientTime - FindPlayer(receivedPacket.Token).lastSendTime;
+                // 밑에 함수는 lastSendTime만 전달에서 플레이어 안에서 처리를 한다
+                FindPlayer(receivedPacket.Token).LatencyCheck(pingpacket.ClientTime - FindPlayer(receivedPacket.Token).lastSendTime);
                 Logger.Log($"플레이어 레이턴시 : {FindPlayer(receivedPacket.Token).playerLatency}");
             }
             
@@ -157,10 +158,13 @@ namespace ResourceWar.Server
 
         public Protocol.Position Correction(Vector3 position, string token)
         {
+            //속도 검사하는 로직이 빠져있고
+            //이동 가능한 위치인지도 빠져있다.
             Logger.Log($"스피드는 : {FindPlayer(token).playerSpeed}, 레이턴시는 : {FindPlayer(token).playerLatency}");
-            FindPlayer(token).position += FindPlayer(token).playerLatency * FindPlayer(token).playerSpeed * position / 1000;
+            // 밑에 함수는 포지션만 전달에서 플레이어 안에서 처리를 한다
+            FindPlayer(token).ChangePosition(FindPlayer(token).playerLatency * FindPlayer(token).playerSpeed * position / 1000);
             Logger.Log($"움직인 결과는 : {FindPlayer(token).position}, 토큰은 : {token}");
-            return PositionExtensions.FromVector(position);
+            return position.FromVector();
         }
 
         public Player FindPlayer(string token)

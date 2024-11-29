@@ -21,5 +21,15 @@ namespace ResourceWar.Server
             this.playerName = clientId.ToString();
             this.avartarItem = 1;
         }
+
+        public void ChangePosition(Vector3 position)
+        {
+            this.position += position;
+        }
+
+        public void LatencyCheck(long latency)
+        {
+            this.playerLatency = latency;
+        }
     }
 }
