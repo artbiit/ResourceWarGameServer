@@ -10,4 +10,21 @@ namespace ResourceWar.Server
         ALREADY_AUTHORIZED = 1,
         FAIL = 2,
     }
+
+    public enum PlayerActionType : byte
+    {
+        STOP = 0,
+        MOVE = 1,
+        DASH = 2,
+    }
+    public enum PlayerEquippedItem : uint
+    {
+        NONE = 0,
+        SOLIDWOOD = 1,
+        IRONSTONE = 2,
+        WOOD = 3,
+        IRON = 4,
+        GARBAGE = 5,
+    }
+
 }
