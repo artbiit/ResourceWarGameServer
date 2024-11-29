@@ -5,7 +5,7 @@ using ResourceWar.Server.Lib;
 using Cysharp.Threading.Tasks;
 using Logger = ResourceWar.Server.Lib.Logger;
 using System.Linq;
-
+using Protocol;
 
 namespace ResourceWar.Server
 {
@@ -162,7 +162,7 @@ namespace ResourceWar.Server
             var userName = await UserRedis.GetNickName(token);
             // Redis에 플레이어 정보 저장
             // AratarI는 어딘가에서 가져와야하는데 아직 모름
-        /*    await PlayerRedis.AddPlayerInfo(
+            await PlayerRedis.AddPlayerInfo(
                 gameToken: GameToken,
                 clientId: clientId,
                 userName: userName,
@@ -171,7 +171,7 @@ namespace ResourceWar.Server
                 loadProgress: 0,
                 teamId: 0,
                 avatarId: 1
-            );*/
+            );
 
             // Notify all players in the same lobby
             await NotifyRoomState();
@@ -182,7 +182,7 @@ namespace ResourceWar.Server
         /// </summary>
         public async UniTask NotifyRoomState()
         {
-         /*   var players = await PlayerRedis.GetAllPlayersInfo(GameToken);
+            var players = await PlayerRedis.GetAllPlayersInfo(GameToken);
 
             var syncRoomNoti = new S2CSyncRoomNoti
             {
@@ -195,7 +195,7 @@ namespace ResourceWar.Server
                         AvartarItem = (uint)p.AvatarId,
                         TeamIndex = (uint)p.TeamId,
                         Ready = p.IsReady,
-                    })                   
+                    })
                 }
             };
 
@@ -206,7 +206,7 @@ namespace ResourceWar.Server
                 Payload = syncRoomNoti
             };
 
-            await SendPacketForAll(packet);*/
+            await SendPacketForAll(packet);
         }
 
         /// <summary>
