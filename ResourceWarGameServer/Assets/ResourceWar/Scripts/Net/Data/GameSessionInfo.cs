@@ -36,11 +36,11 @@ namespace ResourceWar.Server
         /// <summary>
         /// 세션 생성 시점
         /// </summary>
-        public long createAt { get; set; } = UnixTime.Now();
+        public long createdAt { get; set; } = UnixTime.Now();
         /// <summary>
         /// 마지막으로 정보가 갱신된 시점
         /// </summary>
-        public long updateAt { get; set; } = UnixTime.Now();
+        public long updatedAt { get; set; } = UnixTime.Now();
 
     }
 

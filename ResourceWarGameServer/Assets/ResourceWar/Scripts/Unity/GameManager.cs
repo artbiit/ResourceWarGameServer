@@ -28,9 +28,9 @@ namespace ResourceWar.Server
             PlayerSync = 5,
         }
 
-        public GameSessionState GameState { get; private set; } = GameSessionState.CREATING;
+        public GameSessionState GameState;
         // 게임의 고유 토큰 (서버가 게임 세션을 식별하기 위해 사용)
-        public string GameToken { get; private set; } = NanoidDotNet.Nanoid.Generate();
+        public string GameCode { get; private set; } = NanoidDotNet.Nanoid.Generate();
         // 이벤트 구독 여부를 확인하는 플래그
         private bool subscribed = false;
 
@@ -41,19 +41,52 @@ namespace ResourceWar.Server
         // 현재 등록된 플레이어 수
         private int playerCount = 0;
 
+        private GameSessionInfo gameSessionInfo = new GameSessionInfo();
+
         private void Awake()
         {
-            Logger.Log($"{nameof(GameManager)} is Awake");
+            Logger.Log($"{nameof(GameManager)}:{GameCode} is Awake");
             _ = Init();
         }
         public async UniTaskVoid Init()
         {
-            await SetState(GameSessionState.CREATING);
-            teams = new Team[3];
-            for (int i = 0; i < teams.Length; i++)
+
+            /* [최초 초기화]
+             * 1. 레디스에 대기중인 게임 서버 목록에 등록
+             * 2. 모든 초기화가 완료 되었을 경우 점유 알림 채널에 구독
+             * 
+             * [재활용]
+             * 1. 기존 게임코드에 대한 레디스 정보를 말소 해야함
+             * 2. 기존 게임 매니저 내 정보 초기화
+             * 3. 다시 레디스에 대기중인 게임 서버 목록에 등록
+             */
+            bool reinit = string.IsNullOrWhiteSpace(GameCode);
+            if (reinit)
             {
-                teams[i] = new Team();
+                await GameRedis.RemoveGameSessionInfo(GameCode);
+                //새로 생성된 방으로서 초기화 작업
+                gameSessionInfo.state = GameSessionState.CREATING;
+                gameSessionInfo.currentPlayer = 0;
+                gameSessionInfo.maxPlayer = 4;
+                gameSessionInfo.previousPlayer = 0;
+                gameSessionInfo.roomMaster = string.Empty;
+                gameSessionInfo.createdAt = UnixTime.Now();
+                gameSessionInfo.updatedAt = gameSessionInfo.createdAt;
+                gameSessionInfo.gameUrl = string.Empty;
+                foreach (Team team in teams)
+                {
+                    team.Reset();
+                }
             }
+            else
+            {
+                teams = new Team[3];
+                for (int i = 0; i < teams.Length; i++)
+                {
+                    teams[i] = new Team();
+                }
+            }
+            await GameRedis.AddGameSessionInfo(this.GameCode, gameSessionInfo);
             Subscribes();
             await SetState(GameSessionState.LOBBY);
         }
@@ -64,8 +97,11 @@ namespace ResourceWar.Server
         /// <returns></returns>
         public async UniTask SetState(GameSessionState state)
         {
-            this.GameState = state;
-            await GameRedis.SetGameState(state);
+            if (this.gameSessionInfo.state != state)
+            {
+                await GameRedis.SetGameState(GameCode,state);
+            }
+            this.gameSessionInfo.state = state;
         }
 
         /// <summary>
@@ -234,7 +270,7 @@ namespace ResourceWar.Server
             // Redis에 플레이어 정보 저장
             // AratarI는 어딘가에서 가져와야하는데 아직 모름
             await PlayerRedis.AddPlayerInfo(
-                gameToken: GameToken,
+                gameToken: GameCode,
                 clientId: clientId,
                 userName: userName,
                 isReady: false, // Default values
@@ -253,7 +289,7 @@ namespace ResourceWar.Server
         /// </summary>
         public async UniTask NotifyRoomState()
         {
-            var players = await PlayerRedis.GetAllPlayersInfo(GameToken);
+            var players = await PlayerRedis.GetAllPlayersInfo(GameCode);
 
             var syncRoomNoti = new S2CSyncRoomNoti
             {
