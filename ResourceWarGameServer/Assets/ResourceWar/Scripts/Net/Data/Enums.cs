@@ -27,4 +27,11 @@ namespace ResourceWar.Server
         GARBAGE = 5,
     }
 
+    public enum TeamChangeResultCode : uint
+    {
+        SUCCESS = 0,
+        NONE_CHANGE = 1,
+        FAIL = 2,
+    }
+
 }

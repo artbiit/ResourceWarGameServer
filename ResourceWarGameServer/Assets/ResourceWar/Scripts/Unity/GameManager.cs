@@ -34,7 +34,8 @@ namespace ResourceWar.Server
             AddNewPlayer = 3,
             ClientRemove = 4,
             QuitLobby = 5,
-            PlayerSync = 5,
+            PlayerSync = 6,
+            TeamChange = 7,
         }
 
         // 현재 게임 상태를 저장
@@ -104,6 +105,7 @@ namespace ResourceWar.Server
             receivedDispatcher.Subscribe(GameManagerEvent.QuitLobby, QuitLobby);
              receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerSync, PlayerSync);
+            receivedDispatcher.Subscribe(GameManagerEvent.TeamChange, TeamChange);
             
             //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
@@ -267,6 +269,52 @@ namespace ResourceWar.Server
             return false;
         }
 
+        private bool TryGetChangeTeamForPlayer(string token, int changeTeamIndex)
+        {
+            if (changeTeamIndex < 0 || changeTeamIndex >= teams.Length)
+            {
+                Logger.LogError($"Invalid team index: {changeTeamIndex}");
+                return false;
+            }
+
+            var player = FindPlayer(token);
+            if (player == null)
+            {
+                Logger.LogError($"Player with token {token} not found");
+                return false;
+            }
+
+            var currentTeamIndex = GetPlayerTeamIndex(player.ClientId);
+            if (currentTeamIndex == null)
+            {
+                Logger.LogError($"Player {player.ClientId} is not assigned to any team.");
+                return false;
+            }
+
+            if (MovePlayerBetweeonTeams(token, currentTeamIndex.Value, changeTeamIndex))
+            {
+                Logger.Log($"Player {player.ClientId} successfully moved from team {currentTeamIndex} to team {changeTeamIndex}.");
+                return true;
+            }
+
+            Logger.LogError($"Failed to move player {player.ClientId} to team {changeTeamIndex}.");
+            return false;
+        }
+
+        /// <summary>
+        /// 플레이어를 팀 간 이동시키는 메서드
+        /// </summary>
+        private bool MovePlayerBetweeonTeams(string token, int fromTeamIndex, int toTeamIndex)
+        {
+            if (teams[fromTeamIndex].Players.TryGetValue(token, out var player))
+            {
+                teams[fromTeamIndex].Players.Remove(token);
+                teams[toTeamIndex].Players.Add(token, player);
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// TeamIndex, UserToken, Player 매개 변수로 순환함
         /// </summary>
@@ -342,6 +390,29 @@ namespace ResourceWar.Server
             player.Nickname = nickName;
 
             // Notify all players in the same lobby
+            await NotifyRoomState();
+        }
+
+        public async UniTask TeamChange(ReceivedPacket receivedPacket)
+        {
+            var teamChangeMessage = (C2STeamChangeReq)receivedPacket.Payload;
+            if (teamChangeMessage == null)
+            {
+                Logger.LogError("Invalid TeamChange message payload.");
+                return;
+            }
+
+            var token = receivedPacket.Token;
+            var requestTeamIndexMessage = (int)teamChangeMessage.TeamIndex;
+
+            if (!TryGetChangeTeamForPlayer(token, requestTeamIndexMessage))
+            {
+                Logger.LogError($"Failed to change team for player with token {token} to team {requestTeamIndexMessage}.");
+                return;
+            }
+
+            // 팀 변경 후 방 상태 알림
+            Logger.Log($"Player {token} successfully changed to team {requestTeamIndexMessage}.");
             await NotifyRoomState();
         }
 
