@@ -21,6 +21,8 @@ namespace ResourceWar.Server
             //로비 관련
             Handlers.Add(PacketType.QUIT_ROOM_REQUEST, this.QuitRoomHandler);
             Handlers.Add(PacketType.JOIN_ROOM_REQUEST, this.PlayerJoinRoom);
+            Handlers.Add(PacketType.TEAM_CHANGE_REQUEST, this.TeamChangeHandler);
+            Handlers.Add(PacketType.GAME_START_REQUEST, this.GameStartHandler);
         }
 
 
