@@ -56,6 +56,7 @@ namespace ResourceWar.Server
         // 팀 변경
         TEAM_CHANGE_REQUEST = 22,
         TEAM_CHANGE_NOTIFICATION = 23,
+        TEAM_CHANGE_RESPONSE = 64,
 
         // 대기실 동기화 및 게임 시작
         SYNC_ROOM_NOTIFICATION = 24,
