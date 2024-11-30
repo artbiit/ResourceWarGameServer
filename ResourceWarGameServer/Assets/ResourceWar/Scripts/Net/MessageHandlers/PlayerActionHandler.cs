@@ -14,13 +14,21 @@ namespace ResourceWar.Server
         {
             Logger.Log($"패킷 토큰은 : {packet.Token},클라아이디는 : {packet.ClientId}");
             // "ActionType", "TargetObjectId", "Success"
+            // 정확한 액션타입이 나오지 않아서 일단 9999이면 실패인 것으로 처리함
+            uint PlayerActionType = 9999;
+            uint PlayerTargetObjectId = 1000;
+            if (packet.Payload is C2SPlayerActionReq playerAction)
+            {
+                PlayerActionType = playerAction.ActionType;
+                PlayerTargetObjectId = playerAction.TargetObjectId;
+            }
             var actionpacket = new Packet
             {
                 PacketType = PacketType.PLAYER_ACTION_RESPONSE,
                 Payload = new Protocol.S2CPlayerActionRes
                 {
-                    ActionType = 1,
-                    TargetObjectId = 1,
+                    ActionType = PlayerActionType,
+                    TargetObjectId = PlayerTargetObjectId,
                     Success = true,
                 }
 
