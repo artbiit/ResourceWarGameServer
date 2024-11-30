@@ -13,8 +13,8 @@ namespace ResourceWar.Server
         private async UniTask<Packet> PlayerActionHandler(ReceivedPacket packet)
         {
             Logger.Log($"패킷 토큰은 : {packet.Token},클라아이디는 : {packet.ClientId}");
-            // "ActionType", "TargetObjectId", "Success"
             // 정확한 액션타입이 나오지 않아서 일단 9999이면 실패인 것으로 처리함
+            // 타겟 오브젝트도 빈 손인 경우가 없어서 일단 1000으로 함
             uint PlayerActionType = 9999;
             uint PlayerTargetObjectId = 1000;
             if (packet.Payload is C2SPlayerActionReq playerAction)
@@ -22,7 +22,11 @@ namespace ResourceWar.Server
                 PlayerActionType = playerAction.ActionType;
                 PlayerTargetObjectId = playerAction.TargetObjectId;
             }
-            var actionpacket = new Packet
+            // 행동이 성공인지 실패인지를 가려야 하는데 이건 좀 생각해봐야 할 듯
+            // 해당 오브젝트가플레이어가 상호작용할 수 있는 거리 내에 있나?
+            // 그럼 저게 true로 반환되면 플레이어가 들고 있는 아이템이 바뀌어야한다.
+            // 먄약 용광로나 제제소같은데에 넣으면 아이템이 없어져야 하고
+            var actionPacket = new Packet
             {
                 PacketType = PacketType.PLAYER_ACTION_RESPONSE,
                 Payload = new Protocol.S2CPlayerActionRes
@@ -34,7 +38,7 @@ namespace ResourceWar.Server
 
             };
             await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.PlayerSync, packet);
-            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForUser, actionpacket);
+            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForUser, actionPacket);
             return null;
         }
     }

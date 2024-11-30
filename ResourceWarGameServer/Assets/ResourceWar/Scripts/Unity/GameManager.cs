@@ -7,6 +7,7 @@ using Logger = ResourceWar.Server.Lib.Logger;
 using System.Linq;
 using Protocol;
 using Google.Protobuf.Collections;
+using UnityEngine.UIElements;
 
 namespace ResourceWar.Server
 {
@@ -114,12 +115,27 @@ namespace ResourceWar.Server
 
         public async UniTask PlayerSync(ReceivedPacket receivedPacket)
         {
-            Protocol.Position position = new();
+            // 싱크 패킷이 플레이어 무브일 때
             if (receivedPacket.Payload is C2SPlayerMove playerMove)
             {
-                position = playerMove.Position;
+                Protocol.Position position = playerMove.Position;
+                await PlayerSyncNotify((uint)receivedPacket.ClientId, (byte)PlayerActionType.MOVE, position.ToVector3(), 1000, receivedPacket.Token);
             }
-            await PlayerSyncNotify((uint)receivedPacket.ClientId, 1, position.ToVector3(), 1, receivedPacket.Token);
+            // 싱크 패킷이 플레이어 액션일 때
+            else if (receivedPacket.Payload is S2CPlayerActionRes playerAction)
+            {
+                //액션타입이 플레이어액션에서는 uint이고 플레이어싱크에서는 바이트임 수정할 필요 있어보임
+                uint playerActionType = playerAction.ActionType;
+                Vector3 position = FindPlayer(receivedPacket.Token).position;
+                uint playerEquippedItem = (uint)PlayerEquippedItem.NONE;
+                if (playerAction.Success)
+                {
+                    playerEquippedItem = playerAction.TargetObjectId;
+                }
+                //일단 오류 꼴 뵈기 싫어서 바이트로 형변환은 하지만 무조건 수정해야할거같음
+                await PlayerSyncNotify((uint)receivedPacket.ClientId, (byte)playerActionType, position, playerEquippedItem, receivedPacket.Token);
+            }
+            
             return;
         }
 
@@ -131,7 +147,7 @@ namespace ResourceWar.Server
                 PlayerId = ClientId,
                 ActionType = ActionType,
                 Position = Correction(position, token),
-                EquippedItem = EquippedItem
+                EquippedItem = EquippedItem,
             };
 
             var packet = new Packet
@@ -151,8 +167,8 @@ namespace ResourceWar.Server
 
         public Protocol.Position Correction(Vector3 position, string token)
         {
-            //속도 검사하는 로직이 빠져있고
-            //이동 가능한 위치인지도 빠져있다.
+            // 속도 검사하는 로직이 빠져있고 이거는 대쉬 하면서 같이 만들 예정
+            // 이동 가능한 위치인지도 빠져있다.
             // 밑에 함수는 포지션만 전달에서 플레이어 안에서 처리를 한다
             FindPlayer(token).ChangePosition(position);
             return position.FromVector();
