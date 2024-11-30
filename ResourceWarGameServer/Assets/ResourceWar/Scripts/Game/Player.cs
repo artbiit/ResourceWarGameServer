@@ -52,6 +52,10 @@ namespace ResourceWar.Server
         {
             Vector3 positionDifference = this.position - position;
             float distance = positionDifference.magnitude;
+            if(distance > 20) // 거리가 너무 차이날 때 - 임시값으로 넣어둠
+            {
+
+            }
             Logger.Log($"이동 전 위치는 : {this.position}");
             this.position = Vector3.Lerp(position, this.position, Time.deltaTime * this.playerSpeed);
             Logger.Log($"이동 후 위치는 : {this.position}");

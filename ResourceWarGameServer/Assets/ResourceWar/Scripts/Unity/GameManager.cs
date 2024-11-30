@@ -115,6 +115,7 @@ namespace ResourceWar.Server
 
         public async UniTask PlayerSync(ReceivedPacket receivedPacket)
         {
+            // 페이로드 분기
             // 싱크 패킷이 플레이어 무브일 때
             if (receivedPacket.Payload is C2SPlayerMove playerMove)
             {
@@ -134,6 +135,10 @@ namespace ResourceWar.Server
                 }
                 //일단 오류 꼴 뵈기 싫어서 바이트로 형변환은 하지만 무조건 수정해야할거같음
                 await PlayerSyncNotify((uint)receivedPacket.ClientId, (byte)playerActionType, position, playerEquippedItem, receivedPacket.Token);
+            }
+            else
+            {
+                //아마 여기다 missing 뭐 이런거 보내주면 될 듯
             }
             
             return;
