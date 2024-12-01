@@ -20,7 +20,7 @@ namespace ResourceWar.Server
             };
 
             var resultCode = TeamChangeResultCode.SUCCESS;
-            C2STeamChangeReq teamChangeMessage = packet.Payload as C2STeamChangeReq;
+            C2STeamChangeReq teamChangeMessage = (C2STeamChangeReq)packet.Payload;
 
             // 패킷 검증
             if (string.IsNullOrWhiteSpace(packet.Token))
