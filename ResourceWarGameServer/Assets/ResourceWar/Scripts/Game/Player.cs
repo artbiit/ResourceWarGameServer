@@ -50,15 +50,14 @@ namespace ResourceWar.Server
         }
         public Vector3 ChangePosition(Vector3 position)
         {
-            Vector3 positionDifference = this.position - position;
-            float distance = positionDifference.magnitude;
-            if(distance > 20) // 거리가 너무 차이날 때 - 임시값으로 넣어둠
+            float distance = position.magnitude;
+            if(distance > 100) // 거리가 너무 차이날 때 - 임시값으로 넣어둠
             {
-
+                this.position = position;
             }
-            Logger.Log($"이동 전 위치는 : {this.position}");
-            this.position = Vector3.Lerp(position, this.position, Time.deltaTime * this.playerSpeed);
-            Logger.Log($"이동 후 위치는 : {this.position}");
+            Logger.Log($"플레이어{this.Nickname}의 이동 전 위치는 : {this.position}");
+            this.position = Vector3.Lerp(this.position, this.position + position, this.playerSpeed);
+            Logger.Log($"플레이어{this.Nickname}의 이동 후 위치는 : {this.position}");
             return this.position;
         }
 
