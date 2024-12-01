@@ -22,8 +22,7 @@ namespace ResourceWar.Server
 
         private async UniTask Init()
         {
-            string gameCode = NanoidDotNet.Nanoid.Generate(size: 11);
-            GameManager.GameCode = gameCode;
+            string gameCode = GameManager.GenerateGameCode();
             Logger.Log("-------------Initializer-------------");
             await GameRedis.SetGameState(gameCode,GameSessionState.CREATING);
             Logger.Log("Start DataLayer");

@@ -30,7 +30,7 @@ namespace ResourceWar.Server
 
         public GameSessionState GameState;
         // 게임의 고유 토큰 (서버가 게임 세션을 식별하기 위해 사용)
-        public static string GameCode;
+        public static string GameCode {get; private set;}
         // 이벤트 구독 여부를 확인하는 플래그
         private bool subscribed = false;
 
@@ -86,13 +86,19 @@ namespace ResourceWar.Server
                     teams[i] = new Team();
                 }
             }
+            GenerateGameCode();
             await GameRedis.AddGameSessionInfo(GameCode, gameSessionInfo);
             
             Subscribes();
             await SetState(GameSessionState.LOBBY);
         }
 
-        
+        public static string GenerateGameCode()
+        {
+            GameCode = NanoidDotNet.Nanoid.Generate(size: 11);
+            return GameCode;
+        }
+
         /// <summary>
         /// 게임 상태 변경 및 Redis 서버에 상태 저장
         /// </summary>
