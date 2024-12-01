@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Protocol;
 using ResourceWar.Server.Lib;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace ResourceWar.Server
             {
                 PacketType = PacketType.GAME_START_RESPONSE
             };
+
+            var resultCode = GameStartResultCode.SUCCESS;
 
             
 
