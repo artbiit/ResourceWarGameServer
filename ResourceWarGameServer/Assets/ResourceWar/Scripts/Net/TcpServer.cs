@@ -54,7 +54,7 @@ namespace ResourceWar.Server
             {
    
                 TcpClient client = await tcpListener.AcceptTcpClientAsync();  // 새 클라이언트 연결 대기
-                int clientId = Interlocked.Increment(ref clientIdCounter); // 고유 클라이언트 ID 생성
+                int clientId = clientIdCounter++; // 고유 클라이언트 ID 생성
                 // 클라이언트 처리 핸들러 생성
                 Logger.Log($"New Client : {clientId}");
                 var clientHandler = new ClientHandler(clientId, client, this.RemoveClient);
