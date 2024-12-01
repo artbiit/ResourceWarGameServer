@@ -440,6 +440,11 @@ namespace ResourceWar.Server
             await NotifyRoomState();
         }
 
+        public async UniTask GameStart(ReceivedPacket receivedPacket)
+        {
+
+        }
+
         /// <summary>
         /// 방나가기 요청이 들어왔을 때 실행되는 알림
         /// </summary>

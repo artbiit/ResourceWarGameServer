@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using GluonGui.Dialog;
 using Protocol;
 using ResourceWar.Server.Lib;
 using System;
@@ -12,36 +11,36 @@ namespace ResourceWar.Server
 {
     public partial class MessageHandlers : Singleton<MessageHandlers>
     {
-        private async UniTask<Packet> TeamChangeHandler(ReceivedPacket packet)
+        private async UniTask<Packet> PlayerIsReadyChangeHandler(ReceivedPacket packet)
         {
             var result = new Packet
             {
-                PacketType = PacketType.TEAM_CHANGE_RESPONSE
+                PacketType = PacketType.PLAYER_IS_READY_CHANGE_RESPONSE
             };
 
-            var resultCode = TeamChangeResultCode.SUCCESS;
-            C2STeamChangeReq teamChangeMessage = null;
+            var resultCode = PlayerIsReadyChangeResultCode.SUCCESS;
+            C2SPlayerIsReadyChangeReq playerIsReadyChangeMessage = null;
 
             // 패킷 검증
             if (string.IsNullOrWhiteSpace(packet.Token))
             {
                 Logger.LogError("TeamChangeHandler: Token is null or empty.");
-                resultCode = TeamChangeResultCode.FAIL;
+                resultCode = PlayerIsReadyChangeResultCode.FAIL;
             }
-
+            
             // Payload 검증
-            if (packet.Payload is C2STeamChangeReq payload)
+            if (packet.Payload is C2SPlayerIsReadyChangeReq payload)
             {
-                teamChangeMessage = payload;
+                playerIsReadyChangeMessage = payload;
             }
 
-            // teamIndex 기본값 설정
-            var teamIndex = 0; // Default to 0
-            if (resultCode == TeamChangeResultCode.SUCCESS)
+            // isReady 기본값 설정
+            var isReady = 0; // Default to 0
+            if (resultCode == PlayerIsReadyChangeResultCode.SUCCESS)
             {
-                teamIndex = (teamChangeMessage.TeamIndex == 0) ? (int)teamChangeMessage.TeamIndex : 0;
-                teamChangeMessage.TeamIndex = (uint)teamIndex;
-                Logger.Log($"TeamChangeHandler: Received teamIndex is {teamIndex}. Defaulting to 0 if not set.");
+                isReady = playerIsReadyChangeMessage.Ready ? 1 : 0;
+                playerIsReadyChangeMessage.Ready = isReady == 1; // Ready 값을 업데이트
+                Logger.Log($"PlayerIsReadyChangeHandler: Updated isReady to {isReady}.");
             }
 
             // 새로운 ReceivedPacket 생성
@@ -49,23 +48,21 @@ namespace ResourceWar.Server
             {
                 PacketType = packet.PacketType,
                 Token = packet.Token,
-                Payload = teamChangeMessage
+                Payload = playerIsReadyChangeMessage
             };
 
-            if (resultCode == TeamChangeResultCode.SUCCESS)
+            if (resultCode == PlayerIsReadyChangeResultCode.SUCCESS)
             {
-                // 팀 변경 처리
                 await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.TeamChange, updatedPacket);
             }
 
             result.Token = "";
-            result.Payload = new S2CTeamChangeRes
+            result.Payload = new S2CPlayerIsReadyChangeRes
             {
-                TeamChangeResultCode = (uint)resultCode
+                PlayerIsReadyChangeResultCode = (uint)resultCode
             };
 
             return result;
         }
     }
-    
 }

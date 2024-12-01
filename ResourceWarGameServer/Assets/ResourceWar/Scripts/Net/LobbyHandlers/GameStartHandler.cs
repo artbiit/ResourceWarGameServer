@@ -13,12 +13,6 @@ namespace ResourceWar.Server
     {
         private async UniTask<Packet> GameStartHandler(ReceivedPacket packet)
         {
-            var result = new Packet
-            {
-                PacketType = PacketType.GAME_START_RESPONSE
-            };
-
-            var resultCode = GameStartResultCode.SUCCESS;
 
             
 

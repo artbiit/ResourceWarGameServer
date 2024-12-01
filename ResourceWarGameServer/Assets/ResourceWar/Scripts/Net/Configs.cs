@@ -59,7 +59,7 @@ namespace ResourceWar.Server
         TEAM_CHANGE_RESPONSE = 64,
 
         // 대기실 준비 완료
-        PLAYER_IS_READY_CHAGNE_REQUEST = 64,
+        PLAYER_IS_READY_CHANGE_REQUEST = 64,
         PLAYER_IS_READY_CHANGE_RESPONSE = 65,
 
         // 대기실 동기화 및 게임 시작

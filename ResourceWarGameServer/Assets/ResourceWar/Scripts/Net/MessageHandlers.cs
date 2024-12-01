@@ -23,6 +23,7 @@ namespace ResourceWar.Server
             Handlers.Add(PacketType.JOIN_ROOM_REQUEST, this.PlayerJoinRoom);
             Handlers.Add(PacketType.TEAM_CHANGE_REQUEST, this.TeamChangeHandler);
             Handlers.Add(PacketType.GAME_START_REQUEST, this.GameStartHandler);
+            Handlers.Add(PacketType.PLAYER_IS_READY_CHANGE_REQUEST, this.PlayerIsReadyChangeHandler);
         }
 
 

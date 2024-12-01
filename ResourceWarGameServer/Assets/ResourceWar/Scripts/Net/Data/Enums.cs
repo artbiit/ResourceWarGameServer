@@ -40,4 +40,10 @@ namespace ResourceWar.Server
         FAIL = 2,
     }
 
+    public enum PlayerIsReadyChangeResultCode : uint
+    {
+        SUCCESS = 0,
+        FAIL = 1,
+    }
+
 }
