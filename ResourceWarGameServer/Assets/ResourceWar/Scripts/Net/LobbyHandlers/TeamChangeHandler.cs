@@ -34,24 +34,28 @@ namespace ResourceWar.Server
             {
                 teamChangeMessage = payload;
             }
-            else
-            {
-                Logger.LogError("TeamChangeHandler: Invalid or missing Payload.");
-                resultCode = TeamChangeResultCode.FAIL;
-            }
 
             // teamIndex 기본값 설정
             var teamIndex = 0; // Default to 0
             if (resultCode == TeamChangeResultCode.SUCCESS)
             {
-                teamIndex = (int)(teamChangeMessage?.TeamIndex ?? 0);
+                teamIndex = (teamChangeMessage.TeamIndex == 0) ? (int)teamChangeMessage.TeamIndex : 0;
+                teamChangeMessage.TeamIndex = (uint)teamIndex;
                 Logger.Log($"TeamChangeHandler: Received teamIndex is {teamIndex}. Defaulting to 0 if not set.");
             }
+
+            // 새로운 ReceivedPacket 생성
+            var updatedPacket = new ReceivedPacket(packet.ClientId)
+            {
+                PacketType = packet.PacketType,
+                Token = packet.Token,
+                Payload = teamChangeMessage
+            };
 
             if (resultCode == TeamChangeResultCode.SUCCESS)
             {
                 // 팀 변경 처리
-                await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.TeamChange, packet);
+                await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.TeamChange, updatedPacket);
             }
 
             result.Token = "";

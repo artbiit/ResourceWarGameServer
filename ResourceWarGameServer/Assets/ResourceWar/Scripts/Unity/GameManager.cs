@@ -36,6 +36,8 @@ namespace ResourceWar.Server
             QuitLobby = 5,
             PlayerSync = 6,
             TeamChange = 7,
+            PlayerIsReadyChanger =8,
+
         }
 
         // 현재 게임 상태를 저장
@@ -103,9 +105,10 @@ namespace ResourceWar.Server
             var receivedDispatcher = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
             receivedDispatcher.Subscribe(GameManagerEvent.QuitLobby, QuitLobby);
-             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
+            receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerSync, PlayerSync);
             receivedDispatcher.Subscribe(GameManagerEvent.TeamChange, TeamChange);
+            receivedDispatcher.Subscribe(GameManagerEvent.PlayerIsReadyChanger, PlayerReadyStateChanger);
             
             //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
@@ -393,6 +396,7 @@ namespace ResourceWar.Server
             await NotifyRoomState();
         }
 
+        // Handler에서 호출하는 팀 변경
         public async UniTask TeamChange(ReceivedPacket receivedPacket)
         {
             var teamChangeMessage = (C2STeamChangeReq)receivedPacket.Payload;
@@ -414,6 +418,31 @@ namespace ResourceWar.Server
             // 팀 변경 후 방 상태 알림
             Logger.Log($"Player {token} successfully changed to team {requestTeamIndexMessage}.");
             await NotifyRoomState();
+        }
+
+        // 해당 token 또는 clientId로 Player를 찾고 그 플레이어의 isReady 상태를 바꿔주기.
+        public async UniTask PlayerReadyStateChanger(ReceivedPacket receivedPacket)
+        {
+            var token = receivedPacket.Token;
+            var clientId = receivedPacket.ClientId;
+
+            Player player = null;
+            if (!TryGetPlayer(clientId, out player))
+            {
+                Logger.LogError($"Player with clinetId {clientId} not found");
+                return;
+            }
+
+            // isReady 상태 반전
+            player.IsReady = !player.IsReady;
+            Logger.Log($"Player[{player.ClientId}] Ready State Change to: {player.IsReady}");
+
+            await NotifyRoomState();
+        }
+
+        public async UniTask GameStart(ReceivedPacket receivedPacket)
+        {
+
         }
 
         /// <summary>
