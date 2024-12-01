@@ -37,6 +37,7 @@ namespace ResourceWar.Server
             PlayerSync = 6,
             TeamChange = 7,
             PlayerIsReadyChanger =8,
+            GameStart = 9,
 
         }
 
@@ -109,7 +110,8 @@ namespace ResourceWar.Server
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerSync, PlayerSync);
             receivedDispatcher.Subscribe(GameManagerEvent.TeamChange, TeamChange);
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerIsReadyChanger, PlayerReadyStateChanger);
-            
+            receivedDispatcher.Subscribe(GameManagerEvent.GameStart, GameStart);
+
             //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
             innerDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
@@ -198,7 +200,6 @@ namespace ResourceWar.Server
             {
                 // 해당 GameSession파괴
             }
-            Logger.Log("여기인가요? 4번");
             await NotifyRoomState();
         }
 
@@ -440,11 +441,6 @@ namespace ResourceWar.Server
             await NotifyRoomState();
         }
 
-        public async UniTask GameStart(ReceivedPacket receivedPacket)
-        {
-
-        }
-
         /// <summary>
         /// 방나가기 요청이 들어왔을 때 실행되는 알림
         /// </summary>
@@ -473,6 +469,34 @@ namespace ResourceWar.Server
 
             // 방에서 제거하는 코드
             await ClientRemove(clientId);
+        }
+
+        /// <summary>
+        /// 게임 시작
+        /// </summary>
+        /// <param name="receivedPacket"></param>
+        /// <returns></returns>
+        public async UniTask GameStart(ReceivedPacket receivedPacket)
+        {
+            S2CGameStartNoti s2CGameStartNoti = new S2CGameStartNoti();
+
+            bool isAllReady = true;
+
+            LoopAllPlayers((teamIndex, token, player) =>
+            {
+                // 논리 게이트 하나라도 true가 아니면 false
+                isAllReady &= player.IsReady;
+            });
+
+            var packet = new Packet
+            {
+                PacketType = PacketType.GAME_START_NOTI,
+                Token = "",
+                Payload = s2CGameStartNoti
+            };
+
+            Logger.Log($"GameStart");
+            await SendPacketForAll(packet);
         }
 
         /// <summary>

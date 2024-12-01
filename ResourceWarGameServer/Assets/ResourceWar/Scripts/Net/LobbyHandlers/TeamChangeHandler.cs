@@ -20,19 +20,13 @@ namespace ResourceWar.Server
             };
 
             var resultCode = TeamChangeResultCode.SUCCESS;
-            C2STeamChangeReq teamChangeMessage = null;
+            C2STeamChangeReq teamChangeMessage = packet.Payload as C2STeamChangeReq;
 
             // 패킷 검증
             if (string.IsNullOrWhiteSpace(packet.Token))
             {
                 Logger.LogError("TeamChangeHandler: Token is null or empty.");
                 resultCode = TeamChangeResultCode.FAIL;
-            }
-
-            // Payload 검증
-            if (packet.Payload is C2STeamChangeReq payload)
-            {
-                teamChangeMessage = payload;
             }
 
             // teamIndex 기본값 설정
