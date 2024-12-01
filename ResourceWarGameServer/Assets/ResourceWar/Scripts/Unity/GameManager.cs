@@ -119,22 +119,22 @@ namespace ResourceWar.Server
             // 싱크 패킷이 플레이어 무브일 때
             if (receivedPacket.Payload is C2SPlayerMove playerMove)
             {
-                Protocol.Position position = playerMove.Position;
-                await PlayerSyncNotify((uint)receivedPacket.ClientId, (byte)PlayerActionType.MOVE, position.ToVector3(), 1000, receivedPacket.Token);
+                Protocol.Position direction = playerMove.Position;
+                await PlayerSyncNotify((uint)receivedPacket.ClientId, (byte)PlayerActionType.MOVE, direction.ToVector3(), 1000, receivedPacket.Token);
             }
             // 싱크 패킷이 플레이어 액션일 때
             else if (receivedPacket.Payload is S2CPlayerActionRes playerAction)
             {
                 //액션타입이 플레이어액션에서는 uint이고 플레이어싱크에서는 바이트임 수정할 필요 있어보임
                 uint playerActionType = playerAction.ActionType;
-                Vector3 position = FindPlayer(receivedPacket.Token).position;
+                Vector3 direction = FindPlayer(receivedPacket.Token).position;
                 uint playerEquippedItem = (uint)PlayerEquippedItem.NONE;
                 if (playerAction.Success)
                 {
                     playerEquippedItem = playerAction.TargetObjectId;
                 }
                 //일단 오류 꼴 뵈기 싫어서 바이트로 형변환은 하지만 무조건 수정해야할거같음
-                await PlayerSyncNotify((uint)receivedPacket.ClientId, (byte)playerActionType, position, playerEquippedItem, receivedPacket.Token);
+                await PlayerSyncNotify((uint)receivedPacket.ClientId, (byte)playerActionType, direction, playerEquippedItem, receivedPacket.Token);
             }
             else
             {
