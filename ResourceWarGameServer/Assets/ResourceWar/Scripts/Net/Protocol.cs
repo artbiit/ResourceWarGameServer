@@ -105,14 +105,14 @@ namespace Protocol {
             "ZXJzGAEgAygLMhgucHJvdG9jb2wuUGxheWVyUm9vbUluZm8iKgoZQzJTUGxh",
             "eWVySXNSZWFkeUNoYW5nZVJlcRINCgVyZWFkeRgBIAEoCCJCChlTMkNQbGF5",
             "ZXJJc1JlYWR5Q2hhbmdlUmVzEiUKHXBsYXllcklzUmVhZHlDaGFuZ2VSZXN1",
-            "bHRDb2RlGAEgASgNIiAKD0MyU0dhbWVTdGFydFJlcRINCgVyZWFkeRgBIAEo",
-            "CCISChBTMkNHYW1lU3RhcnROb3RpIicKE0MyU0xvYWRQcm9ncmVzc05vdGkS",
-            "EAoIcHJvZ3Jlc3MYASABKA0igwEKD1MyQ1N5bmNMb2FkTm90aRI8CgxzeW5j",
-            "TG9hZERhdGEYASADKAsyJi5wcm90b2NvbC5TMkNTeW5jTG9hZE5vdGkuU3lu",
-            "Y0xvYWREYXRhGjIKDFN5bmNMb2FkRGF0YRIQCghwbGF5ZXJJZBgBIAEoDRIQ",
-            "Cghwcm9ncmVzcxgCIAEoDSJFChNTMkNNaXNzaW5nRmllbGROb3RpEhIKCnBh",
-            "Y2tldFR5cGUYASABKAUSGgoSbWlzc2luZ0ZpZWxkTGVuZ3RoGAIgASgFIhYK",
-            "FFMyQ05lZWRBdXRob3JpemVOb3RpYgZwcm90bzM="));
+            "bHRDb2RlGAEgASgNIhEKD0MyU0dhbWVTdGFydFJlcSISChBTMkNHYW1lU3Rh",
+            "cnROb3RpIicKE0MyU0xvYWRQcm9ncmVzc05vdGkSEAoIcHJvZ3Jlc3MYASAB",
+            "KA0igwEKD1MyQ1N5bmNMb2FkTm90aRI8CgxzeW5jTG9hZERhdGEYASADKAsy",
+            "Ji5wcm90b2NvbC5TMkNTeW5jTG9hZE5vdGkuU3luY0xvYWREYXRhGjIKDFN5",
+            "bmNMb2FkRGF0YRIQCghwbGF5ZXJJZBgBIAEoDRIQCghwcm9ncmVzcxgCIAEo",
+            "DSJFChNTMkNNaXNzaW5nRmllbGROb3RpEhIKCnBhY2tldFR5cGUYASABKAUS",
+            "GgoSbWlzc2luZ0ZpZWxkTGVuZ3RoGAIgASgFIhYKFFMyQ05lZWRBdXRob3Jp",
+            "emVOb3RpYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -175,7 +175,7 @@ namespace Protocol {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSyncRoomNoti), global::Protocol.S2CSyncRoomNoti.Parser, new[]{ "Players" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SPlayerIsReadyChangeReq), global::Protocol.C2SPlayerIsReadyChangeReq.Parser, new[]{ "Ready" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CPlayerIsReadyChangeRes), global::Protocol.S2CPlayerIsReadyChangeRes.Parser, new[]{ "PlayerIsReadyChangeResultCode" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SGameStartReq), global::Protocol.C2SGameStartReq.Parser, new[]{ "Ready" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SGameStartReq), global::Protocol.C2SGameStartReq.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CGameStartNoti), global::Protocol.S2CGameStartNoti.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SLoadProgressNoti), global::Protocol.C2SLoadProgressNoti.Parser, new[]{ "Progress" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSyncLoadNoti), global::Protocol.S2CSyncLoadNoti.Parser, new[]{ "SyncLoadData" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSyncLoadNoti.Types.SyncLoadData), global::Protocol.S2CSyncLoadNoti.Types.SyncLoadData.Parser, new[]{ "PlayerId", "Progress" }, null, null, null, null)}),
@@ -9465,24 +9465,12 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public C2SGameStartReq(C2SGameStartReq other) : this() {
-      ready_ = other.ready_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public C2SGameStartReq Clone() {
       return new C2SGameStartReq(this);
-    }
-
-    /// <summary>Field number for the "ready" field.</summary>
-    public const int ReadyFieldNumber = 1;
-    private bool ready_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Ready {
-      get { return ready_; }
-      set {
-        ready_ = value;
-      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -9498,14 +9486,12 @@ namespace Protocol {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Ready != other.Ready) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Ready != false) hash ^= Ready.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -9519,10 +9505,6 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Ready != false) {
-        output.WriteRawTag(8);
-        output.WriteBool(Ready);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -9531,9 +9513,6 @@ namespace Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Ready != false) {
-        size += 1 + 1;
-      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -9544,9 +9523,6 @@ namespace Protocol {
     public void MergeFrom(C2SGameStartReq other) {
       if (other == null) {
         return;
-      }
-      if (other.Ready != false) {
-        Ready = other.Ready;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -9559,10 +9535,6 @@ namespace Protocol {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            Ready = input.ReadBool();
-            break;
-          }
         }
       }
     }
