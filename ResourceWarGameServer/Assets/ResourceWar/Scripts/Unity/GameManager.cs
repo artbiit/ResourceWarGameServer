@@ -86,6 +86,7 @@ namespace ResourceWar.Server
                 {
                     team.Reset();
                 }
+                GenerateGameCode();
             }
             else
             {
@@ -95,9 +96,8 @@ namespace ResourceWar.Server
                     teams[i] = new Team();
                 }
             }
-            GenerateGameCode();
+
             await GameRedis.AddGameSessionInfo(GameCode, gameSessionInfo);
-            
             Subscribes();
             await SetState(GameSessionState.LOBBY);
         }
