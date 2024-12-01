@@ -22,6 +22,7 @@ namespace ResourceWar.Server
             Handlers.Add(PacketType.JOIN_ROOM_REQUEST, this.PlayerJoinRoom);
             //플레이어 행동 관련
             Handlers.Add(PacketType.PLAYER_MOVE, this.PlayerMove);
+            Handlers.Add(PacketType.MOVE_TO_AREA_MAP_REQUEST, this.PlayerMoveAreaHandler);
             Handlers.Add(PacketType.PLAYER_ACTION_REQUEST, this.PlayerActionHandler);
         }
 
