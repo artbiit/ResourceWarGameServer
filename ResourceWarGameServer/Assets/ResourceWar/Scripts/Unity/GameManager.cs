@@ -158,6 +158,7 @@ namespace ResourceWar.Server
             innerDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
         }
 
+        #region 플레이어 상태 동기화
         public async UniTask PlayerSync(ReceivedPacket receivedPacket)
         {
             Protocol.Position position = new();
@@ -194,6 +195,7 @@ namespace ResourceWar.Server
             SendPacketForAll(packet);
             return UniTask.CompletedTask;
         }
+        #endregion
 
         public Protocol.Position Correction(Vector3 position, string token)
         {
@@ -243,6 +245,70 @@ namespace ResourceWar.Server
             }
             await NotifyRoomState();
         }
+        #region Find Player Or Team
+        /// <summary>
+        /// TeamIndex, UserToken, Player 매개 변수로 순환함
+        /// </summary>
+        /// <param name="action"></param>
+        public void LoopAllPlayers(System.Action<int, string, Player> action)
+        {
+
+            for (int i = 0; i < teams.Length; i++)
+            {
+                var team = teams[i];
+                foreach (var playerPair in team.Players)
+                {
+                    action?.Invoke(i, playerPair.Key, playerPair.Value);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// 플레이어 검색
+        /// </summary>
+        /// <param name="token">플레이어의 고유 토큰</param>
+        /// <returns>찾은 플레이어 객체 or Null</returns>
+        public Player FindPlayer(string token)
+        {
+            foreach (var team in teams)
+            {
+                if (team.Players.TryGetValue(token, out Player player)) return player;
+            }
+            return null;
+        }
+
+        private bool TryGetPlayer(int clientId, out Player player)
+        {
+            foreach (var team in teams)
+            {
+                foreach (var teamPlayer in team.Players.Values)
+                {
+                    if (teamPlayer.ClientId == clientId)
+                    {
+                        player = teamPlayer;
+                        return true;
+                    }
+                }
+            }
+            player = null;
+            return false;
+        }
+
+        private bool TryGetPlayer(string token, out Player player)
+        {
+            foreach (var team in teams)
+            {
+                if (team.Players.ContainsKey(token))
+                {
+                    player = team.Players[token];
+                    return true;
+                }
+            }
+
+            player = null;
+            return false;
+        }
 
         /// <summary>
         /// Teams에 Player가 한명이라도 남아 있는지 체크
@@ -278,39 +344,6 @@ namespace ResourceWar.Server
             }
 
             team = null;
-            return false;
-        }
-
-
-        private bool TryGetPlayer(int clientId, out Player player)
-        {
-            foreach (var team in teams)
-            {
-                foreach (var teamPlayer in team.Players.Values)
-                {
-                    if (teamPlayer.ClientId == clientId)
-                    {
-                        player = teamPlayer;
-                        return true;
-                    }
-                }
-            }
-            player = null;
-            return false;
-        }
-
-        private bool TryGetPlayer(string token, out Player player)
-        {
-            foreach (var team in teams)
-            {
-                if (team.Players.ContainsKey(token))
-                {
-                    player = team.Players[token];
-                    return true;
-                }
-            }
-
-            player = null;
             return false;
         }
 
@@ -360,24 +393,6 @@ namespace ResourceWar.Server
             return false;
         }
 
-        /// <summary>
-        /// TeamIndex, UserToken, Player 매개 변수로 순환함
-        /// </summary>
-        /// <param name="action"></param>
-        public void LoopAllPlayers(System.Action<int, string, Player> action)
-        {
-
-            for (int i = 0; i < teams.Length; i++)
-            {
-                var team = teams[i];
-                foreach (var playerPair in team.Players)
-                {
-                    action?.Invoke(i, playerPair.Key, playerPair.Value);
-                }
-            }
-
-        }
-
         public int? GetPlayerTeamIndex(int clientId)
         {
 
@@ -396,6 +411,8 @@ namespace ResourceWar.Server
             Logger.LogWarning($"Player[{clientId}]를 찾을 수 없습니다.");
             return null;
         }
+
+        #endregion
 
         /// <summary>
         /// 새로운 플레이어 등록
@@ -573,20 +590,7 @@ namespace ResourceWar.Server
             await SendPacketForAll(packet);
         }
 
-        /// <summary>
-        /// 플레이어 검색
-        /// </summary>
-        /// <param name="token">플레이어의 고유 토큰</param>
-        /// <returns>찾은 플레이어 객체 or Null</returns>
-        public Player FindPlayer(string token)
-        {
-            foreach (var team in teams)
-            {
-                if (team.Players.TryGetValue(token, out Player player)) return player;
-            }
-            return null;
-        }
-
+        #region Send_Packet
         /// <summary>
         /// 게임 내 모든 유저에게 데이터를 보냅니다.
         /// </summary>
@@ -665,6 +669,7 @@ namespace ResourceWar.Server
             }
             return UniTask.CompletedTask;
         }
+        #endregion
 
         private async void OnDestroy()
         {
