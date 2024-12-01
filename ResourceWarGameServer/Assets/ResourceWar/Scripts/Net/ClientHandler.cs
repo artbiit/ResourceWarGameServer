@@ -186,7 +186,7 @@ namespace ResourceWar.Server
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error processing packet: {ex.Message}");
+                    Logger.LogError($"Error processing packet: {ex.Message}");  
                 }
             }
             await UniTask.NextFrame(PlayerLoopTiming.LastPreUpdate);

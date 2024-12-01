@@ -30,7 +30,7 @@ namespace ResourceWar.Server
             PlayerSync = 5,
         }
 
-        public GameSessionState GameState;
+        public GameSessionState GameState => gameSessionInfo.state;
         // 게임의 고유 토큰 (서버가 게임 세션을 식별하기 위해 사용)
         public static string GameCode {get; private set;}
         // 이벤트 구독 여부를 확인하는 플래그
@@ -117,8 +117,9 @@ namespace ResourceWar.Server
         /// <returns></returns>
         public async UniTask SetState(GameSessionState state)
         {
-            await GameRedis.SetGameState(GameCode,state);
             this.gameSessionInfo.state = state;
+            await GameRedis.SetGameState(GameCode,state);
+   
         }
 
         /// <summary>
@@ -141,9 +142,8 @@ namespace ResourceWar.Server
 
             // 플레이어 등록 관련이벤트 등록
             var receivedDispatcher = EventDispatcher<GameManagerEvent, ReceivedPacket>.Instance;
-            receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
             receivedDispatcher.Subscribe(GameManagerEvent.QuitLobby, QuitLobby);
-             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
+            receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerSync, PlayerSync);
             
             //

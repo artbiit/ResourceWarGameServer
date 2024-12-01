@@ -12,7 +12,7 @@ namespace ResourceWar.Server
             var result = new Packet();
             result.PacketType = PacketType.AUTHORIZE_RESPONSE;
             var resultCode = AuthorizeResultCode.SUCCESS;
-           
+          
             if (TcpServer.Instance.TryGetClient(packet.ClientId, out var clientHandler)){
                 if (clientHandler.IsAuthorized)
                 {
@@ -46,6 +46,12 @@ namespace ResourceWar.Server
                 }
             }
 
+#if UNITY_EDITOR
+            if(packet.Token.StartsWith("master"))
+            {
+                resultCode = AuthorizeResultCode.SUCCESS;
+            }
+#endif
             var payload = new S2CAuthorizeRes { AuthorizeResultCode = (uint)resultCode };;
             result.Payload = payload;
             result.Token = "";

@@ -126,7 +126,6 @@ namespace ResourceWar.Server
             {
                 previousPlayerCount = Interlocked.Decrement(ref previousPlayerCount);
             }
-            Logger.Log($"previousPlayerCount : {previousPlayerCount}");
             await  GameRedis.SetPreviousPlayerCount(GameManager.GameCode, previousPlayerCount);
         }
 
