@@ -53,7 +53,7 @@ namespace ResourceWar.Server
 
             if (resultCode == PlayerIsReadyChangeResultCode.SUCCESS)
             {
-                await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.TeamChange, updatedPacket);
+                await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.PlayerIsReadyChanger, updatedPacket);
             }
 
             result.Token = "";
