@@ -13,7 +13,7 @@ namespace ResourceWar.Server
         {
             C2SPongRes pong = (C2SPongRes)packet.Payload;
             if (pong.ClientTime <= 0)
-            {                
+            {
                 Logger.LogError($"Player[{packet.ClientId}] pong time is less than or same zero");
                 pong.ClientTime = UnixTime.Now();
             }
