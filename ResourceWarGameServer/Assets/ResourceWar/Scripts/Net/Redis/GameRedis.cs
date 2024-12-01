@@ -13,10 +13,11 @@ namespace ResourceWar.Server
     
         public enum KEY
         {
-            GameSession,
-            GameSessions,
-            Lobby,
-            WaitingGames
+            GameSession, //해당 게임 세션에 대한 정보
+            GameSessions, //모든 게임 세션에 대한 열거를 위한 리스트
+            Lobby, //매치메이킹으로 입장이 가능한 서버 목록
+            WaitingGames, //방 배정없이 대기 중인 게임 서버 목록
+            NewWaitingGameServer, //새로 배정된 게임 서버가 있음을 알리는 채널
         }
 
         /// <summary>
@@ -159,10 +160,20 @@ namespace ResourceWar.Server
         public static async UniTask AddGameSessionInfo(string gameCode, GameSessionInfo sessionInfo)
         {
             await UniTask.WhenAll(SetGameSessionInfo(gameCode, sessionInfo), 
-                AddWaitingGameServer(gameCode) );
+                AddWaitingGameServer(gameCode),
+                PublishNewWaitingGameServer(gameCode));
             
         }
 
-        
+        /// <summary>
+        /// 새 게임 서버가 준비되었음을 알립니다.
+        /// </summary>
+        /// <param name="gameCode"></param>
+        /// <returns></returns>
+       public static async UniTask<long> PublishNewWaitingGameServer(string gameCode)
+        {
+            return await RedisClient.Instance.ExecuteAsync(db => db.PublishAsync(KEY.NewWaitingGameServer.ToString(), gameCode));
+        }
+
     }
 }

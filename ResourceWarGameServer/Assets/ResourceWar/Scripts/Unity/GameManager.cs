@@ -39,9 +39,18 @@ namespace ResourceWar.Server
         /// </summary>
         private Team[] teams = null;
         // 현재 등록된 플레이어 수
-        private int playerCount = 0;
-
+        private int _playerCount = 0;
+        private int playerCount
+        {
+            get { return _playerCount; }
+            set { 
+                _playerCount = value;
+                _ = GameRedis.SetCurrentPlayerCount(GameCode, value);
+            }
+        }
         private GameSessionInfo gameSessionInfo = new GameSessionInfo();
+
+        
 
         private void Awake()
         {
@@ -53,7 +62,7 @@ namespace ResourceWar.Server
 
             /* [최초 초기화]
              * 1. 레디스에 대기중인 게임 서버 목록에 등록
-             * 2. 모든 초기화가 완료 되었을 경우 점유 알림 채널에 구독
+             * 2. 모든 초기화가 완료 되었을 경우 점유 알림 채널에 송신
              * 
              * [재활용]
              * 1. 기존 게임코드에 대한 레디스 정보를 말소 해야함
