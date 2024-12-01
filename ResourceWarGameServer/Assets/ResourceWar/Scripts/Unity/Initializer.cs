@@ -22,8 +22,10 @@ namespace ResourceWar.Server
 
         private async UniTask Init()
         {
+            string gameCode = NanoidDotNet.Nanoid.Generate(size: 11);
+            GameManager.GameCode = gameCode;
             Logger.Log("-------------Initializer-------------");
-            await GameRedis.SetGameState(GameSessionState.CREATING);
+            await GameRedis.SetGameState(gameCode,GameSessionState.CREATING);
             Logger.Log("Start DataLayer");
             DotEnv.Config();
             var (postgresqlResult, redisResult) = await UniTask.WhenAll(TryInitialize(PostogresqlInit), TryInitialize(RedisInit));
@@ -32,19 +34,19 @@ namespace ResourceWar.Server
                 Logger.Log("-------------DataLayer Initialized-------------");
                 TcpServer.Instance.Init(DotEnv.Get<string>("SERVER_BIND"), DotEnv.Get<int>("SERVER_PORT"));
                 Logger.Log("-------------Initializer-------------");
-                await GameRedis.SetGameState(GameSessionState.LOBBY);
+                SceneManager.LoadScene("Game");
             }
             else
             {
                 Logger.LogError("-------------DataLayer Initialize Failed-------------");
-                await GameRedis.SetGameState(GameSessionState.ERROR);
-#if UNITY_EDITOR
+                await GameRedis.SetGameState(gameCode, GameSessionState.ERROR);
+#if !UNITY_EDITOR
                 Application.Quit(1);
 #endif
             }
             
             
-            //SceneManager.LoadScene("Game");
+           
         }
 
         private async UniTask<bool> PostogresqlInit() => await PostgreSQLClient.Instance.ConnectAsync(DotEnv.Get<string>("DB_HOST"), DotEnv.Get<int>("DB_PORT"), DotEnv.Get<string>("DB_NAME"), DotEnv.Get<string>("DB_USER"), DotEnv.Get<string>("DB_PASSWORD"), DotEnv.Get<int>("DB_CONNECTION_LIMIT_MIN"), DotEnv.Get<int>("DB_CONNECTION_LIMIT_MAX"));
