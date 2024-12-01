@@ -16,7 +16,6 @@ namespace ResourceWar.Server
         public MessageHandlers() : base() {
             Handlers.Add(PacketType.PONG_RESPONSE, this.PongHandler);
             Handlers.Add(PacketType.SIGN_IN_REQUEST, this.SignInHandler);
-            Handlers.Add(PacketType.PLAYER_MOVE, this.PlayerMove);
             Handlers.Add(PacketType.AUTHORIZE_REQUEST, this.AuthorizeRequestHandler);
             //로비 관련
             Handlers.Add(PacketType.QUIT_ROOM_REQUEST, this.QuitRoomHandler);
@@ -24,6 +23,10 @@ namespace ResourceWar.Server
             Handlers.Add(PacketType.TEAM_CHANGE_REQUEST, this.TeamChangeHandler);
             Handlers.Add(PacketType.GAME_START_REQUEST, this.GameStartHandler);
             Handlers.Add(PacketType.PLAYER_IS_READY_CHANGE_REQUEST, this.PlayerIsReadyChangeHandler);
+            //플레이어 행동 관련
+            Handlers.Add(PacketType.PLAYER_MOVE, this.PlayerMove);
+            Handlers.Add(PacketType.MOVE_TO_AREA_MAP_REQUEST, this.PlayerMoveAreaHandler);
+            Handlers.Add(PacketType.PLAYER_ACTION_REQUEST, this.PlayerActionHandler);
         }
 
 

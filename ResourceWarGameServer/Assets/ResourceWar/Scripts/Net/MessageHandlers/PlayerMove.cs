@@ -15,9 +15,5 @@ namespace ResourceWar.Server
             await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.PlayerSync, packet);
             return null;
         }
-
-        
-
-        
     }
 }
