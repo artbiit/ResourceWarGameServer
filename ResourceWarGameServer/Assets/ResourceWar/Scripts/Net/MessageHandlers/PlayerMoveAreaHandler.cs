@@ -29,6 +29,7 @@ namespace ResourceWar.Server
                 Payload = new Protocol.S2CMoveToAreaMap
                 {
                     JoinMapResultCode = joinMapResultCode,
+                    // uint DestinationArea = DestinationAreaType, 도착 맵의 번호를 알려줘야 할 듯
                 }
 
             };

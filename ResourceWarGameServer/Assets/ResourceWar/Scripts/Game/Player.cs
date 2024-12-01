@@ -57,7 +57,7 @@ namespace ResourceWar.Server
         public Vector3 ChangePosition(Vector3 position)
         {
             float distance = position.magnitude;
-            if(distance > 100) // 거리가 너무 차이날 때 - 임시값으로 넣어둠
+            if (distance > 100) // 거리가 너무 차이날 때 - 임시값으로 넣어둠
             {
                 this.position = position;
             }
@@ -65,6 +65,12 @@ namespace ResourceWar.Server
             this.position = Vector3.Lerp(this.position, this.position + position, this.playerSpeed);
             Logger.Log($"플레이어{this.Nickname}의 이동 후 위치는 : {this.position}");
             return this.position;
+        }
+
+        public void ChangeArea(uint DestinationAreaType)
+        {
+            this.position = Vector3.one * 999; // 임의로 멀리 이동시킴
+            //Enum이던 인메모리에 있는 맵이던 가져와서 바꿔줄 예정
         }
 
         public void Connected(int clientId)

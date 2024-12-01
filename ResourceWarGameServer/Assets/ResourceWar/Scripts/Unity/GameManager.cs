@@ -139,6 +139,14 @@ namespace ResourceWar.Server
                 //일단 오류 꼴 뵈기 싫어서 바이트로 형변환은 하지만 무조건 수정해야할거같음
                 await PlayerSyncNotify((uint)receivedPacket.ClientId, (byte)playerActionType, direction, playerEquippedItem, receivedPacket.Token);
             }
+            else if (receivedPacket.Payload is S2CMoveToAreaMap moveArea)
+            {
+                if(moveArea.JoinMapResultCode == 1)
+                {
+                    // 맵의 위치를 받아서 플레이어의 위치를 수정해 줌
+
+                }
+            }
             else
             {
                 //아마 여기다 missing 뭐 이런거 보내주면 될 듯
@@ -196,6 +204,11 @@ namespace ResourceWar.Server
             FindPlayer(token).ChangePosition(direction);
             return FindPlayer(token).position.FromVector();
 
+        }
+        
+        public void PlayerMoveArea(uint DestinationAreaType, string token)
+        {
+            FindPlayer(token).ChangeArea(DestinationAreaType);
         }
 
         /// <summary>
