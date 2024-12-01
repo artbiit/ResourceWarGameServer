@@ -27,6 +27,25 @@ namespace ResourceWar.Server
         GARBAGE = 5,
     }
 
+    public enum TeamChangeResultCode : uint
+    {
+        SUCCESS = 0,
+        NONE_CHANGE = 1,
+        FAIL = 2,
+    }
+
+    public enum GameStartResultCode : uint
+    {
+        SUCCESS = 0,
+        FAIL = 2,
+    }
+
+    public enum PlayerIsReadyChangeResultCode : uint
+    {
+        SUCCESS = 0,
+        FAIL = 1,
+    }
+
     public enum GameSessionState : int
     {
         CREATING = 0,

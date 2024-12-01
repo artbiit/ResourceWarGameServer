@@ -58,10 +58,14 @@ namespace ResourceWar.Server
     { PacketType.TEAM_CHANGE_REQUEST, "Protocol.C2STeamChangeReq" },
     { PacketType.TEAM_CHANGE_NOTIFICATION, "Protocol.S2CTeamChangeNoti" },
 
+            // 로비 팀 준비
+            {PacketType.PLAYER_IS_READY_CHANGE_REQUEST, "Protocol.C2SPlayerIsReadyChangeReq" },
+            {PacketType.PLAYER_IS_READY_CHANGE_RESPONSE, "Protocol.C2SPlayerIsReadyChangeRes" },
+
     // 대기실 동기화 및 게임 시작
     { PacketType.SYNC_ROOM_NOTIFICATION, "Protocol.S2CSyncRoomNoti" },
     { PacketType.GAME_START_REQUEST, "Protocol.C2SGameStartReq" },
-    { PacketType.GAME_START_RESPONSE, "Protocol.S2CGameStartRes" },
+    { PacketType.GAME_START_NOTI, "Protocol.S2CGameStartRes" },
 
     // 로딩 진행
     { PacketType.LOAD_PROGRESS_NOTIFICATION, "Protocol.S2CLoadProgressNoti" },

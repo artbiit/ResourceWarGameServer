@@ -97,3 +97,4 @@ crashlytics-build.properties
 [Tt]est[Rr]esults/
 *.coverage
 
+/ProtobufGen/protocol.proto

@@ -56,11 +56,16 @@ namespace ResourceWar.Server
         // 팀 변경
         TEAM_CHANGE_REQUEST = 22,
         TEAM_CHANGE_NOTIFICATION = 23,
+        TEAM_CHANGE_RESPONSE = 64,
+
+        // 대기실 준비 완료
+        PLAYER_IS_READY_CHANGE_REQUEST = 64,
+        PLAYER_IS_READY_CHANGE_RESPONSE = 65,
 
         // 대기실 동기화 및 게임 시작
         SYNC_ROOM_NOTIFICATION = 24,
         GAME_START_REQUEST = 25,
-        GAME_START_RESPONSE = 26,
+        GAME_START_NOTI = 26,
 
         // 로딩 진행
         LOAD_PROGRESS_NOTIFICATION = 27,

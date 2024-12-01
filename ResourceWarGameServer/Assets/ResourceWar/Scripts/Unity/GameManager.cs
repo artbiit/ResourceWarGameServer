@@ -27,7 +27,10 @@ namespace ResourceWar.Server
             AddNewPlayer = 3,
             ClientRemove = 4,
             QuitLobby = 5,
-            PlayerSync = 5,
+            PlayerSync = 6,
+            TeamChange = 7,
+            PlayerIsReadyChanger =8,
+
         }
 
         public GameSessionState GameState => gameSessionInfo.state;
@@ -145,6 +148,8 @@ namespace ResourceWar.Server
             receivedDispatcher.Subscribe(GameManagerEvent.QuitLobby, QuitLobby);
             receivedDispatcher.Subscribe(GameManagerEvent.AddNewPlayer, RegisterPlayer);
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerSync, PlayerSync);
+            receivedDispatcher.Subscribe(GameManagerEvent.TeamChange, TeamChange);
+            receivedDispatcher.Subscribe(GameManagerEvent.PlayerIsReadyChanger, PlayerReadyStateChanger);
             
             //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
@@ -308,6 +313,52 @@ namespace ResourceWar.Server
             return false;
         }
 
+        private bool TryGetChangeTeamForPlayer(string token, int changeTeamIndex)
+        {
+            if (changeTeamIndex < 0 || changeTeamIndex >= teams.Length)
+            {
+                Logger.LogError($"Invalid team index: {changeTeamIndex}");
+                return false;
+            }
+
+            var player = FindPlayer(token);
+            if (player == null)
+            {
+                Logger.LogError($"Player with token {token} not found");
+                return false;
+            }
+
+            var currentTeamIndex = GetPlayerTeamIndex(player.ClientId);
+            if (currentTeamIndex == null)
+            {
+                Logger.LogError($"Player {player.ClientId} is not assigned to any team.");
+                return false;
+            }
+
+            if (MovePlayerBetweeonTeams(token, currentTeamIndex.Value, changeTeamIndex))
+            {
+                Logger.Log($"Player {player.ClientId} successfully moved from team {currentTeamIndex} to team {changeTeamIndex}.");
+                return true;
+            }
+
+            Logger.LogError($"Failed to move player {player.ClientId} to team {changeTeamIndex}.");
+            return false;
+        }
+
+        /// <summary>
+        /// 플레이어를 팀 간 이동시키는 메서드
+        /// </summary>
+        private bool MovePlayerBetweeonTeams(string token, int fromTeamIndex, int toTeamIndex)
+        {
+            if (teams[fromTeamIndex].Players.TryGetValue(token, out var player))
+            {
+                teams[fromTeamIndex].Players.Remove(token);
+                teams[toTeamIndex].Players.Add(token, player);
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// TeamIndex, UserToken, Player 매개 변수로 순환함
         /// </summary>
@@ -384,6 +435,55 @@ namespace ResourceWar.Server
 
             // Notify all players in the same lobby
             await NotifyRoomState();
+        }
+
+        // Handler에서 호출하는 팀 변경
+        public async UniTask TeamChange(ReceivedPacket receivedPacket)
+        {
+            var teamChangeMessage = (C2STeamChangeReq)receivedPacket.Payload;
+            if (teamChangeMessage == null)
+            {
+                Logger.LogError("Invalid TeamChange message payload.");
+                return;
+            }
+
+            var token = receivedPacket.Token;
+            var requestTeamIndexMessage = (int)teamChangeMessage.TeamIndex;
+
+            if (!TryGetChangeTeamForPlayer(token, requestTeamIndexMessage))
+            {
+                Logger.LogError($"Failed to change team for player with token {token} to team {requestTeamIndexMessage}.");
+                return;
+            }
+
+            // 팀 변경 후 방 상태 알림
+            Logger.Log($"Player {token} successfully changed to team {requestTeamIndexMessage}.");
+            await NotifyRoomState();
+        }
+
+        // 해당 token 또는 clientId로 Player를 찾고 그 플레이어의 isReady 상태를 바꿔주기.
+        public async UniTask PlayerReadyStateChanger(ReceivedPacket receivedPacket)
+        {
+            var token = receivedPacket.Token;
+            var clientId = receivedPacket.ClientId;
+
+            Player player = null;
+            if (!TryGetPlayer(clientId, out player))
+            {
+                Logger.LogError($"Player with clinetId {clientId} not found");
+                return;
+            }
+
+            // isReady 상태 반전
+            player.IsReady = !player.IsReady;
+            Logger.Log($"Player[{player.ClientId}] Ready State Change to: {player.IsReady}");
+
+            await NotifyRoomState();
+        }
+
+        public async UniTask GameStart(ReceivedPacket receivedPacket)
+        {
+
         }
 
         /// <summary>
