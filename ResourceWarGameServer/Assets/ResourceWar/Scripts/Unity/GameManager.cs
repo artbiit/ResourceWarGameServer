@@ -117,10 +117,7 @@ namespace ResourceWar.Server
         /// <returns></returns>
         public async UniTask SetState(GameSessionState state)
         {
-            if (this.gameSessionInfo.state != state)
-            {
-                await GameRedis.SetGameState(GameCode,state);
-            }
+            await GameRedis.SetGameState(GameCode,state);
             this.gameSessionInfo.state = state;
         }
 
@@ -543,6 +540,11 @@ namespace ResourceWar.Server
                 return UniTask.FromException(new System.InvalidOperationException($"Unknown player token : {token}"));
             }
             return UniTask.CompletedTask;
+        }
+
+        private async void OnDestroy()
+        {
+           await GameRedis.RemoveGameSessionInfo(GameCode);
         }
     }
 }

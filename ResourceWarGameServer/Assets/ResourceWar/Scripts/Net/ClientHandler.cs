@@ -35,7 +35,7 @@ namespace ResourceWar.Server
         /// <summary>
         /// 인증된 클라이언트인지 검사
         /// </summary>
-        public bool IsAuthorized { get; private set; } = true;
+        public bool IsAuthorized { get; private set; } = false;
 
 
         public ClientHandler(int clientId, TcpClient tcpClient, Action<int> onDisconnect)

@@ -78,9 +78,9 @@ namespace ResourceWar.Server
         /// <param name="gameCode"></param>
         /// <param name="priviousPlayer"></param>
         /// <returns></returns>
-        public static async UniTask<bool> SetPreviousPlayerCount(string gameCode, int priviousPlayer)
+        public static async UniTask<bool> SetPreviousPlayerCount(string gameCode, int previousPlayer)
         {
-            return await RedisClient.Instance.ExecuteAsync(db => db.HashSetAsync($"{KEY.GameSession}:{gameCode}", "priviousPlayer", priviousPlayer));
+            return await RedisClient.Instance.ExecuteAsync(db => db.HashSetAsync($"{KEY.GameSession}:{gameCode}", "previousPlayer", previousPlayer));
         }
      
 

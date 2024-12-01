@@ -126,6 +126,7 @@ namespace ResourceWar.Server
             {
                 previousPlayerCount = Interlocked.Decrement(ref previousPlayerCount);
             }
+            Logger.Log($"previousPlayerCount : {previousPlayerCount}");
             await  GameRedis.SetPreviousPlayerCount(GameManager.GameCode, previousPlayerCount);
         }
 
@@ -133,12 +134,12 @@ namespace ResourceWar.Server
         private async void RemoveClient(int clientId)
         {
             clients.TryRemove(clientId, out var client); // 클라이언트 목록에서 제거
-            if(clients.Count <= 4 && cts == null) //제거된 후 연결대기중이 아니면 대기상태로 전환
+            if (client.IsAuthorized == false)
             {
-                if(client.IsAuthorized == false)
-                {
-                   await ChangePreviousPlayer(false);
-                }
+                await ChangePreviousPlayer(false);
+            }
+            if (clients.Count <= 4 && cts == null) //제거된 후 연결대기중이 아니면 대기상태로 전환
+            {
                 Listen();
             }
             await EventDispatcher<GameManager.GameManagerEvent, int>.Instance.NotifyAsync(GameManager.GameManagerEvent.ClientRemove, clientId);
