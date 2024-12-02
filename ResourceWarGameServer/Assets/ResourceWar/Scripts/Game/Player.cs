@@ -54,12 +54,15 @@ namespace ResourceWar.Server
         public void MoveArea(uint currentArea, uint destinationArea)
         {
             
-             
         }
         public Vector3 ChangePosition(Vector3 position)
         {
             float distance = position.magnitude;
-            if (distance > 100) // 거리가 너무 차이날 때 - 임시값으로 넣어둠
+            if(distance > 6) // 플레이어 대쉬 판별
+            {
+                ActionType = 3;
+            }
+            else if (distance > 12) // 거리가 너무 차이날 때
             {
                 this.position = position;
             }

@@ -41,7 +41,6 @@ namespace ResourceWar.Server
                     TargetObjectId = PlayerTargetObjectId,
                     Success = isSuccess,
                 }
-
             };
             await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.PlayerSync, packet);
             await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForUser, actionPacket);

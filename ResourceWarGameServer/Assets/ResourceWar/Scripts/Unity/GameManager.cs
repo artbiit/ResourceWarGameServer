@@ -119,6 +119,11 @@ namespace ResourceWar.Server
 
         public async UniTask PlayerSync(ReceivedPacket receivedPacket)
         {
+            //테스트용 플레이어 등록
+            if (FindPlayer(receivedPacket.Token) == null)
+            {
+                await RegisterPlayer(receivedPacket);
+            }
             // 페이로드 분기
             // 싱크 패킷이 플레이어 무브일 때
             if (receivedPacket.Payload is C2SPlayerMove playerMove)
@@ -159,15 +164,16 @@ namespace ResourceWar.Server
         private UniTask PlayerSyncNotify(uint ClientId, byte ActionType, Vector3 direction, uint EquippedItem, string token)
         {
             Logger.Log($"기존 움직임 방향은 : {direction}");
-            PlayerState protoPlayerState;
-            if (direction.magnitude < 100) // dash가 얼마나 될 지 모르니 일단 100
-            {
-                Correction(direction, ActionType, token);                
-            }
-            else // 이동 거리가 너무 클 경우 움직이지 않게 함
-            {
-                Correction(Vector3.zero, ActionType, token);
-            }
+            Logger.Log($"direction : {direction}, ActionType : {ActionType}, token : {token}, direction.magnitude : {direction.magnitude}");
+            //if (direction.magnitude < 100) // dash가 얼마나 될 지 모르니 일단 100
+            //{
+            //    Correction(direction, ActionType, token);                
+            //}
+            //else // 이동 거리가 너무 클 경우 움직이지 않게 함
+            //{
+            //    Correction(Vector3.zero, ActionType, token);
+            //}
+            Correction(direction, ActionType, token);
             List<Protocol.PlayerState> playerStates = new();
             if (TryGetTeam((int)ClientId, out Team allPlayers))
             {
@@ -202,7 +208,7 @@ namespace ResourceWar.Server
         {
             // 속도 검사하는 로직이 빠져있고 이거는 대쉬 하면서 같이 만들 예정
             // 이동 가능한 위치인지도 빠져있다.
-            // 밑에 함수는 포지션만 전달에서 플레이어 안에서 처리를 한다
+            // 밑에 함수는 포지션만 전달에서 플레이어 안에서 처리를 한다 
             FindPlayer(token).ChangePosition(direction);
             FindPlayer(token).ChangeAction(ActionType);
             return FindPlayer(token).position.FromVector();
@@ -250,7 +256,6 @@ namespace ResourceWar.Server
             {
                 // 해당 GameSession파괴
             }
-            Logger.Log("여기인가요? 4번");
             await NotifyRoomState();
         }
 
