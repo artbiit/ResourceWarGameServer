@@ -34,26 +34,9 @@ namespace ResourceWar.Server
                 playerIsReadyChangeMessage = payload;
             }
 
-            // isReady 기본값 설정
-            var isReady = 0; // Default to 0
             if (resultCode == PlayerIsReadyChangeResultCode.SUCCESS)
             {
-                isReady = playerIsReadyChangeMessage.Ready ? 1 : 0;
-                playerIsReadyChangeMessage.Ready = isReady == 1; // Ready 값을 업데이트
-                Logger.Log($"PlayerIsReadyChangeHandler: Updated isReady to {isReady}.");
-            }
-
-            // 새로운 ReceivedPacket 생성
-            var updatedPacket = new ReceivedPacket(packet.ClientId)
-            {
-                PacketType = packet.PacketType,
-                Token = packet.Token,
-                Payload = playerIsReadyChangeMessage
-            };
-
-            if (resultCode == PlayerIsReadyChangeResultCode.SUCCESS)
-            {
-                await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.PlayerIsReadyChanger, updatedPacket);
+                await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.PlayerIsReadyChanger, packet);
             }
 
             result.Token = "";

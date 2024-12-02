@@ -23,7 +23,6 @@ namespace ResourceWar.Server
             var resultCode = TeamChangeResultCode.SUCCESS;
             C2STeamChangeReq teamChangeMessage = (C2STeamChangeReq)packet.Payload;
 
-            Logger.Log($"테스트 => {packet.Payload}");
 
             // 패킷 검증
             if (string.IsNullOrWhiteSpace(packet.Token))
@@ -31,32 +30,13 @@ namespace ResourceWar.Server
                 Logger.LogError("TeamChangeHandler: Token is null or empty.");
                 resultCode = TeamChangeResultCode.FAIL;
             }
-            Logger.Log($"테스트2 => {packet.Payload}");
-
-            // teamIndex 기본값 설정
-            var teamIndex = 0; // Default to 0
-            if (resultCode == TeamChangeResultCode.SUCCESS)
-            {
-                teamIndex = (teamChangeMessage.TeamIndex == 0) ? 0 : (int)teamChangeMessage.TeamIndex;
-
-                teamChangeMessage.TeamIndex = (uint)teamIndex;
-                Logger.Log($"TeamChangeHandler: Received teamIndex is {teamIndex}. Defaulting to 0 if not set.");
-            }
-            Logger.Log($"테스트 3 => {packet.Payload}");
-            // 새로운 ReceivedPacket 생성
-            var updatedPacket = new ReceivedPacket(packet.ClientId)
-            {
-                PacketType = packet.PacketType,
-                Token = packet.Token,
-                Payload = teamChangeMessage
-            };
 
             packet.Payload = teamChangeMessage;
 
             if (resultCode == TeamChangeResultCode.SUCCESS)
             {
                 // 팀 변경 처리
-                await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.TeamChange, updatedPacket);
+                await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.TeamChange, packet);
             }
 
             result.Token = "";
