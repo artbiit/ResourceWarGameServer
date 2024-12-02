@@ -18,7 +18,7 @@ namespace ResourceWar.Server
                 Logger.LogError("GameStartHandler: Token is null or empty.");
             }
 
-            await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.LoadProgressNoti, packet);
+            await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.SurrenderNoti, packet);
 
             return null;
         }

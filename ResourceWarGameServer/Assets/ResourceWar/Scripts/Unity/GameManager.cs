@@ -32,6 +32,8 @@ namespace ResourceWar.Server
             PlayerIsReadyChanger =8,
             GameStart = 9,
             LoadProgressNoti = 10,
+            SurrenderNoti = 11,
+
 
         }
 
@@ -154,6 +156,7 @@ namespace ResourceWar.Server
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerIsReadyChanger, PlayerReadyStateChanger);
             receivedDispatcher.Subscribe(GameManagerEvent.GameStart, GameStart);
             receivedDispatcher.Subscribe(GameManagerEvent.LoadProgressNoti, LoadProgressNoti);
+            receivedDispatcher.Subscribe(GameManagerEvent.SurrenderNoti, SurrenderNoti);
 
             //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
@@ -414,6 +417,14 @@ namespace ResourceWar.Server
             return null;
         }
 
+        #endregion
+
+        #region 항복 투표
+        public async UniTask SurrenderNoti(ReceivedPacket receivedPacket)
+        {
+
+            
+        }
         #endregion
 
         /// <summary>
