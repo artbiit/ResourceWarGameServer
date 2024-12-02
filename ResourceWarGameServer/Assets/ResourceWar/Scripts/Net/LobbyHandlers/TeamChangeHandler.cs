@@ -33,7 +33,7 @@ namespace ResourceWar.Server
             var teamIndex = 0; // Default to 0
             if (resultCode == TeamChangeResultCode.SUCCESS)
             {
-                teamIndex = (teamChangeMessage.TeamIndex == 0) ? (int)teamChangeMessage.TeamIndex : 0;
+                teamIndex = (teamChangeMessage.TeamIndex == 0) ? 0 : (int)teamChangeMessage.TeamIndex;
                 teamChangeMessage.TeamIndex = (uint)teamIndex;
                 Logger.Log($"TeamChangeHandler: Received teamIndex is {teamIndex}. Defaulting to 0 if not set.");
             }
