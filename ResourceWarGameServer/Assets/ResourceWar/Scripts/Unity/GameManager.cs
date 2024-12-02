@@ -30,6 +30,8 @@ namespace ResourceWar.Server
             PlayerSync = 6,
             TeamChange = 7,
             PlayerIsReadyChanger =8,
+            GameStart = 9,
+            LoadProgressNoti = 10,
 
         }
 
@@ -150,12 +152,15 @@ namespace ResourceWar.Server
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerSync, PlayerSync);
             receivedDispatcher.Subscribe(GameManagerEvent.TeamChange, TeamChange);
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerIsReadyChanger, PlayerReadyStateChanger);
-            
+            receivedDispatcher.Subscribe(GameManagerEvent.GameStart, GameStart);
+            receivedDispatcher.Subscribe(GameManagerEvent.LoadProgressNoti, LoadProgressNoti);
+
             //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
             innerDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
         }
 
+        #region 플레이어 상태 동기화
         public async UniTask PlayerSync(ReceivedPacket receivedPacket)
         {
             Protocol.Position position = new();
@@ -192,6 +197,7 @@ namespace ResourceWar.Server
             SendPacketForAll(packet);
             return UniTask.CompletedTask;
         }
+        #endregion
 
         public Protocol.Position Correction(Vector3 position, string token)
         {
@@ -239,8 +245,71 @@ namespace ResourceWar.Server
             {
                 // 해당 GameSession파괴
             }
-            Logger.Log("여기인가요? 4번");
             await NotifyRoomState();
+        }
+        #region Find Player Or Team
+        /// <summary>
+        /// TeamIndex, UserToken, Player 매개 변수로 순환함
+        /// </summary>
+        /// <param name="action"></param>
+        public void LoopAllPlayers(System.Action<int, string, Player> action)
+        {
+
+            for (int i = 0; i < teams.Length; i++)
+            {
+                var team = teams[i];
+                foreach (var playerPair in team.Players)
+                {
+                    action?.Invoke(i, playerPair.Key, playerPair.Value);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// 플레이어 검색
+        /// </summary>
+        /// <param name="token">플레이어의 고유 토큰</param>
+        /// <returns>찾은 플레이어 객체 or Null</returns>
+        public Player FindPlayer(string token)
+        {
+            foreach (var team in teams)
+            {
+                if (team.Players.TryGetValue(token, out Player player)) return player;
+            }
+            return null;
+        }
+
+        private bool TryGetPlayer(int clientId, out Player player)
+        {
+            foreach (var team in teams)
+            {
+                foreach (var teamPlayer in team.Players.Values)
+                {
+                    if (teamPlayer.ClientId == clientId)
+                    {
+                        player = teamPlayer;
+                        return true;
+                    }
+                }
+            }
+            player = null;
+            return false;
+        }
+
+        private bool TryGetPlayer(string token, out Player player)
+        {
+            foreach (var team in teams)
+            {
+                if (team.Players.ContainsKey(token))
+                {
+                    player = team.Players[token];
+                    return true;
+                }
+            }
+
+            player = null;
+            return false;
         }
 
         /// <summary>
@@ -277,39 +346,6 @@ namespace ResourceWar.Server
             }
 
             team = null;
-            return false;
-        }
-
-
-        private bool TryGetPlayer(int clientId, out Player player)
-        {
-            foreach (var team in teams)
-            {
-                foreach (var teamPlayer in team.Players.Values)
-                {
-                    if (teamPlayer.ClientId == clientId)
-                    {
-                        player = teamPlayer;
-                        return true;
-                    }
-                }
-            }
-            player = null;
-            return false;
-        }
-
-        private bool TryGetPlayer(string token, out Player player)
-        {
-            foreach (var team in teams)
-            {
-                if (team.Players.ContainsKey(token))
-                {
-                    player = team.Players[token];
-                    return true;
-                }
-            }
-
-            player = null;
             return false;
         }
 
@@ -359,24 +395,6 @@ namespace ResourceWar.Server
             return false;
         }
 
-        /// <summary>
-        /// TeamIndex, UserToken, Player 매개 변수로 순환함
-        /// </summary>
-        /// <param name="action"></param>
-        public void LoopAllPlayers(System.Action<int, string, Player> action)
-        {
-
-            for (int i = 0; i < teams.Length; i++)
-            {
-                var team = teams[i];
-                foreach (var playerPair in team.Players)
-                {
-                    action?.Invoke(i, playerPair.Key, playerPair.Value);
-                }
-            }
-
-        }
-
         public int? GetPlayerTeamIndex(int clientId)
         {
 
@@ -395,6 +413,8 @@ namespace ResourceWar.Server
             Logger.LogWarning($"Player[{clientId}]를 찾을 수 없습니다.");
             return null;
         }
+
+        #endregion
 
         /// <summary>
         /// 새로운 플레이어 등록
@@ -481,11 +501,6 @@ namespace ResourceWar.Server
             await NotifyRoomState();
         }
 
-        public async UniTask GameStart(ReceivedPacket receivedPacket)
-        {
-
-        }
-
         /// <summary>
         /// 방나가기 요청이 들어왔을 때 실행되는 알림
         /// </summary>
@@ -514,6 +529,60 @@ namespace ResourceWar.Server
 
             // 방에서 제거하는 코드
             await ClientRemove(clientId);
+        }
+
+        /// <summary>
+        /// 게임 시작
+        /// </summary>
+        /// <param name="receivedPacket"></param>
+        /// <returns></returns>
+        public async UniTask GameStart(ReceivedPacket receivedPacket)
+        {
+            S2CGameStartNoti s2CGameStartNoti = new S2CGameStartNoti();
+
+            bool isAllReady = true;
+
+            LoopAllPlayers((teamIndex, token, player) =>
+            {
+                // 논리 게이트 하나라도 true가 아니면 false
+                isAllReady &= player.IsReady;
+            });
+
+            var packet = new Packet
+            {
+                PacketType = PacketType.GAME_START_NOTI,
+                Token = "",
+                Payload = s2CGameStartNoti
+            };
+
+            Logger.Log($"GameStart");
+            await SendPacketForAll(packet);
+        }
+
+        /// <summary>
+        /// 로드 진행도 바꿔서 알리기
+        /// </summary>
+        /// <param name="receivedPacket"></param>
+        /// <returns></returns>
+        public async UniTask LoadProgressNoti(ReceivedPacket receivedPacket)
+        {
+            var loadProgressNoti = (C2SLoadProgressNoti)receivedPacket.Payload;
+
+            if (loadProgressNoti.Progress < 0 || loadProgressNoti.Progress > 100)
+            {
+                loadProgressNoti.Progress = 0;
+            }
+
+            if (!TryGetPlayer(receivedPacket.ClientId, out var player))
+            {
+                Logger.LogError($"Player with ClientId {receivedPacket.ClientId} not found.");
+                return;
+            }
+            // 플레이어의 LoadProgress 값 업데이트
+            player.LoadProgress = (int)loadProgressNoti.Progress;
+            Logger.Log($"Player[{player.ClientId}] load progress updated to: {player.LoadProgress}%");
+
+            await NotifySyncLoadProgress();
         }
 
         /// <summary>
@@ -550,19 +619,36 @@ namespace ResourceWar.Server
         }
 
         /// <summary>
-        /// 플레이어 검색
+        /// 모든 플레이어 아이디, Progress 정보 알림
         /// </summary>
-        /// <param name="token">플레이어의 고유 토큰</param>
-        /// <returns>찾은 플레이어 객체 or Null</returns>
-        public Player FindPlayer(string token)
+        /// <returns></returns>
+        public async UniTask NotifySyncLoadProgress()
         {
-            foreach (var team in teams)
+            S2CSyncLoadNoti s2CSyncLoadNoti = new S2CSyncLoadNoti();
+
+            LoopAllPlayers((teamIndex, token, player) =>
             {
-                if (team.Players.TryGetValue(token, out Player player)) return player;
-            }
-            return null;
+                s2CSyncLoadNoti.SyncLoadData.Add(new S2CSyncLoadNoti.Types.SyncLoadData
+                {
+                    PlayerId = (uint)player.ClientId,
+                    Progress = (uint)player.LoadProgress,
+                });
+            });
+
+            var packet = new Packet
+            {
+                PacketType = PacketType.SYNC_LOAD_NOTIFICATION,
+                Token = "",
+                Payload = s2CSyncLoadNoti
+            };
+
+            // 패킷 로그 출력
+            Logger.Log($"SYNC_LOAD_NOTIFICATION => {packet}");
+
+            await SendPacketForAll(packet);
         }
 
+        #region Send_Packet
         /// <summary>
         /// 게임 내 모든 유저에게 데이터를 보냅니다.
         /// </summary>
@@ -641,6 +727,7 @@ namespace ResourceWar.Server
             }
             return UniTask.CompletedTask;
         }
+        #endregion
 
         private async void OnDestroy()
         {
