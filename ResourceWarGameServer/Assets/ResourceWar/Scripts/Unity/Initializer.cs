@@ -24,8 +24,10 @@ namespace ResourceWar.Server
         {
             string gameCode = GameManager.GenerateGameCode();
             Logger.Log("-------------Initializer-------------");
+            Application.targetFrameRate = 30;
             Logger.Log("Start DataLayer");
             DotEnv.Config();
+            TableData.Load();
             var (postgresqlResult, redisResult) = await UniTask.WhenAll(TryInitialize(PostogresqlInit), TryInitialize(RedisInit));
             if(postgresqlResult && redisResult)
             {

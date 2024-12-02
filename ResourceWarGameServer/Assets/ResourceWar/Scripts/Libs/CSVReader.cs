@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +20,7 @@ namespace ResourceWar.Server.Lib
                 return null;
             }
 
-            string[] lines = File.ReadAllLines(fullPath);
+            string[] lines =  File.ReadAllLines(fullPath);
 
             //주석 포함 
             if (lines.Length < 3)
@@ -77,7 +78,7 @@ namespace ResourceWar.Server.Lib
                     dictionary[id] = instance;
                 }
             }
-            return dictionary;
+            return null;
         }
     }
 }

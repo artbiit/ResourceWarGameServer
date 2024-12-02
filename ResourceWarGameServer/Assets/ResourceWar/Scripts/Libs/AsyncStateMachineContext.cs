@@ -78,6 +78,17 @@ namespace ResourceWar.Server
             globalTransitions.Add(new Transition(toState, condition));
         }
 
+        /// <summary>
+        /// 상태머신 내부 데이터를 초기화합니다.
+        /// </summary>
+        public void Clear()
+        {
+            currentState = null;
+            transitions.Clear(); 
+            globalTransitions.Clear(); 
+        }
+
+
         private class Transition
         {
             public IAsyncState<T> TargetState { get; }

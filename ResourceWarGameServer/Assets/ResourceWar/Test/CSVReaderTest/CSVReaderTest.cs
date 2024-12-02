@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
+using Cysharp.Threading.Tasks;
 
 public class CSVReaderTest : MonoBehaviour
 {
@@ -17,8 +18,6 @@ public class CSVReaderTest : MonoBehaviour
         {
             Debug.Log($"{monsterTable.Key} - {JsonConvert.SerializeObject(monsterTable.Value)}");
         }
-
-
     }
     
 }
