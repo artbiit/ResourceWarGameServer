@@ -561,7 +561,7 @@ namespace ResourceWar.Server
                 totalPlayerCount++;
             });
 
-            if (totalPlayerCount < 4 )
+            if (totalPlayerCount < 4)
             {
                 Logger.LogError($"Game cannot start. Current player count: {totalPlayerCount}.");
                 return;

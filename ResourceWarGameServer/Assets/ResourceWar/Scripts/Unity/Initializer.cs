@@ -22,6 +22,7 @@ namespace ResourceWar.Server
 
         private async UniTask Init()
         {
+            PacketUtils.GetMessageType(PacketType.TEAM_CHANGE_RESPONSE);
             string gameCode = GameManager.GenerateGameCode();
             Logger.Log("-------------Initializer-------------");
             Logger.Log("Start DataLayer");
