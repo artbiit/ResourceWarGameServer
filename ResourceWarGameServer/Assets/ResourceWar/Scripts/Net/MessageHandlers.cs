@@ -38,7 +38,7 @@ namespace ResourceWar.Server
                 //null이면 반환할 데이터 없음을 의미
                 if (result != null && !PacketUtils.IsSameMessageType(result.Payload, result.PacketType))
                 {
-                    throw new InvalidOperationException($"Mismatch between returned message type and packetType. : {packet}");
+                    throw new InvalidOperationException($"Mismatch between returned message type and packetType. : {packet}\n{result.Payload.GetType().Name}|{result.PacketType}");
                 }
             }
      

@@ -56,11 +56,12 @@ namespace ResourceWar.Server
 
     // 팀 변경
     { PacketType.TEAM_CHANGE_REQUEST, "Protocol.C2STeamChangeReq" },
+    { PacketType.TEAM_CHANGE_RESPONSE, "Protocol.S2CTeamChangeRes" },
     { PacketType.TEAM_CHANGE_NOTIFICATION, "Protocol.S2CTeamChangeNoti" },
 
             // 로비 팀 준비
             {PacketType.PLAYER_IS_READY_CHANGE_REQUEST, "Protocol.C2SPlayerIsReadyChangeReq" },
-            {PacketType.PLAYER_IS_READY_CHANGE_RESPONSE, "Protocol.C2SPlayerIsReadyChangeRes" },
+            {PacketType.PLAYER_IS_READY_CHANGE_RESPONSE, "Protocol.S2CPlayerIsReadyChangeRes" },
 
     // 대기실 동기화 및 게임 시작
     { PacketType.SYNC_ROOM_NOTIFICATION, "Protocol.S2CSyncRoomNoti" },
@@ -215,7 +216,7 @@ namespace ResourceWar.Server
                 CachedMessageTypes.TryAdd(messageName, messageType);
             }
 
-           
+
             return messageType;
         }
 
@@ -228,7 +229,7 @@ namespace ResourceWar.Server
         /// <exception cref="ArgumentNullException"></exception>
         public static bool IsSameMessageType(IMessage message, PacketType packetType)
         {
-            if (message == null )
+            if (message == null)
             {
                 throw new ArgumentNullException("Message cannot be null.");
             }
