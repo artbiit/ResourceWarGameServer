@@ -31,6 +31,7 @@ namespace ResourceWar.Server
             TeamChange = 7,
             PlayerIsReadyChanger =8,
             GameStart = 9,
+            LoadProgressNoti = 10,
 
         }
 
@@ -152,6 +153,7 @@ namespace ResourceWar.Server
             receivedDispatcher.Subscribe(GameManagerEvent.TeamChange, TeamChange);
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerIsReadyChanger, PlayerReadyStateChanger);
             receivedDispatcher.Subscribe(GameManagerEvent.GameStart, GameStart);
+            receivedDispatcher.Subscribe(GameManagerEvent.LoadProgressNoti, LoadProgressNoti);
 
             //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
@@ -558,6 +560,32 @@ namespace ResourceWar.Server
         }
 
         /// <summary>
+        /// 로드 진행도 바꿔서 알리기
+        /// </summary>
+        /// <param name="receivedPacket"></param>
+        /// <returns></returns>
+        public async UniTask LoadProgressNoti(ReceivedPacket receivedPacket)
+        {
+            var loadProgressNoti = (C2SLoadProgressNoti)receivedPacket.Payload;
+
+            if (loadProgressNoti.Progress < 0 || loadProgressNoti.Progress > 100)
+            {
+                loadProgressNoti.Progress = 0;
+            }
+
+            if (!TryGetPlayer(receivedPacket.ClientId, out var player))
+            {
+                Logger.LogError($"Player with ClientId {receivedPacket.ClientId} not found.");
+                return;
+            }
+            // 플레이어의 LoadProgress 값 업데이트
+            player.LoadProgress = (int)loadProgressNoti.Progress;
+            Logger.Log($"Player[{player.ClientId}] load progress updated to: {player.LoadProgress}%");
+
+            await NotifySyncLoadProgress();
+        }
+
+        /// <summary>
         /// 모든 유저에게 현재 방 상태를 알림.
         /// </summary>
         public async UniTask NotifyRoomState()
@@ -587,6 +615,36 @@ namespace ResourceWar.Server
             };
 
             Logger.Log($"SYNC_ROOM_NOTIFICATION => {packet}");
+            await SendPacketForAll(packet);
+        }
+
+        /// <summary>
+        /// 모든 플레이어 아이디, Progress 정보 알림
+        /// </summary>
+        /// <returns></returns>
+        public async UniTask NotifySyncLoadProgress()
+        {
+            S2CSyncLoadNoti s2CSyncLoadNoti = new S2CSyncLoadNoti();
+
+            LoopAllPlayers((teamIndex, token, player) =>
+            {
+                s2CSyncLoadNoti.SyncLoadData.Add(new S2CSyncLoadNoti.Types.SyncLoadData
+                {
+                    PlayerId = (uint)player.ClientId,
+                    Progress = (uint)player.LoadProgress,
+                });
+            });
+
+            var packet = new Packet
+            {
+                PacketType = PacketType.SYNC_LOAD_NOTIFICATION,
+                Token = "",
+                Payload = s2CSyncLoadNoti
+            };
+
+            // 패킷 로그 출력
+            Logger.Log($"SYNC_LOAD_NOTIFICATION => {packet}");
+
             await SendPacketForAll(packet);
         }
 
