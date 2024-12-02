@@ -21,12 +21,19 @@ namespace ResourceWar.Server
         private CancellationTokenSource cts = null;
 
         private ObjectPool<MonsterBehaviour> monsterPool;
+        [SerializeField]
+        private Transform[] TeamSpawnPoints;
 
         private void Awake()
         {
             monsterPool = new(monsterPool_OnCreate, monsterPool_OnGet, monsterPool_OnRelease, monsterPool_OnDestroy, true, 100, 300);
-            EventDispatcher<Event, int>.Instance.Subscribe(Event.AddNewTeam, AddNewTeam);
+            for (int i = 0; i < TeamSpawnPoints.Length; ++i)
+            {
+                monsters.Add(i + 1, new List<MonsterBehaviour>());
+            }
         }
+
+        
 
         private void OnEnable()
         {
@@ -64,7 +71,7 @@ namespace ResourceWar.Server
             {
                 foreach (var monster in monsters.Values)
                 {
-              
+                    
                 }
                 await UniTask.Yield(cts.Token);
             }
@@ -72,15 +79,6 @@ namespace ResourceWar.Server
             
         }
 
-
-        private  UniTask AddNewTeam(int teamId)
-        {
-            if(monsters.ContainsKey(teamId) == false)
-            {
-                monsters.Add(teamId, new List<MonsterBehaviour>());
-            }
-            return UniTask.CompletedTask;
-        }
         public void AddMonster(int teamId, MonsterBehaviour monster)
         {
             monsters[teamId].Add(monster);
@@ -119,9 +117,30 @@ namespace ResourceWar.Server
 
         private void OnDestroy()
         {
+
             if (cts != null) { 
             cts.Cancel();
             cts.Dispose();
+            }
+
+            if (monsters != null)
+            {
+                foreach (var team in monsters.Values)
+                {
+                    foreach (var monster in team)
+                    {
+                        monsterPool.Release(monster);
+                    }
+                }
+                monsters.Clear();
+            }
+
+            if (monsterPool != null)
+            {
+               
+                monsterPool.Clear();
+                monsterPool.Dispose();
+                monsterPool = null;
             }
         }
     }

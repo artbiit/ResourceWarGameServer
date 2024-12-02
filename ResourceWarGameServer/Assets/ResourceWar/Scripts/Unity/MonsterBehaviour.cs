@@ -48,8 +48,8 @@ namespace ResourceWar.Server
             this.Speed = monsterData.Speed;
             this.AttackRanged = monsterData.AttackRanged;
             this.DetectRanged = monsterData.DetectRanged;
-            
-
         }
+
+        
     }
 }
