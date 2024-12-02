@@ -541,20 +541,20 @@ namespace ResourceWar.Server
             S2CGameStartNoti s2CGameStartNoti = new S2CGameStartNoti();
 
             bool isAllReady = true;
-            int totalPlayerCount = 0;
+            /*int totalPlayerCount = 0;*/
 
             LoopAllPlayers((teamIndex, token, player) =>
             {
                 // 논리 게이트 하나라도 true가 아니면 false
                 isAllReady &= player.IsReady;
-                totalPlayerCount++;
+                /*totalPlayerCount++;*/
             });
 
-            if (totalPlayerCount < 4)
+            /*if (totalPlayerCount < 4)
             {
                 Logger.LogError($"Game cannot start. Current player count: {totalPlayerCount}.");
                 return;
-            }
+            }*/
 
             var packet = new Packet
             {
