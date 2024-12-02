@@ -31,8 +31,6 @@ namespace ResourceWar.Server
                 resultCode = TeamChangeResultCode.FAIL;
             }
 
-            packet.Payload = teamChangeMessage;
-
             if (resultCode == TeamChangeResultCode.SUCCESS)
             {
                 // 팀 변경 처리
