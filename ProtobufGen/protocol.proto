@@ -71,15 +71,6 @@ message S2CSignOutRes{
 //Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//
 //Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//
 //Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//
-// GameState 메시지
-message GameState {
-    uint32 gold = 1;
-    uint32 baseHp = 2;
-    uint32 monsterLevel = 5;
-    uint32 score = 6;
-    repeated Position monsterPath = 7;
-    Position basePosition = 8;
-  }
 
   // 아이템 데이터
 message ItemData {
@@ -116,11 +107,12 @@ message PlayerState {
   
 message FieldUnit {
     uint32 id = 1;
-    uint32 state = 2; // 상태아이디로 이동인지, 근거리공격인지, 원거리공격인지 등등
-    Position position = 3;
-    uint32 hp = 4;
-    uint32 damage = 5;
-    uint32 targetId = 6;
+    int32 unitType = 2;
+    uint32 state = 3; // 상태아이디로 이동인지, 근거리공격인지, 원거리공격인지 등등
+    Position position = 4;
+    uint32 hp = 5;
+    uint32 damage = 6;
+    uint32 targetId = 7;
 }
   
 message Position {
@@ -128,6 +120,8 @@ message Position {
     float y = 2;
     float z = 3;
 }
+
+// 여기서부터 실제 패킷들
 
 message C2SAuthorizeReq{
     
@@ -353,7 +347,7 @@ message S2CPlayerIsReadyChangeRes {
 
 // 게임 시작 요청 (준비 완료)
 message C2SGameStartReq {
-    bool ready = 1;
+    
 }
 
 // 게임 시작 결과 (준비 완료)

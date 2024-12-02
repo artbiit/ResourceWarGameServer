@@ -8,6 +8,7 @@ using System.Linq;
 using Protocol;
 using Google.Protobuf.Collections;
 using UnityEngine.UIElements;
+using System.ComponentModel;
 
 namespace ResourceWar.Server
 {
@@ -158,28 +159,29 @@ namespace ResourceWar.Server
         private UniTask PlayerSyncNotify(uint ClientId, byte ActionType, Vector3 direction, uint EquippedItem, string token)
         {
             Logger.Log($"기존 움직임 방향은 : {direction}");
-            PlayerState protoPlayerState = new();
+            PlayerState protoPlayerState;
             if (direction.magnitude < 100) // dash가 얼마나 될 지 모르니 일단 100
             {
-                protoPlayerState = new Protocol.PlayerState
-                {
-                    PlayerId = ClientId,
-                    ActionType = ActionType,
-                    Position = Correction(direction, token),
-                    EquippedItem = EquippedItem,
-                };
+                Correction(direction, ActionType, token);                
             }
             else // 이동 거리가 너무 클 경우 움직이지 않게 함
             {
-                protoPlayerState = new Protocol.PlayerState
-                {
-                    PlayerId = ClientId,
-                    ActionType = ActionType,
-                    Position = Correction(Vector3.zero, token),
-                    EquippedItem = EquippedItem,
-                };
+                Correction(Vector3.zero, ActionType, token);
             }
-            
+            List<Protocol.PlayerState> playerStates = new();
+            if (TryGetTeam((int)ClientId, out Team allPlayers))
+            {
+                foreach (var player in allPlayers.Players.Values) // 플레이어 목록 순회
+                {
+                    playerStates.Add(new Protocol.PlayerState
+                    {
+                        PlayerId = (uint)player.ClientId,
+                        ActionType = (uint)player.ActionType,
+                        Position = player.position.FromVector(),
+                        EquippedItem = (uint)player.EquippedItem,
+                    });
+                }
+            }
 
             var packet = new Packet
             {
@@ -188,20 +190,21 @@ namespace ResourceWar.Server
                 //Token = "", // 특정 클라이언트에게 전송 시 설정
                 Payload = new Protocol.S2CSyncPlayersNoti
                 {
-                    PlayerStates = { protoPlayerState },
+                    PlayerStates = { playerStates },
                 }
             };
-            Logger.Log(packet);
+            Logger.Log("플레이어 싱크 패킷" + packet);
             SendPacketForAll(packet);
             return UniTask.CompletedTask;
         }
 
-        public Protocol.Position Correction(Vector3 direction, string token)
+        public Protocol.Position Correction(Vector3 direction, byte ActionType, string token)
         {
             // 속도 검사하는 로직이 빠져있고 이거는 대쉬 하면서 같이 만들 예정
             // 이동 가능한 위치인지도 빠져있다.
             // 밑에 함수는 포지션만 전달에서 플레이어 안에서 처리를 한다
             FindPlayer(token).ChangePosition(direction);
+            FindPlayer(token).ChangeAction(ActionType);
             return FindPlayer(token).position.FromVector();
 
         }

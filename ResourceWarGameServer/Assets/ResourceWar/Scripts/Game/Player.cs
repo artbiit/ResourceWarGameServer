@@ -24,6 +24,8 @@ namespace ResourceWar.Server
         public int AvatarId { get; set; }
         public int playerSpeed = 100;
         public Vector3 position = Vector3.zero;
+        public int ActionType { get; set; }
+        public int EquippedItem { get; set; }
 
         /// <summary>
         /// ms 단위 지연시간
@@ -67,6 +69,11 @@ namespace ResourceWar.Server
             return this.position;
         }
 
+        public void ChangeAction(byte ActionType)
+        {
+            this.ActionType = ActionType;
+        }
+
         public void ChangeArea(uint DestinationAreaType)
         {
             this.position = Vector3.one * 999; // 임의로 멀리 이동시킴
@@ -79,7 +86,7 @@ namespace ResourceWar.Server
             this.ClientId = clientId;
             this.IsConnected = true;
             EventDispatcher<(int, int), long>.Instance.Subscribe((this.ClientId, int.MaxValue + this.ClientId), PongRes);
-           /* pingToken = IntervalManager.Instance.AddTask(hashCode, PingReq, 1.0f);*/
+            pingToken = IntervalManager.Instance.AddTask(hashCode, PingReq, 1.0f);
         }
 
         public void Disconnected()
