@@ -4,6 +4,7 @@ using Protocol;
 using ResourceWar.Server.Lib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,22 +23,25 @@ namespace ResourceWar.Server
             var resultCode = TeamChangeResultCode.SUCCESS;
             C2STeamChangeReq teamChangeMessage = (C2STeamChangeReq)packet.Payload;
 
+            Logger.Log($"테스트 => {packet.Payload}");
+
             // 패킷 검증
             if (string.IsNullOrWhiteSpace(packet.Token))
             {
                 Logger.LogError("TeamChangeHandler: Token is null or empty.");
                 resultCode = TeamChangeResultCode.FAIL;
             }
+            Logger.Log($"테스트2 => {packet.Payload}");
 
             // teamIndex 기본값 설정
             var teamIndex = 0; // Default to 0
             if (resultCode == TeamChangeResultCode.SUCCESS)
             {
-                teamIndex = (teamChangeMessage.TeamIndex == 0) ? (int)teamChangeMessage.TeamIndex : 0;
+                teamIndex = (teamChangeMessage.TeamIndex == 0) ? 0 : (int)teamChangeMessage.TeamIndex ;
                 teamChangeMessage.TeamIndex = (uint)teamIndex;
                 Logger.Log($"TeamChangeHandler: Received teamIndex is {teamIndex}. Defaulting to 0 if not set.");
             }
-
+            Logger.Log($"테스트 3 => {packet.Payload}");
             // 새로운 ReceivedPacket 생성
             var updatedPacket = new ReceivedPacket(packet.ClientId)
             {
