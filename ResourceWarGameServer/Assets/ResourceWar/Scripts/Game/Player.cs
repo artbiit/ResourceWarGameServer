@@ -20,7 +20,6 @@ namespace ResourceWar.Server
         public string Nickname { get; set; }
         public bool IsReady { get; set; }
 
-        public bool IsSurrender { get; set; }
         public bool IsConnected { get; set; }
         public int LoadProgress { get; set; }
         public int AvatarId { get; set; }
@@ -46,7 +45,6 @@ namespace ResourceWar.Server
             this.AvatarId = 1;
             IsReady = false;
             IsConnected = true;
-            IsSurrender = false;
             LoadProgress = 0;
             this.hashCode = this.GetHashCode().ToString();
             Connected(clientId);
