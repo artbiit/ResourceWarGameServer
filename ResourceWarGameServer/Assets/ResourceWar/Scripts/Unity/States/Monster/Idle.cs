@@ -10,19 +10,17 @@ namespace ResourceWar.Server.Monster
     {
         public async UniTask Enter(MonsterStats stats)
         {
-            throw new System.NotImplementedException();
+            await UniTask.Yield();
         }
 
         public async UniTask Execute(MonsterStats stats)
         {
-            throw new System.NotImplementedException();
+            await UniTask.Yield();
         }
 
         public async UniTask Exit(MonsterStats stats)
         {
-            throw new System.NotImplementedException();
+            await UniTask.Yield();
         }
-
-
     }
 }

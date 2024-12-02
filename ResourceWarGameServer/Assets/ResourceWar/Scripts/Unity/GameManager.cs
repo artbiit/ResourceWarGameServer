@@ -99,6 +99,9 @@ namespace ResourceWar.Server
                 for (int i = 0; i < teams.Length; i++)
                 {
                     teams[i] = new Team();
+                    if(i != 0) { 
+                     await EventDispatcher<MonsterController.Event, int>.Instance.NotifyAsync( MonsterController.Event.AddNewTeam, i);
+                    }
                 }
             }
 
