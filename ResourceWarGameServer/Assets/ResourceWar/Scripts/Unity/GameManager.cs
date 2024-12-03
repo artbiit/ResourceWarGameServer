@@ -417,7 +417,26 @@ namespace ResourceWar.Server
             return null;
         }
 
+        private bool TryGetTeamIndex(int clientId, out int teamIndex, out Team team)
+        {
+            for (int i = 0; i < teams.Length; i++)
+            {
+                if (teams[i].Players.Values.Any(p => p.ClientId == clientId))
+                {
+                    teamIndex = i;
+                    team = teams[i];
+                    return true;
+                }
+            }
+
+            teamIndex = -1;
+            team = null;
+            return false;
+        }
+
         #endregion
+
+        private TimerManager<int> timerManager = new TimerManager<int>();
 
         #region 항복 투표
         private Dictionary<int, HashSet<int>> surrenderVotes = new Dictionary<int, HashSet<int>>();
@@ -426,25 +445,9 @@ namespace ResourceWar.Server
         public async UniTask SurrenderNoti(ReceivedPacket receivedPacket)
         {
             var clientId = receivedPacket.ClientId;
-            if (!TryGetTeam(clientId, out var team))
+            if (!TryGetTeamIndex(clientId, out int teamIndex, out var team))
             {
-                Logger.LogError($"Player {clientId}가 속한 팀을 찾을 수 없습니다.");
-                return;
-            }
-
-            int teamIndex = -1;
-            for (int i = 0; i < teams.Length; i++)
-            {
-                if (teams[i] == team)
-                {
-                    teamIndex = i;
-                    break;
-                }
-            }
-
-            if (teamIndex == -1)
-            {
-                Logger.LogError($"Player {clientId}의 팀 인덱스를 찾을 수 없습니다.");
+                Logger.Log($"Player {clientId}가 속한 팀을 찾을 수 없습니다.");
                 return;
             }
 
@@ -452,7 +455,13 @@ namespace ResourceWar.Server
             {
                 surrenderVotes[teamIndex] = new HashSet<int>();
 
-                surrenderVotes.Remove(teamIndex); // 투표 삭제
+
+                // 이미 타이머가 실행 중인지 확인
+                if (!timerManager.IsTimerActive(teamIndex))
+                {
+                    // 타이머 시작
+                    timerManager.StartTimer(teamIndex, 180, OnSurrenderVoteTimeout);
+                }
             }
 
             var votes = surrenderVotes[teamIndex];
@@ -484,6 +493,31 @@ namespace ResourceWar.Server
             {
                 Logger.Log($"팀 {teamIndex}의 항복이 승인되었습니다.");
                 await HandleSurrender(teamIndex);
+            }
+        }
+
+        /// <summary>
+        /// 투표 시간이 초과되었을 때 실행되는 콜백.
+        /// </summary>
+        /// <param name="teamIndex"></param>
+        private void OnSurrenderVoteTimeout(int teamIndex)
+        {
+            if (surrenderVotes.ContainsKey(teamIndex))
+            {
+                surrenderVotes.Remove(teamIndex); // 투표 삭제
+                Logger.Log($"팀 {teamIndex}의 항복 투표 데이터가 시간 초과로 제거되었습니다.");
+
+                // 필요하다면 시간 초과 알림 패킷 전송
+                /*var packet = new Packet
+                {
+                    PacketType = PacketType.SURRENDER_TIMEOUT_NOTIFICATION,
+                    Payload = new S2CSurrenderTimeoutNoti
+                    {
+                        TeamIndex = (uint)teamIndex,
+                    }
+                };
+
+                SendPacketForTeam(packet).Forget();*/
             }
         }
     
