@@ -25,6 +25,7 @@ namespace ResourceWar.Server
             Handlers.Add(PacketType.GAME_START_REQUEST, this.GameStartHandler);
             Handlers.Add(PacketType.PLAYER_IS_READY_CHANGE_REQUEST, this.PlayerIsReadyChangeHandler);
             Handlers.Add(PacketType.LOAD_PROGRESS_NOTIFICATION, this.LoadProgressHandler);
+            Handlers.Add(PacketType.SURRENDER_REQUEST, this.SurrenderHandler);
         }
 
 
@@ -38,7 +39,7 @@ namespace ResourceWar.Server
                 //null이면 반환할 데이터 없음을 의미
                 if (result != null && !PacketUtils.IsSameMessageType(result.Payload, result.PacketType))
                 {
-                    throw new InvalidOperationException($"Mismatch between returned message type and packetType. : {packet}");
+                    throw new InvalidOperationException($"Mismatch between returned message type and packetType. : {packet}\n{result.Payload.GetType().Name}|{result.PacketType}");
                 }
             }
      

@@ -72,45 +72,45 @@ namespace Protocol {
             "YmplY3ROb3RpEhAKCG9iamVjdElkGAEgASgNEhIKCm9iamVjdFR5cGUYAiAB",
             "KA0SEAoIYXJlYVR5cGUYAyABKA0iOwoUUzJDU3luY0ZpZWxkVW5pdE5vdGkS",
             "IwoGT2JqZWN0GAEgAygLMhMucHJvdG9jb2wuRmllbGRVbml0IhEKD0MyU1N1",
-            "cnJlbmRlclJlcSJKCg9TMkNTdXJyZW5kZXJSZXMSGwoTc3VycmVuZGVyUmVz",
-            "dWx0Q29kZRgBIAEoDRIaChJzdXJyZW5kZXJTdGFydFRpbWUYAiABKAQiQAoQ",
-            "UzJDU3VycmVuZGVyTm90aRIQCghwbGF5ZXJJZBgBIAEoDRIaChJzdXJyZW5k",
-            "ZXJTdGFydFRpbWUYAiABKAQiOgoPUzJDR2FtZU92ZXJOb3RpEhQKDGdhbWVP",
-            "dmVyVHlwZRgBIAEoDRIRCgl0ZWFtSW5kZXgYAiABKA0iSwoTQzJTTW92ZVRv",
-            "QXJlYU1hcFJlcRIXCg9jdXJyZW50QXJlYVR5cGUYASABKA0SGwoTZGVzdGlu",
-            "YXRpb25BcmVhVHlwZRgCIAEoDSJTChBTMkNNb3ZlVG9BcmVhTWFwEhkKEWpv",
-            "aW5NYXBSZXN1bHRDb2RlGAEgASgNEiQKCHBvc2l0aW9uGAIgASgLMhIucHJv",
-            "dG9jb2wuUG9zaXRpb24iJQoPQzJTV29ya2JlbmNoUmVxEhIKCnJlc3VsdEl0",
-            "ZW0YASABKA0iLgoPUzJDV29ya2JlbmNoUmVzEhsKE3dvcmtiZW5jaFJlc3Vs",
-            "dENvZGUYASABKA0iMQoNQzJTRnVybmFjZVJlcRIgCgRpdGVtGAEgASgLMhIu",
-            "cHJvdG9jb2wuSXRlbURhdGEiKgoNUzJDRnVybmFjZVJlcxIZChFmdXJuYWNl",
-            "UmVzdWx0Q29kZRgBIAEoDSIxCg1DMlNTYXdtaWxsUmVxEiAKBGl0ZW0YASAB",
-            "KAsyEi5wcm90b2NvbC5JdGVtRGF0YSIqCg1TMkNTYXdtaWxsUmVzEhkKEXNh",
-            "d21pbGxSZXN1bHRDb2RlGAEgASgNIiUKEEMyU0NyZWF0ZVJvb21SZXESEQoJ",
-            "aXNQcml2YXRlGAEgASgIIjUKEFMyQ0NyZWF0ZVJvb21SZXMSEAoIZ2FtZUNv",
-            "ZGUYASABKAkSDwoHZ2FtZVVybBgCIAEoCSITChFDMlNNYXRjaENhbmNlbFJl",
-            "cSITChFTMkNNYXRjaENhbmNlbFJlcyINCgtDMlNNYXRjaFJlcSIqCgtTMkNN",
-            "YXRjaFJlcxIbChNyb29tTWF0Y2hSZXN1bHRDb2RlGAEgASgNIlcKFFMyQ01h",
-            "dGNoUHJvZ3Jlc3NOb3RpEhkKEW1hdGNoUHJvZ3Jlc3NDb2RlGAEgASgNEhMK",
-            "C2VsYXBzZWRUaW1lGAIgASgEEg8KB2dhbWVVcmwYAyABKAkiIgoOQzJTSm9p",
-            "blJvb21SZXESEAoIZ2FtZUNvZGUYASABKAkiPQoOUzJDSm9pblJvb21SZXMS",
-            "GgoSam9pblJvb21SZXN1bHRDb2RlGAEgASgNEg8KB2dhbWVVcmwYAiABKAki",
-            "EAoOQzJTUXVpdFJvb21SZXEiIwoPUzJDUXVpdFJvb21Ob3RpEhAKCHBsYXll",
-            "cklkGAEgASgNIiUKEEMyU1RlYW1DaGFuZ2VSZXESEQoJdGVhbUluZGV4GAEg",
-            "ASgNIjAKEFMyQ1RlYW1DaGFuZ2VSZXMSHAoUdGVhbUNoYW5nZVJlc3VsdENv",
-            "ZGUYASABKA0iPAoPUzJDU3luY1Jvb21Ob3RpEikKB3BsYXllcnMYASADKAsy",
-            "GC5wcm90b2NvbC5QbGF5ZXJSb29tSW5mbyIqChlDMlNQbGF5ZXJJc1JlYWR5",
-            "Q2hhbmdlUmVxEg0KBXJlYWR5GAEgASgIIkIKGVMyQ1BsYXllcklzUmVhZHlD",
-            "aGFuZ2VSZXMSJQodcGxheWVySXNSZWFkeUNoYW5nZVJlc3VsdENvZGUYASAB",
-            "KA0iEQoPQzJTR2FtZVN0YXJ0UmVxIhIKEFMyQ0dhbWVTdGFydE5vdGkiJwoT",
-            "QzJTTG9hZFByb2dyZXNzTm90aRIQCghwcm9ncmVzcxgBIAEoDSKDAQoPUzJD",
-            "U3luY0xvYWROb3RpEjwKDHN5bmNMb2FkRGF0YRgBIAMoCzImLnByb3RvY29s",
-            "LlMyQ1N5bmNMb2FkTm90aS5TeW5jTG9hZERhdGEaMgoMU3luY0xvYWREYXRh",
-            "EhAKCHBsYXllcklkGAEgASgNEhAKCHByb2dyZXNzGAIgASgNIiQKEEMyU01v",
-            "bnN0ZXJBZGRSZXESEAoIbW9uc3RlcnMYASADKAUiFQoTQzJTTW9uc3RlckRl",
-            "cGxveVJlcSIWChRTMkNNb25zdGVyRGVwbG95Tm90aSJFChNTMkNNaXNzaW5n",
-            "RmllbGROb3RpEhIKCnBhY2tldFR5cGUYASABKAUSGgoSbWlzc2luZ0ZpZWxk",
-            "TGVuZ3RoGAIgASgFIhYKFFMyQ05lZWRBdXRob3JpemVOb3RpYgZwcm90bzM="));
+            "cnJlbmRlclJlcSIuCg9TMkNTdXJyZW5kZXJSZXMSGwoTc3VycmVuZGVyUmVz",
+            "dWx0Q29kZRgBIAEoDSJVChBTMkNTdXJyZW5kZXJOb3RpEhAKCHBsYXllcklk",
+            "GAEgASgNEhMKC2lzU3VycmVuZGVyGAIgASgIEhoKEnN1cnJlbmRlclN0YXJ0",
+            "VGltZRgDIAEoBCI6Cg9TMkNHYW1lT3Zlck5vdGkSFAoMZ2FtZU92ZXJUeXBl",
+            "GAEgASgNEhEKCXRlYW1JbmRleBgCIAEoDSJLChNDMlNNb3ZlVG9BcmVhTWFw",
+            "UmVxEhcKD2N1cnJlbnRBcmVhVHlwZRgBIAEoDRIbChNkZXN0aW5hdGlvbkFy",
+            "ZWFUeXBlGAIgASgNIlMKEFMyQ01vdmVUb0FyZWFNYXASGQoRam9pbk1hcFJl",
+            "c3VsdENvZGUYASABKA0SJAoIcG9zaXRpb24YAiABKAsyEi5wcm90b2NvbC5Q",
+            "b3NpdGlvbiIlCg9DMlNXb3JrYmVuY2hSZXESEgoKcmVzdWx0SXRlbRgBIAEo",
+            "DSIuCg9TMkNXb3JrYmVuY2hSZXMSGwoTd29ya2JlbmNoUmVzdWx0Q29kZRgB",
+            "IAEoDSIxCg1DMlNGdXJuYWNlUmVxEiAKBGl0ZW0YASABKAsyEi5wcm90b2Nv",
+            "bC5JdGVtRGF0YSIqCg1TMkNGdXJuYWNlUmVzEhkKEWZ1cm5hY2VSZXN1bHRD",
+            "b2RlGAEgASgNIjEKDUMyU1Nhd21pbGxSZXESIAoEaXRlbRgBIAEoCzISLnBy",
+            "b3RvY29sLkl0ZW1EYXRhIioKDVMyQ1Nhd21pbGxSZXMSGQoRc2F3bWlsbFJl",
+            "c3VsdENvZGUYASABKA0iJQoQQzJTQ3JlYXRlUm9vbVJlcRIRCglpc1ByaXZh",
+            "dGUYASABKAgiNQoQUzJDQ3JlYXRlUm9vbVJlcxIQCghnYW1lQ29kZRgBIAEo",
+            "CRIPCgdnYW1lVXJsGAIgASgJIhMKEUMyU01hdGNoQ2FuY2VsUmVxIhMKEVMy",
+            "Q01hdGNoQ2FuY2VsUmVzIg0KC0MyU01hdGNoUmVxIioKC1MyQ01hdGNoUmVz",
+            "EhsKE3Jvb21NYXRjaFJlc3VsdENvZGUYASABKA0iVwoUUzJDTWF0Y2hQcm9n",
+            "cmVzc05vdGkSGQoRbWF0Y2hQcm9ncmVzc0NvZGUYASABKA0SEwoLZWxhcHNl",
+            "ZFRpbWUYAiABKAQSDwoHZ2FtZVVybBgDIAEoCSIiCg5DMlNKb2luUm9vbVJl",
+            "cRIQCghnYW1lQ29kZRgBIAEoCSI9Cg5TMkNKb2luUm9vbVJlcxIaChJqb2lu",
+            "Um9vbVJlc3VsdENvZGUYASABKA0SDwoHZ2FtZVVybBgCIAEoCSIQCg5DMlNR",
+            "dWl0Um9vbVJlcSIjCg9TMkNRdWl0Um9vbU5vdGkSEAoIcGxheWVySWQYASAB",
+            "KA0iJQoQQzJTVGVhbUNoYW5nZVJlcRIRCgl0ZWFtSW5kZXgYASABKA0iMAoQ",
+            "UzJDVGVhbUNoYW5nZVJlcxIcChR0ZWFtQ2hhbmdlUmVzdWx0Q29kZRgBIAEo",
+            "DSI8Cg9TMkNTeW5jUm9vbU5vdGkSKQoHcGxheWVycxgBIAMoCzIYLnByb3Rv",
+            "Y29sLlBsYXllclJvb21JbmZvIioKGUMyU1BsYXllcklzUmVhZHlDaGFuZ2VS",
+            "ZXESDQoFcmVhZHkYASABKAgiQgoZUzJDUGxheWVySXNSZWFkeUNoYW5nZVJl",
+            "cxIlCh1wbGF5ZXJJc1JlYWR5Q2hhbmdlUmVzdWx0Q29kZRgBIAEoDSIRCg9D",
+            "MlNHYW1lU3RhcnRSZXEiEgoQUzJDR2FtZVN0YXJ0Tm90aSInChNDMlNMb2Fk",
+            "UHJvZ3Jlc3NOb3RpEhAKCHByb2dyZXNzGAEgASgNIoMBCg9TMkNTeW5jTG9h",
+            "ZE5vdGkSPAoMc3luY0xvYWREYXRhGAEgAygLMiYucHJvdG9jb2wuUzJDU3lu",
+            "Y0xvYWROb3RpLlN5bmNMb2FkRGF0YRoyCgxTeW5jTG9hZERhdGESEAoIcGxh",
+            "eWVySWQYASABKA0SEAoIcHJvZ3Jlc3MYAiABKA0iJAoQQzJTTW9uc3RlckFk",
+            "ZFJlcRIQCghtb25zdGVycxgBIAMoBSIVChNDMlNNb25zdGVyRGVwbG95UmVx",
+            "IhYKFFMyQ01vbnN0ZXJEZXBsb3lOb3RpIkUKE1MyQ01pc3NpbmdGaWVsZE5v",
+            "dGkSEgoKcGFja2V0VHlwZRgBIAEoBRIaChJtaXNzaW5nRmllbGRMZW5ndGgY",
+            "AiABKAUiFgoUUzJDTmVlZEF1dGhvcml6ZU5vdGliBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -145,8 +145,8 @@ namespace Protocol {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CDestoryObjectNoti), global::Protocol.S2CDestoryObjectNoti.Parser, new[]{ "ObjectId", "ObjectType", "AreaType" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSyncFieldUnitNoti), global::Protocol.S2CSyncFieldUnitNoti.Parser, new[]{ "Object" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SSurrenderReq), global::Protocol.C2SSurrenderReq.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSurrenderRes), global::Protocol.S2CSurrenderRes.Parser, new[]{ "SurrenderResultCode", "SurrenderStartTime" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSurrenderNoti), global::Protocol.S2CSurrenderNoti.Parser, new[]{ "PlayerId", "SurrenderStartTime" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSurrenderRes), global::Protocol.S2CSurrenderRes.Parser, new[]{ "SurrenderResultCode" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSurrenderNoti), global::Protocol.S2CSurrenderNoti.Parser, new[]{ "PlayerId", "IsSurrender", "SurrenderStartTime" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CGameOverNoti), global::Protocol.S2CGameOverNoti.Parser, new[]{ "GameOverType", "TeamIndex" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SMoveToAreaMapReq), global::Protocol.C2SMoveToAreaMapReq.Parser, new[]{ "CurrentAreaType", "DestinationAreaType" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CMoveToAreaMap), global::Protocol.S2CMoveToAreaMap.Parser, new[]{ "JoinMapResultCode", "Position" }, null, null, null, null),
@@ -5497,7 +5497,6 @@ namespace Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public S2CSurrenderRes(S2CSurrenderRes other) : this() {
       surrenderResultCode_ = other.surrenderResultCode_;
-      surrenderStartTime_ = other.surrenderStartTime_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -5517,17 +5516,6 @@ namespace Protocol {
       }
     }
 
-    /// <summary>Field number for the "surrenderStartTime" field.</summary>
-    public const int SurrenderStartTimeFieldNumber = 2;
-    private ulong surrenderStartTime_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ulong SurrenderStartTime {
-      get { return surrenderStartTime_; }
-      set {
-        surrenderStartTime_ = value;
-      }
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as S2CSurrenderRes);
@@ -5542,7 +5530,6 @@ namespace Protocol {
         return true;
       }
       if (SurrenderResultCode != other.SurrenderResultCode) return false;
-      if (SurrenderStartTime != other.SurrenderStartTime) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -5550,7 +5537,6 @@ namespace Protocol {
     public override int GetHashCode() {
       int hash = 1;
       if (SurrenderResultCode != 0) hash ^= SurrenderResultCode.GetHashCode();
-      if (SurrenderStartTime != 0UL) hash ^= SurrenderStartTime.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -5568,10 +5554,6 @@ namespace Protocol {
         output.WriteRawTag(8);
         output.WriteUInt32(SurrenderResultCode);
       }
-      if (SurrenderStartTime != 0UL) {
-        output.WriteRawTag(16);
-        output.WriteUInt64(SurrenderStartTime);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -5582,9 +5564,6 @@ namespace Protocol {
       int size = 0;
       if (SurrenderResultCode != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(SurrenderResultCode);
-      }
-      if (SurrenderStartTime != 0UL) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(SurrenderStartTime);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -5600,9 +5579,6 @@ namespace Protocol {
       if (other.SurrenderResultCode != 0) {
         SurrenderResultCode = other.SurrenderResultCode;
       }
-      if (other.SurrenderStartTime != 0UL) {
-        SurrenderStartTime = other.SurrenderStartTime;
-      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -5616,10 +5592,6 @@ namespace Protocol {
             break;
           case 8: {
             SurrenderResultCode = input.ReadUInt32();
-            break;
-          }
-          case 16: {
-            SurrenderStartTime = input.ReadUInt64();
             break;
           }
         }
@@ -5657,6 +5629,7 @@ namespace Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public S2CSurrenderNoti(S2CSurrenderNoti other) : this() {
       playerId_ = other.playerId_;
+      isSurrender_ = other.isSurrender_;
       surrenderStartTime_ = other.surrenderStartTime_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -5677,8 +5650,19 @@ namespace Protocol {
       }
     }
 
+    /// <summary>Field number for the "isSurrender" field.</summary>
+    public const int IsSurrenderFieldNumber = 2;
+    private bool isSurrender_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool IsSurrender {
+      get { return isSurrender_; }
+      set {
+        isSurrender_ = value;
+      }
+    }
+
     /// <summary>Field number for the "surrenderStartTime" field.</summary>
-    public const int SurrenderStartTimeFieldNumber = 2;
+    public const int SurrenderStartTimeFieldNumber = 3;
     private ulong surrenderStartTime_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ulong SurrenderStartTime {
@@ -5702,6 +5686,7 @@ namespace Protocol {
         return true;
       }
       if (PlayerId != other.PlayerId) return false;
+      if (IsSurrender != other.IsSurrender) return false;
       if (SurrenderStartTime != other.SurrenderStartTime) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -5710,6 +5695,7 @@ namespace Protocol {
     public override int GetHashCode() {
       int hash = 1;
       if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
+      if (IsSurrender != false) hash ^= IsSurrender.GetHashCode();
       if (SurrenderStartTime != 0UL) hash ^= SurrenderStartTime.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -5728,8 +5714,12 @@ namespace Protocol {
         output.WriteRawTag(8);
         output.WriteUInt32(PlayerId);
       }
-      if (SurrenderStartTime != 0UL) {
+      if (IsSurrender != false) {
         output.WriteRawTag(16);
+        output.WriteBool(IsSurrender);
+      }
+      if (SurrenderStartTime != 0UL) {
+        output.WriteRawTag(24);
         output.WriteUInt64(SurrenderStartTime);
       }
       if (_unknownFields != null) {
@@ -5742,6 +5732,9 @@ namespace Protocol {
       int size = 0;
       if (PlayerId != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(PlayerId);
+      }
+      if (IsSurrender != false) {
+        size += 1 + 1;
       }
       if (SurrenderStartTime != 0UL) {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(SurrenderStartTime);
@@ -5759,6 +5752,9 @@ namespace Protocol {
       }
       if (other.PlayerId != 0) {
         PlayerId = other.PlayerId;
+      }
+      if (other.IsSurrender != false) {
+        IsSurrender = other.IsSurrender;
       }
       if (other.SurrenderStartTime != 0UL) {
         SurrenderStartTime = other.SurrenderStartTime;
@@ -5779,6 +5775,10 @@ namespace Protocol {
             break;
           }
           case 16: {
+            IsSurrender = input.ReadBool();
+            break;
+          }
+          case 24: {
             SurrenderStartTime = input.ReadUInt64();
             break;
           }

@@ -19,6 +19,7 @@ namespace ResourceWar.Server
 
         public string Nickname { get; set; }
         public bool IsReady { get; set; }
+
         public bool IsConnected { get; set; }
         public int LoadProgress { get; set; }
         public int AvatarId { get; set; }
