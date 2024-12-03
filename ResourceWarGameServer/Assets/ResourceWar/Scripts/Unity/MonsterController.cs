@@ -79,15 +79,18 @@ namespace ResourceWar.Server
             
         }
 
-        public void AddMonster(int teamId, MonsterBehaviour monster)
+        public void AddMonster(int teamId, int monsterId)
         {
+            monsterPool.Get(out var monster);
+            if (monster.Init(monsterId)) { 
             monsters[teamId].Add(monster);
-        }
 
-        public void InstantiateMonster(int teamId)
-        {
-            var monster = GameObject.Instantiate(monsterPrefab);
-            monsters[teamId].Add(monster);
+                var spawnPoint = TeamSpawnPoints[teamId];
+            }
+            else
+            {
+                monsterPool.Release(monster);
+            }
         }
 
         #region MonsterPool
