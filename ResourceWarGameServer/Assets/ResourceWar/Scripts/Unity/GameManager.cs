@@ -672,21 +672,27 @@ namespace ResourceWar.Server
         {
             S2CGameStartNoti s2CGameStartNoti = new S2CGameStartNoti();
 
+            // 팀별 플레이어 수와 준비 상태를 동시에 확인
+            int team1Count = 0;
+            int team2Count = 0;
             bool isAllReady = true;
-            int totalPlayerCount = 0;
 
             LoopAllPlayers((teamIndex, token, player) =>
             {
+                // 팀별 플레이어 수를 계산
+                if (teamIndex == 1) team1Count++;
+                if (teamIndex == 2) team2Count++;
+
                 // 논리 게이트 하나라도 true가 아니면 false
                 isAllReady &= player.IsReady;
-                /*totalPlayerCount++;*/
             });
 
-            /*if (totalPlayerCount < 4)
+            // 팀 구성 및 준비 상태 확인
+            if (team1Count != 2 || team2Count != 2 || !isAllReady)
             {
-                Logger.LogError($"Game cannot start. Current player count: {totalPlayerCount}.");
+                Logger.LogError($"Game cannot start. Team composition or readiness is invalid: Team[1]={team1Count}, Team[2]={team2Count}, AllReady={isAllReady}");
                 return;
-            }*/
+            }
 
             var packet = new Packet
             {
