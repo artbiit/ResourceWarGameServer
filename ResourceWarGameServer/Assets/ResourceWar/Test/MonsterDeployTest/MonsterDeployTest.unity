@@ -122,7 +122,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: e4c29a60a5109684aabb7c03860ac078, type: 2}
 --- !u!1 &102314145
 GameObject:
   m_ObjectHideFlags: 0
@@ -250,9 +250,7 @@ Transform:
   - {fileID: 568145783}
   - {fileID: 1384435308}
   - {fileID: 1286866864}
-  - {fileID: 4859378410203205459}
   - {fileID: 1733783408323896729}
-  - {fileID: 483437964730908087}
   m_Father: {fileID: 8060744160649781840}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &245791069
@@ -570,7 +568,7 @@ GameObject:
   - component: {fileID: 568145781}
   - component: {fileID: 568145780}
   - component: {fileID: 568145784}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: BasicBuilding2Team
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -675,7 +673,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
@@ -997,7 +995,7 @@ GameObject:
   - component: {fileID: 808917069}
   - component: {fileID: 808917068}
   - component: {fileID: 808917072}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Nexus1Team
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1102,7 +1100,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
@@ -1119,7 +1117,7 @@ GameObject:
   - component: {fileID: 1026205573}
   - component: {fileID: 1026205572}
   - component: {fileID: 1026205576}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Tower1Team
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1224,7 +1222,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
@@ -1262,6 +1260,8 @@ MonoBehaviour:
   TeamSpawnPoints:
   - {fileID: 5098123538473514344}
   - {fileID: 1733783408323896729}
+  battleField: {fileID: 8060744160649781840}
+  SpawnOffset: {x: 6, y: 6}
 --- !u!4 &1170836508
 Transform:
   m_ObjectHideFlags: 0
@@ -1290,6 +1290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   monsterController: {fileID: 1170836507}
+  spawnCount: 3
 --- !u!1 &1286866860
 GameObject:
   m_ObjectHideFlags: 0
@@ -1303,7 +1304,7 @@ GameObject:
   - component: {fileID: 1286866862}
   - component: {fileID: 1286866861}
   - component: {fileID: 1286866865}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Nexus2Team
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1408,7 +1409,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
@@ -1530,7 +1531,7 @@ GameObject:
   - component: {fileID: 1384435306}
   - component: {fileID: 1384435305}
   - component: {fileID: 1384435309}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Tower2Team
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1635,7 +1636,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
@@ -2008,7 +2009,7 @@ GameObject:
   - component: {fileID: 1494998677}
   - component: {fileID: 1494998676}
   - component: {fileID: 1494998680}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: BasicBuilding1Team
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2113,7 +2114,7 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
@@ -2626,9 +2627,7 @@ Transform:
   - {fileID: 808917071}
   - {fileID: 1026205575}
   - {fileID: 1494998679}
-  - {fileID: 9203595272741629503}
   - {fileID: 5098123538473514344}
-  - {fileID: 414941786349807683}
   m_Father: {fileID: 8060744160649781840}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2086602893
@@ -2726,36 +2725,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1472994796}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &414941786349807683
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4661833028653462750}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -110, y: 0, z: -40}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2056543498}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &483437964730908087
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7426271114282741089}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 70, y: 0, z: -40}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 171199424}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &705514730855896684
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2798,22 +2767,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &1053558716327612034
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4859378410203205459}
-  m_Layer: 0
-  m_Name: Team2RangedMonsterSpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!65 &1062067851190524475
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2879,7 +2832,7 @@ Transform:
   m_GameObject: {fileID: 4371240569079054190}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 80, y: 0, z: -40}
+  m_LocalPosition: {x: 65, y: 0, z: -40}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3464,22 +3417,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1704487866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4661833028653462750
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 414941786349807683}
-  m_Layer: 0
-  m_Name: Team1MeleeMonsterSpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!23 &4722749746500778271
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3530,21 +3467,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8520020214183610205}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &4859378410203205459
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1053558716327612034}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 90, y: 0, z: -40}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 171199424}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4989792772199498218
 Transform:
   m_ObjectHideFlags: 0
@@ -3560,22 +3482,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1596823774}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5038955383766458083
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9203595272741629503}
-  m_Layer: 0
-  m_Name: Team1RangedMonsterSpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!4 &5098123538473514344
 Transform:
   m_ObjectHideFlags: 0
@@ -3585,7 +3491,7 @@ Transform:
   m_GameObject: {fileID: 2351937330487460028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -120, y: 0, z: -40}
+  m_LocalPosition: {x: -105, y: 0, z: -40}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3758,29 +3664,12 @@ GameObject:
   - component: {fileID: 1415446770469095850}
   - component: {fileID: 4722749746500778271}
   - component: {fileID: 2268279328825922647}
-  - component: {fileID: 7618479888867801842}
   m_Layer: 6
   m_Name: BattleMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
---- !u!1 &7426271114282741089
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 483437964730908087}
-  m_Layer: 0
-  m_Name: Team2MeleeMonsterSpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!1 &7434863321263436727
 GameObject:
@@ -3816,37 +3705,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1704487866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7618479888867801842
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6745701969741670284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AgentTypeID: 0
-  m_CollectObjects: 2
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 2, z: 0}
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  m_UseGeometry: 0
-  m_DefaultArea: 0
-  m_GenerateLinks: 1
-  m_IgnoreNavMeshAgent: 1
-  m_IgnoreNavMeshObstacle: 1
-  m_OverrideTileSize: 0
-  m_TileSize: 256
-  m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
-  m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 9f7c5e17f8af7bb4a8a51cc0f0f09580, type: 2}
-  m_BuildHeightMesh: 0
 --- !u!65 &7725674427816182292
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4074,21 +3932,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!4 &9203595272741629503
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5038955383766458083}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -130, y: 0, z: -40}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2056543498}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

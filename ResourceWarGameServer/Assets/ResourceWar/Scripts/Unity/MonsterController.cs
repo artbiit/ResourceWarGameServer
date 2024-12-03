@@ -23,7 +23,13 @@ namespace ResourceWar.Server
         private ObjectPool<MonsterBehaviour> monsterPool;
         [SerializeField]
         private Transform[] TeamSpawnPoints;
-
+        [SerializeField]
+        private Transform battleField;
+        public Vector2 SpawnOffset = new Vector2(10f, 10f);
+        /// <summary>
+        /// Team - Position Count, 소환용 계수기
+        /// </summary>
+        private Dictionary<int, int[]> spawnedCounter = new();
         private void Awake()
         {
             monsterPool = new(monsterPool_OnCreate, monsterPool_OnGet, monsterPool_OnRelease, monsterPool_OnDestroy, true, 100, 300);
@@ -67,30 +73,82 @@ namespace ResourceWar.Server
                 cts = new CancellationTokenSource();
             }
 
+            List<UniTask> tasks = new List<UniTask>();
             while (!cts.IsCancellationRequested)
             {
-                foreach (var monster in monsters.Values)
+                foreach (var monsterList in monsters.Values)
                 {
-                    
+                    foreach (var monster in monsterList)
+                    {
+                        tasks.Add(monster.Execute());
+                    }
+                }
+                await UniTask.WhenAll(tasks);
+
+                for (int i = 1; i <= monsters.Count; i++)
+                {
+                    for (int j = 0; j < monsters[i].Count; j++)
+                    {
+                        if(monsters[i][j].IsAlive == false)
+                        {
+                            monsterPool.Release(monsters[i][j]);
+                            j--;
+                        }
+                    }
                 }
                 await UniTask.Yield(cts.Token);
+                tasks.Clear();
             }
 
             
         }
 
-        public void AddMonster(int teamId, int monsterId)
+        public void AddMonster(int teamId, int[] monsterIds)
         {
-            monsterPool.Get(out var monster);
-            if (monster.Init(monsterId)) { 
-            monsters[teamId].Add(monster);
-
-                var spawnPoint = TeamSpawnPoints[teamId];
-            }
-            else
+            
+            var spawnPoint = TeamSpawnPoints[teamId-1];
+            if (!spawnedCounter.ContainsKey(teamId))
             {
-                monsterPool.Release(monster);
+                spawnedCounter.Add(teamId, new int[System.Enum.GetNames(typeof(MonsterPosition)).Length]);
             }
+            for (int i = 0; i < monsterIds.Length; ++i) {
+                var monsterId = monsterIds[i];
+                monsterPool.Get(out var monster);
+                if (monster.Init(teamId, monsterId))
+                {
+#if UNITY_EDITOR
+                    monster.name = $"[{teamId}]{TableData.Monsters[monsterId].Name}{monsters[teamId].Count}";
+#endif
+        
+                    monsters[teamId].Add(monster);
+                    
+                    Vector3 pos = spawnPoint.transform.position;
+                    int monsterPosition = (int)monster.Position-1;
+                    int count = spawnedCounter[teamId][monsterPosition]++;
+
+                    pos -= spawnPoint.forward * SpawnOffset.y * (float)(monster.Position + (count / 7));
+                    pos += spawnPoint.right * ((-(count & 1) | 1) * (((count + 1) >> 1) * SpawnOffset.x));
+                    pos.y = transform.localScale.y;
+                    //Debug.Log($"[{TableData.Monsters[monsterId].Name}]{i} - {spawnPoint.forward * SpawnOffset.y * (float)(monster.Position + (count / 3))} - {spawnPoint.right * SpawnOffset.x * (1f - ((i & 1) << 1)) * (i % 3)}\n{pos}");
+                    monster.transform.position = pos;
+                    //monster.NavMeshAgent.SetDestination(pos);
+                    monster.gameObject.layer = LayerMask.NameToLayer($"Team{teamId}");
+                    monster.DefaultDirection = spawnPoint.forward;
+
+                }
+                else
+                {
+                    monsterPool.Release(monster);
+                }
+
+            }
+
+            for (int i = 0; i < spawnedCounter[teamId].Length; i++)
+            {
+                spawnedCounter[teamId][i] = 0;
+            }
+
+
         }
 
         #region MonsterPool
