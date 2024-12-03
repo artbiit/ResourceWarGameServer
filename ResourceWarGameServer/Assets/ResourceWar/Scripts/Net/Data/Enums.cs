@@ -56,4 +56,11 @@ namespace ResourceWar.Server
         SUCCESS = 0,
         FAIL = 1,
     }
+
+    public enum FurnaceResultCode : uint
+    {
+        SUCCESS = 0,
+        INVALID_ITEM = 1,
+        FAIL = 2,
+    }
 }
