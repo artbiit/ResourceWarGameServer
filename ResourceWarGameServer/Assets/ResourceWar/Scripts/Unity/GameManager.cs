@@ -433,7 +433,7 @@ namespace ResourceWar.Server
             team = null;
             return false;
         }
-
+        
         #endregion
 
         private TimerManager<int> timerManager = new TimerManager<int>();
