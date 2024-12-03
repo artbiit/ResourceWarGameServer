@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using Cysharp.Threading.Tasks;
 using Logger = ResourceWar.Server.Lib.Logger;
 using ResourceWar.Server.Lib;
+using System.Reflection;
 namespace ResourceWar.Server
 {
     public class RedisClient :  Singleton<RedisClient>, IDisposable
@@ -116,6 +117,84 @@ namespace ResourceWar.Server
                     }
                 }
                 isProcessingQueue = false;
+            });
+        }
+
+        /// <summary>
+        /// 객체를 Redis 해시에 저장
+        /// </summary>
+        public UniTask SaveObjectToHash<T>(string key, T obj, int ttl = 0)
+        {
+            return ExecuteAsync(async db =>
+            {
+                var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                var hashEntries = new HashEntry[properties.Length];
+                int index = 0;
+
+                foreach (var property in properties)
+                {
+                    var value = property.GetValue(obj);
+                    string stringValue;
+
+                    // Enum 타입 처리
+                    if (value is Enum enumValue)
+                    {
+                        stringValue = enumValue.ToString();
+                    }
+                    else
+                    {
+                        stringValue = value?.ToString() ?? string.Empty;
+                    }
+
+                    hashEntries[index++] = new HashEntry(property.Name, stringValue);
+                }
+
+                await db.HashSetAsync(key, hashEntries);
+
+                if (ttl > 0)
+                {
+                    await db.KeyExpireAsync(key, TimeSpan.FromSeconds(ttl));
+                }
+            });
+        }
+
+        /// <summary>
+        /// Redis 해시에서 객체를 읽어오기
+        /// </summary>
+        public UniTask<T> LoadObjectFromHash<T>(string key) where T : new()
+        {
+            return ExecuteAsync(async db =>
+            {
+                var hashEntries = await db.HashGetAllAsync(key);
+                if (hashEntries.Length == 0)
+                {
+                    return default;
+                }
+
+                var obj = new T();
+                var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+                foreach (var property in properties)
+                {
+                    var entry = Array.Find(hashEntries, x => x.Name == property.Name);
+                    if (entry.Name.HasValue)
+                    {
+                        object value;
+
+                        if (property.PropertyType.IsEnum) // Enum 타입 처리
+                        {
+                            value = Enum.Parse(property.PropertyType, entry.Value.ToString());
+                        }
+                        else
+                        {
+                            value = Convert.ChangeType(entry.Value.ToString(), property.PropertyType);
+                        }
+
+                        property.SetValue(obj, value);
+                    }
+                }
+
+                return obj;
             });
         }
 

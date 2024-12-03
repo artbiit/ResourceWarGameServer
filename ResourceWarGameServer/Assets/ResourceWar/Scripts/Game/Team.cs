@@ -78,5 +78,17 @@ namespace ResourceWar.Server
         {
             return Players.Count > 0;
         }
+
+        /// <summary>
+        /// 팀 정보 초기 상태로 돌려놓는 용도
+        /// </summary>
+        public void Reset()
+        {
+            foreach (var player in Players)
+            {
+                player.Value.Disconnected();
+            }
+            Players.Clear();
+        }
     }
 }

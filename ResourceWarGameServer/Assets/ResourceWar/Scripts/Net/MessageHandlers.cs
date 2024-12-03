@@ -27,6 +27,8 @@ namespace ResourceWar.Server
             Handlers.Add(PacketType.PLAYER_MOVE, this.PlayerMove);
             Handlers.Add(PacketType.MOVE_TO_AREA_MAP_REQUEST, this.PlayerMoveAreaHandler);
             Handlers.Add(PacketType.PLAYER_ACTION_REQUEST, this.PlayerActionHandler);
+            Handlers.Add(PacketType.LOAD_PROGRESS_NOTIFICATION, this.LoadProgressHandler);
+            Handlers.Add(PacketType.SURRENDER_REQUEST, this.SurrenderHandler);
         }
 
 
@@ -40,7 +42,7 @@ namespace ResourceWar.Server
                 //null이면 반환할 데이터 없음을 의미
                 if (result != null && !PacketUtils.IsSameMessageType(result.Payload, result.PacketType))
                 {
-                    throw new InvalidOperationException($"Mismatch between returned message type and packetType. : {packet}");
+                    throw new InvalidOperationException($"Mismatch between returned message type and packetType. : {packet}\n{result.Payload.GetType().Name}|{result.PacketType}");
                 }
             }
      

@@ -35,7 +35,7 @@ namespace ResourceWar.Server
         /// <summary>
         /// 인증된 클라이언트인지 검사
         /// </summary>
-        public bool IsAuthorized { get; private set; } = true;
+        public bool IsAuthorized { get; private set; } = false;
 
 
         public ClientHandler(int clientId, TcpClient tcpClient, Action<int> onDisconnect)
@@ -186,7 +186,7 @@ namespace ResourceWar.Server
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error processing packet: {ex.Message}");
+                    Logger.LogException(ex);  
                 }
             }
             await UniTask.NextFrame(PlayerLoopTiming.LastPreUpdate);
@@ -254,7 +254,7 @@ namespace ResourceWar.Server
                 catch (Exception e)
                 {
 
-                    Logger.LogError(e);
+                    Logger.LogException(e);
                     // 잘못된 데이터가 있으면 남은 데이터 대기
                     receiveBuffer.Position = startPosition;
                     break;
