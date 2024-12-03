@@ -51,10 +51,6 @@ namespace ResourceWar.Server
             Connected(clientId);
         }
 
-        public void MoveArea(uint currentArea, uint destinationArea)
-        {
-            
-        }
         public Vector3 ChangePosition(Vector3 position)
         {
             float distance = position.magnitude;

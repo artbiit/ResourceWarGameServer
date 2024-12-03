@@ -234,9 +234,9 @@ message C2SMoveToAreaMapReq {
     uint32 destinationAreaType = 2;
 }
 
-message S2CMoveToAreaMap {
+message S2CMoveToAreaMapRes {
     uint32 joinMapResultCode = 1;
-    Position position = 2;
+    uint32 destinationAreaType = 2;
 }
   
 // 조합대 요청 (철 100, 단단한 목재도 100개, 핵도 100개)
@@ -371,6 +371,22 @@ message S2CSyncLoadNoti {
   }
 }
 
+//TODO : 추후 삭제할 것
+//검증없이 바로 몬스터 추가할 수 있도록 해주는 메세지
+message C2SMonsterAddReq{
+    repeated int32 monsters = 1;
+}
+
+//저장된 몬스터 출격 요청
+message C2SMonsterDeployReq{
+    
+}
+
+
+//출격한 팀에게만 보내주는 몬스터 출격되었다는 알람
+message S2CMonsterDeployNoti{
+ 
+}
 
 ///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error//
 ///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error//

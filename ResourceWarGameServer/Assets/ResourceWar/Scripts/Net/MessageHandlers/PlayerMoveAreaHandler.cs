@@ -14,11 +14,13 @@ namespace ResourceWar.Server
         {
             Logger.Log($"패킷 토큰은 : {packet.Token},클라아이디는 : {packet.ClientId}");
             uint joinMapResultCode = 0;
+            uint DestinationArea = 99999;
             if (packet.Payload is C2SMoveToAreaMapReq playerAction)
             {
                 if(playerAction.CurrentAreaType == playerAction.DestinationAreaType)
                 {
                     joinMapResultCode = 1;
+                    DestinationArea = playerAction.DestinationAreaType;
                     Logger.LogError("맵 이동이 아님!");
                 }
             }
@@ -26,15 +28,15 @@ namespace ResourceWar.Server
             {
                 PacketType = PacketType.PLAYER_ACTION_RESPONSE,
                 Token = packet.Token,
-                Payload = new Protocol.S2CMoveToAreaMap
+                Payload = new Protocol.S2CMoveToAreaMapRes
                 {
                     JoinMapResultCode = joinMapResultCode,
-                    // uint DestinationArea = DestinationAreaType, 도착 맵의 번호를 알려줘야 할 듯
+                    DestinationAreaType = DestinationArea // 도착 맵의 번호를 알려줘야 할 듯
                 }
 
             };
             await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.PlayerSync, Packet);
-            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForAll, Packet);
+            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForUser, Packet);
             return null;
         }
     }

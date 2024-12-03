@@ -145,13 +145,16 @@ namespace ResourceWar.Server
                 //일단 오류 꼴 뵈기 싫어서 바이트로 형변환은 하지만 무조건 수정해야할거같음
                 await PlayerSyncNotify((uint)receivedPacket.ClientId, (byte)playerActionType, direction, playerEquippedItem, receivedPacket.Token);
             }
-            else if (receivedPacket.Payload is S2CMoveToAreaMap moveArea)
+            else if (receivedPacket.Payload is S2CMoveToAreaMapRes moveArea)
             {
+                var player = FindPlayer(receivedPacket.Token);
+                var playerEquippedItem = player.EquippedItem;
                 if(moveArea.JoinMapResultCode == 1)
                 {
                     // 맵의 위치를 받아서 플레이어의 위치를 수정해 줌
-
+                    PlayerMoveArea(moveArea.DestinationAreaType, receivedPacket.Token);
                 }
+                await PlayerSyncNotify((uint)receivedPacket.ClientId, 0, Vector3.zero, (uint)playerEquippedItem, receivedPacket.Token);
             }
             else
             {

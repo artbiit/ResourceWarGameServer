@@ -78,38 +78,39 @@ namespace Protocol {
             "ZXJTdGFydFRpbWUYAiABKAQiOgoPUzJDR2FtZU92ZXJOb3RpEhQKDGdhbWVP",
             "dmVyVHlwZRgBIAEoDRIRCgl0ZWFtSW5kZXgYAiABKA0iSwoTQzJTTW92ZVRv",
             "QXJlYU1hcFJlcRIXCg9jdXJyZW50QXJlYVR5cGUYASABKA0SGwoTZGVzdGlu",
-            "YXRpb25BcmVhVHlwZRgCIAEoDSJTChBTMkNNb3ZlVG9BcmVhTWFwEhkKEWpv",
-            "aW5NYXBSZXN1bHRDb2RlGAEgASgNEiQKCHBvc2l0aW9uGAIgASgLMhIucHJv",
-            "dG9jb2wuUG9zaXRpb24iJQoPQzJTV29ya2JlbmNoUmVxEhIKCnJlc3VsdEl0",
-            "ZW0YASABKA0iLgoPUzJDV29ya2JlbmNoUmVzEhsKE3dvcmtiZW5jaFJlc3Vs",
-            "dENvZGUYASABKA0iMQoNQzJTRnVybmFjZVJlcRIgCgRpdGVtGAEgASgLMhIu",
-            "cHJvdG9jb2wuSXRlbURhdGEiKgoNUzJDRnVybmFjZVJlcxIZChFmdXJuYWNl",
-            "UmVzdWx0Q29kZRgBIAEoDSIxCg1DMlNTYXdtaWxsUmVxEiAKBGl0ZW0YASAB",
-            "KAsyEi5wcm90b2NvbC5JdGVtRGF0YSIqCg1TMkNTYXdtaWxsUmVzEhkKEXNh",
-            "d21pbGxSZXN1bHRDb2RlGAEgASgNIiUKEEMyU0NyZWF0ZVJvb21SZXESEQoJ",
-            "aXNQcml2YXRlGAEgASgIIjUKEFMyQ0NyZWF0ZVJvb21SZXMSEAoIZ2FtZUNv",
-            "ZGUYASABKAkSDwoHZ2FtZVVybBgCIAEoCSITChFDMlNNYXRjaENhbmNlbFJl",
-            "cSITChFTMkNNYXRjaENhbmNlbFJlcyINCgtDMlNNYXRjaFJlcSIqCgtTMkNN",
-            "YXRjaFJlcxIbChNyb29tTWF0Y2hSZXN1bHRDb2RlGAEgASgNIlcKFFMyQ01h",
-            "dGNoUHJvZ3Jlc3NOb3RpEhkKEW1hdGNoUHJvZ3Jlc3NDb2RlGAEgASgNEhMK",
-            "C2VsYXBzZWRUaW1lGAIgASgEEg8KB2dhbWVVcmwYAyABKAkiIgoOQzJTSm9p",
-            "blJvb21SZXESEAoIZ2FtZUNvZGUYASABKAkiPQoOUzJDSm9pblJvb21SZXMS",
-            "GgoSam9pblJvb21SZXN1bHRDb2RlGAEgASgNEg8KB2dhbWVVcmwYAiABKAki",
-            "EAoOQzJTUXVpdFJvb21SZXEiIwoPUzJDUXVpdFJvb21Ob3RpEhAKCHBsYXll",
-            "cklkGAEgASgNIiUKEEMyU1RlYW1DaGFuZ2VSZXESEQoJdGVhbUluZGV4GAEg",
-            "ASgNIjAKEFMyQ1RlYW1DaGFuZ2VSZXMSHAoUdGVhbUNoYW5nZVJlc3VsdENv",
-            "ZGUYASABKA0iPAoPUzJDU3luY1Jvb21Ob3RpEikKB3BsYXllcnMYASADKAsy",
-            "GC5wcm90b2NvbC5QbGF5ZXJSb29tSW5mbyIqChlDMlNQbGF5ZXJJc1JlYWR5",
-            "Q2hhbmdlUmVxEg0KBXJlYWR5GAEgASgIIkIKGVMyQ1BsYXllcklzUmVhZHlD",
-            "aGFuZ2VSZXMSJQodcGxheWVySXNSZWFkeUNoYW5nZVJlc3VsdENvZGUYASAB",
-            "KA0iEQoPQzJTR2FtZVN0YXJ0UmVxIhIKEFMyQ0dhbWVTdGFydE5vdGkiJwoT",
-            "QzJTTG9hZFByb2dyZXNzTm90aRIQCghwcm9ncmVzcxgBIAEoDSKDAQoPUzJD",
-            "U3luY0xvYWROb3RpEjwKDHN5bmNMb2FkRGF0YRgBIAMoCzImLnByb3RvY29s",
-            "LlMyQ1N5bmNMb2FkTm90aS5TeW5jTG9hZERhdGEaMgoMU3luY0xvYWREYXRh",
-            "EhAKCHBsYXllcklkGAEgASgNEhAKCHByb2dyZXNzGAIgASgNIkUKE1MyQ01p",
-            "c3NpbmdGaWVsZE5vdGkSEgoKcGFja2V0VHlwZRgBIAEoBRIaChJtaXNzaW5n",
-            "RmllbGRMZW5ndGgYAiABKAUiFgoUUzJDTmVlZEF1dGhvcml6ZU5vdGliBnBy",
-            "b3RvMw=="));
+            "YXRpb25BcmVhVHlwZRgCIAEoDSJNChNTMkNNb3ZlVG9BcmVhTWFwUmVzEhkK",
+            "EWpvaW5NYXBSZXN1bHRDb2RlGAEgASgNEhsKE2Rlc3RpbmF0aW9uQXJlYVR5",
+            "cGUYAiABKA0iJQoPQzJTV29ya2JlbmNoUmVxEhIKCnJlc3VsdEl0ZW0YASAB",
+            "KA0iLgoPUzJDV29ya2JlbmNoUmVzEhsKE3dvcmtiZW5jaFJlc3VsdENvZGUY",
+            "ASABKA0iMQoNQzJTRnVybmFjZVJlcRIgCgRpdGVtGAEgASgLMhIucHJvdG9j",
+            "b2wuSXRlbURhdGEiKgoNUzJDRnVybmFjZVJlcxIZChFmdXJuYWNlUmVzdWx0",
+            "Q29kZRgBIAEoDSIxCg1DMlNTYXdtaWxsUmVxEiAKBGl0ZW0YASABKAsyEi5w",
+            "cm90b2NvbC5JdGVtRGF0YSIqCg1TMkNTYXdtaWxsUmVzEhkKEXNhd21pbGxS",
+            "ZXN1bHRDb2RlGAEgASgNIiUKEEMyU0NyZWF0ZVJvb21SZXESEQoJaXNQcml2",
+            "YXRlGAEgASgIIjUKEFMyQ0NyZWF0ZVJvb21SZXMSEAoIZ2FtZUNvZGUYASAB",
+            "KAkSDwoHZ2FtZVVybBgCIAEoCSITChFDMlNNYXRjaENhbmNlbFJlcSITChFT",
+            "MkNNYXRjaENhbmNlbFJlcyINCgtDMlNNYXRjaFJlcSIqCgtTMkNNYXRjaFJl",
+            "cxIbChNyb29tTWF0Y2hSZXN1bHRDb2RlGAEgASgNIlcKFFMyQ01hdGNoUHJv",
+            "Z3Jlc3NOb3RpEhkKEW1hdGNoUHJvZ3Jlc3NDb2RlGAEgASgNEhMKC2VsYXBz",
+            "ZWRUaW1lGAIgASgEEg8KB2dhbWVVcmwYAyABKAkiIgoOQzJTSm9pblJvb21S",
+            "ZXESEAoIZ2FtZUNvZGUYASABKAkiPQoOUzJDSm9pblJvb21SZXMSGgoSam9p",
+            "blJvb21SZXN1bHRDb2RlGAEgASgNEg8KB2dhbWVVcmwYAiABKAkiEAoOQzJT",
+            "UXVpdFJvb21SZXEiIwoPUzJDUXVpdFJvb21Ob3RpEhAKCHBsYXllcklkGAEg",
+            "ASgNIiUKEEMyU1RlYW1DaGFuZ2VSZXESEQoJdGVhbUluZGV4GAEgASgNIjAK",
+            "EFMyQ1RlYW1DaGFuZ2VSZXMSHAoUdGVhbUNoYW5nZVJlc3VsdENvZGUYASAB",
+            "KA0iPAoPUzJDU3luY1Jvb21Ob3RpEikKB3BsYXllcnMYASADKAsyGC5wcm90",
+            "b2NvbC5QbGF5ZXJSb29tSW5mbyIqChlDMlNQbGF5ZXJJc1JlYWR5Q2hhbmdl",
+            "UmVxEg0KBXJlYWR5GAEgASgIIkIKGVMyQ1BsYXllcklzUmVhZHlDaGFuZ2VS",
+            "ZXMSJQodcGxheWVySXNSZWFkeUNoYW5nZVJlc3VsdENvZGUYASABKA0iEQoP",
+            "QzJTR2FtZVN0YXJ0UmVxIhIKEFMyQ0dhbWVTdGFydE5vdGkiJwoTQzJTTG9h",
+            "ZFByb2dyZXNzTm90aRIQCghwcm9ncmVzcxgBIAEoDSKDAQoPUzJDU3luY0xv",
+            "YWROb3RpEjwKDHN5bmNMb2FkRGF0YRgBIAMoCzImLnByb3RvY29sLlMyQ1N5",
+            "bmNMb2FkTm90aS5TeW5jTG9hZERhdGEaMgoMU3luY0xvYWREYXRhEhAKCHBs",
+            "YXllcklkGAEgASgNEhAKCHByb2dyZXNzGAIgASgNIiQKEEMyU01vbnN0ZXJB",
+            "ZGRSZXESEAoIbW9uc3RlcnMYASADKAUiFQoTQzJTTW9uc3RlckRlcGxveVJl",
+            "cSIWChRTMkNNb25zdGVyRGVwbG95Tm90aSJFChNTMkNNaXNzaW5nRmllbGRO",
+            "b3RpEhIKCnBhY2tldFR5cGUYASABKAUSGgoSbWlzc2luZ0ZpZWxkTGVuZ3Ro",
+            "GAIgASgFIhYKFFMyQ05lZWRBdXRob3JpemVOb3RpYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -148,7 +149,7 @@ namespace Protocol {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSurrenderNoti), global::Protocol.S2CSurrenderNoti.Parser, new[]{ "PlayerId", "SurrenderStartTime" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CGameOverNoti), global::Protocol.S2CGameOverNoti.Parser, new[]{ "GameOverType", "TeamIndex" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SMoveToAreaMapReq), global::Protocol.C2SMoveToAreaMapReq.Parser, new[]{ "CurrentAreaType", "DestinationAreaType" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CMoveToAreaMap), global::Protocol.S2CMoveToAreaMap.Parser, new[]{ "JoinMapResultCode", "Position" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CMoveToAreaMapRes), global::Protocol.S2CMoveToAreaMapRes.Parser, new[]{ "JoinMapResultCode", "DestinationAreaType" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SWorkbenchReq), global::Protocol.C2SWorkbenchReq.Parser, new[]{ "ResultItem" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CWorkbenchRes), global::Protocol.S2CWorkbenchRes.Parser, new[]{ "WorkbenchResultCode" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SFurnaceReq), global::Protocol.C2SFurnaceReq.Parser, new[]{ "Item" }, null, null, null, null),
@@ -175,6 +176,9 @@ namespace Protocol {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CGameStartNoti), global::Protocol.S2CGameStartNoti.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SLoadProgressNoti), global::Protocol.C2SLoadProgressNoti.Parser, new[]{ "Progress" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSyncLoadNoti), global::Protocol.S2CSyncLoadNoti.Parser, new[]{ "SyncLoadData" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSyncLoadNoti.Types.SyncLoadData), global::Protocol.S2CSyncLoadNoti.Types.SyncLoadData.Parser, new[]{ "PlayerId", "Progress" }, null, null, null, null)}),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SMonsterAddReq), global::Protocol.C2SMonsterAddReq.Parser, new[]{ "Monsters" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SMonsterDeployReq), global::Protocol.C2SMonsterDeployReq.Parser, null, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CMonsterDeployNoti), global::Protocol.S2CMonsterDeployNoti.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CMissingFieldNoti), global::Protocol.S2CMissingFieldNoti.Parser, new[]{ "PacketType", "MissingFieldLength" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CNeedAuthorizeNoti), global::Protocol.S2CNeedAuthorizeNoti.Parser, null, null, null, null, null)
           }));
@@ -6107,11 +6111,11 @@ namespace Protocol {
 
   }
 
-  public sealed partial class S2CMoveToAreaMap : pb::IMessage<S2CMoveToAreaMap> {
-    private static readonly pb::MessageParser<S2CMoveToAreaMap> _parser = new pb::MessageParser<S2CMoveToAreaMap>(() => new S2CMoveToAreaMap());
+  public sealed partial class S2CMoveToAreaMapRes : pb::IMessage<S2CMoveToAreaMapRes> {
+    private static readonly pb::MessageParser<S2CMoveToAreaMapRes> _parser = new pb::MessageParser<S2CMoveToAreaMapRes>(() => new S2CMoveToAreaMapRes());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<S2CMoveToAreaMap> Parser { get { return _parser; } }
+    public static pb::MessageParser<S2CMoveToAreaMapRes> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -6124,22 +6128,22 @@ namespace Protocol {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public S2CMoveToAreaMap() {
+    public S2CMoveToAreaMapRes() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public S2CMoveToAreaMap(S2CMoveToAreaMap other) : this() {
+    public S2CMoveToAreaMapRes(S2CMoveToAreaMapRes other) : this() {
       joinMapResultCode_ = other.joinMapResultCode_;
-      position_ = other.position_ != null ? other.position_.Clone() : null;
+      destinationAreaType_ = other.destinationAreaType_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public S2CMoveToAreaMap Clone() {
-      return new S2CMoveToAreaMap(this);
+    public S2CMoveToAreaMapRes Clone() {
+      return new S2CMoveToAreaMapRes(this);
     }
 
     /// <summary>Field number for the "joinMapResultCode" field.</summary>
@@ -6153,24 +6157,24 @@ namespace Protocol {
       }
     }
 
-    /// <summary>Field number for the "position" field.</summary>
-    public const int PositionFieldNumber = 2;
-    private global::Protocol.Position position_;
+    /// <summary>Field number for the "destinationAreaType" field.</summary>
+    public const int DestinationAreaTypeFieldNumber = 2;
+    private uint destinationAreaType_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Protocol.Position Position {
-      get { return position_; }
+    public uint DestinationAreaType {
+      get { return destinationAreaType_; }
       set {
-        position_ = value;
+        destinationAreaType_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as S2CMoveToAreaMap);
+      return Equals(other as S2CMoveToAreaMapRes);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(S2CMoveToAreaMap other) {
+    public bool Equals(S2CMoveToAreaMapRes other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -6178,7 +6182,7 @@ namespace Protocol {
         return true;
       }
       if (JoinMapResultCode != other.JoinMapResultCode) return false;
-      if (!object.Equals(Position, other.Position)) return false;
+      if (DestinationAreaType != other.DestinationAreaType) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -6186,7 +6190,7 @@ namespace Protocol {
     public override int GetHashCode() {
       int hash = 1;
       if (JoinMapResultCode != 0) hash ^= JoinMapResultCode.GetHashCode();
-      if (position_ != null) hash ^= Position.GetHashCode();
+      if (DestinationAreaType != 0) hash ^= DestinationAreaType.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -6204,9 +6208,9 @@ namespace Protocol {
         output.WriteRawTag(8);
         output.WriteUInt32(JoinMapResultCode);
       }
-      if (position_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Position);
+      if (DestinationAreaType != 0) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(DestinationAreaType);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -6219,8 +6223,8 @@ namespace Protocol {
       if (JoinMapResultCode != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(JoinMapResultCode);
       }
-      if (position_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Position);
+      if (DestinationAreaType != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(DestinationAreaType);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -6229,18 +6233,15 @@ namespace Protocol {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(S2CMoveToAreaMap other) {
+    public void MergeFrom(S2CMoveToAreaMapRes other) {
       if (other == null) {
         return;
       }
       if (other.JoinMapResultCode != 0) {
         JoinMapResultCode = other.JoinMapResultCode;
       }
-      if (other.position_ != null) {
-        if (position_ == null) {
-          Position = new global::Protocol.Position();
-        }
-        Position.MergeFrom(other.Position);
+      if (other.DestinationAreaType != 0) {
+        DestinationAreaType = other.DestinationAreaType;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -6257,11 +6258,8 @@ namespace Protocol {
             JoinMapResultCode = input.ReadUInt32();
             break;
           }
-          case 18: {
-            if (position_ == null) {
-              Position = new global::Protocol.Position();
-            }
-            input.ReadMessage(Position);
+          case 16: {
+            DestinationAreaType = input.ReadUInt32();
             break;
           }
         }
@@ -9819,6 +9817,340 @@ namespace Protocol {
   }
 
   /// <summary>
+  ///TODO : 추후 삭제할 것
+  ///검증없이 바로 몬스터 추가할 수 있도록 해주는 메세지
+  /// </summary>
+  public sealed partial class C2SMonsterAddReq : pb::IMessage<C2SMonsterAddReq> {
+    private static readonly pb::MessageParser<C2SMonsterAddReq> _parser = new pb::MessageParser<C2SMonsterAddReq>(() => new C2SMonsterAddReq());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<C2SMonsterAddReq> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Protocol.ProtocolReflection.Descriptor.MessageTypes[62]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public C2SMonsterAddReq() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public C2SMonsterAddReq(C2SMonsterAddReq other) : this() {
+      monsters_ = other.monsters_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public C2SMonsterAddReq Clone() {
+      return new C2SMonsterAddReq(this);
+    }
+
+    /// <summary>Field number for the "monsters" field.</summary>
+    public const int MonstersFieldNumber = 1;
+    private static readonly pb::FieldCodec<int> _repeated_monsters_codec
+        = pb::FieldCodec.ForInt32(10);
+    private readonly pbc::RepeatedField<int> monsters_ = new pbc::RepeatedField<int>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<int> Monsters {
+      get { return monsters_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as C2SMonsterAddReq);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(C2SMonsterAddReq other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!monsters_.Equals(other.monsters_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= monsters_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      monsters_.WriteTo(output, _repeated_monsters_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += monsters_.CalculateSize(_repeated_monsters_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(C2SMonsterAddReq other) {
+      if (other == null) {
+        return;
+      }
+      monsters_.Add(other.monsters_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10:
+          case 8: {
+            monsters_.AddEntriesFrom(input, _repeated_monsters_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///저장된 몬스터 출격 요청
+  /// </summary>
+  public sealed partial class C2SMonsterDeployReq : pb::IMessage<C2SMonsterDeployReq> {
+    private static readonly pb::MessageParser<C2SMonsterDeployReq> _parser = new pb::MessageParser<C2SMonsterDeployReq>(() => new C2SMonsterDeployReq());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<C2SMonsterDeployReq> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Protocol.ProtocolReflection.Descriptor.MessageTypes[63]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public C2SMonsterDeployReq() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public C2SMonsterDeployReq(C2SMonsterDeployReq other) : this() {
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public C2SMonsterDeployReq Clone() {
+      return new C2SMonsterDeployReq(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as C2SMonsterDeployReq);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(C2SMonsterDeployReq other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(C2SMonsterDeployReq other) {
+      if (other == null) {
+        return;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///출격한 팀에게만 보내주는 몬스터 출격되었다는 알람
+  /// </summary>
+  public sealed partial class S2CMonsterDeployNoti : pb::IMessage<S2CMonsterDeployNoti> {
+    private static readonly pb::MessageParser<S2CMonsterDeployNoti> _parser = new pb::MessageParser<S2CMonsterDeployNoti>(() => new S2CMonsterDeployNoti());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<S2CMonsterDeployNoti> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Protocol.ProtocolReflection.Descriptor.MessageTypes[64]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public S2CMonsterDeployNoti() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public S2CMonsterDeployNoti(S2CMonsterDeployNoti other) : this() {
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public S2CMonsterDeployNoti Clone() {
+      return new S2CMonsterDeployNoti(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as S2CMonsterDeployNoti);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(S2CMonsterDeployNoti other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(S2CMonsterDeployNoti other) {
+      if (other == null) {
+        return;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
   ///해당 패킷에 대해 빠진 페이로드 데이터 갯수를 알립니다.
   /// </summary>
   public sealed partial class S2CMissingFieldNoti : pb::IMessage<S2CMissingFieldNoti> {
@@ -9829,7 +10161,7 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Protocol.ProtocolReflection.Descriptor.MessageTypes[62]; }
+      get { return global::Protocol.ProtocolReflection.Descriptor.MessageTypes[65]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -9989,7 +10321,7 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Protocol.ProtocolReflection.Descriptor.MessageTypes[63]; }
+      get { return global::Protocol.ProtocolReflection.Descriptor.MessageTypes[66]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
