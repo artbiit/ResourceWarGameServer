@@ -6,9 +6,17 @@ using System.Threading.Tasks;
 
 namespace ResourceWar.Server
 {
+    public enum ItemTypes
+    {
+        SolidWood = 1,
+        Ironstone,
+        Wood,
+        Iron,
+        Garbage
+    }
     public class ItemTableData
     {
         public string Name { get; set; }
-        public int ItemType { get; set; }
+        public ItemTypes ItemType { get; set; }
     }
 }
