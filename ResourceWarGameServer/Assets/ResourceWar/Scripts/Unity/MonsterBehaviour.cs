@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-
+using Logger = ResourceWar.Server.Lib.Logger;
 namespace ResourceWar.Server
 {
     public class MonsterBehaviour : MonoBehaviour
@@ -35,11 +35,12 @@ namespace ResourceWar.Server
 
         #endregion
 
-        public void Init(int monsterId)
+        public bool Init(int monsterId)
         {
             if (TableData.Monsters.TryGetValue(monsterId, out var monsterData) == false)
             {
-                throw new System.InvalidOperationException($"Could not found monster in table : {monsterId}");
+               Logger.LogError($"Could not found monster in table : {monsterId}");
+                return false;
             }
 
             this.MaxHealth = monsterData.Health;
@@ -48,6 +49,7 @@ namespace ResourceWar.Server
             this.Speed = monsterData.Speed;
             this.AttackRanged = monsterData.AttackRanged;
             this.DetectRanged = monsterData.DetectRanged;
+            return true;
         }
 
         

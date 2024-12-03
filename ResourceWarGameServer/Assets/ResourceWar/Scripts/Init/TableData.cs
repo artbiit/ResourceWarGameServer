@@ -13,7 +13,7 @@ namespace ResourceWar.Server
 
         public static  void Load()
         {
-            Monsters = CSVReader.ReadCsv<MonsterTableData>("monster");
+            Monsters = CSVReader.ReadCsv<MonsterTableData>("monsters");
 
             Logger.Log("TableData loaded.");
         }
