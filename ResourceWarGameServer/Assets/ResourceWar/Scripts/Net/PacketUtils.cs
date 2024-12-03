@@ -69,7 +69,7 @@ namespace ResourceWar.Server
     { PacketType.GAME_START_NOTI, "Protocol.S2CGameStartRes" },
 
     // 로딩 진행
-    { PacketType.LOAD_PROGRESS_NOTIFICATION, "Protocol.S2CLoadProgressNoti" },
+    { PacketType.LOAD_PROGRESS_NOTIFICATION, "Protocol.C2SLoadProgressNoti" },
     { PacketType.SYNC_LOAD_NOTIFICATION, "Protocol.S2CSyncLoadNoti" },
 
     // 초기 정보 동기화

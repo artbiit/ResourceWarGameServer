@@ -437,6 +437,11 @@ namespace ResourceWar.Server
         #endregion
 
         private TimerManager<int> timerManager = new TimerManager<int>();
+        private TimerManager<int> furnaceTimerManager = new TimerManager<int>();
+
+        #region 용광로
+        
+        #endregion
 
         #region 항복 투표
         private Dictionary<int, HashSet<int>> surrenderVotes = new Dictionary<int, HashSet<int>>();
@@ -674,14 +679,14 @@ namespace ResourceWar.Server
             {
                 // 논리 게이트 하나라도 true가 아니면 false
                 isAllReady &= player.IsReady;
-                totalPlayerCount++;
+                /*totalPlayerCount++;*/
             });
 
-            if (totalPlayerCount < 4)
+            /*if (totalPlayerCount < 4)
             {
                 Logger.LogError($"Game cannot start. Current player count: {totalPlayerCount}.");
                 return;
-            }
+            }*/
 
             var packet = new Packet
             {
