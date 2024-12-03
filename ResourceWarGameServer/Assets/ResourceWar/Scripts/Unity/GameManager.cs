@@ -32,6 +32,8 @@ namespace ResourceWar.Server
             PlayerIsReadyChanger =8,
             GameStart = 9,
             LoadProgressNoti = 10,
+            SurrenderNoti = 11,
+
 
         }
 
@@ -154,6 +156,7 @@ namespace ResourceWar.Server
             receivedDispatcher.Subscribe(GameManagerEvent.PlayerIsReadyChanger, PlayerReadyStateChanger);
             receivedDispatcher.Subscribe(GameManagerEvent.GameStart, GameStart);
             receivedDispatcher.Subscribe(GameManagerEvent.LoadProgressNoti, LoadProgressNoti);
+            receivedDispatcher.Subscribe(GameManagerEvent.SurrenderNoti, SurrenderNoti);
 
             //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
@@ -414,6 +417,129 @@ namespace ResourceWar.Server
             return null;
         }
 
+        private bool TryGetTeamIndex(int clientId, out int teamIndex, out Team team)
+        {
+            for (int i = 0; i < teams.Length; i++)
+            {
+                if (teams[i].Players.Values.Any(p => p.ClientId == clientId))
+                {
+                    teamIndex = i;
+                    team = teams[i];
+                    return true;
+                }
+            }
+
+            teamIndex = -1;
+            team = null;
+            return false;
+        }
+
+        #endregion
+
+        private TimerManager<int> timerManager = new TimerManager<int>();
+
+        #region 항복 투표
+        private Dictionary<int, HashSet<int>> surrenderVotes = new Dictionary<int, HashSet<int>>();
+        // 팀 별 항복 투표 상태를 저장하는 데이터 구조. Key: 팀 Index, Value: 투표한 Player ID 목록
+
+        public async UniTask SurrenderNoti(ReceivedPacket receivedPacket)
+        {
+            var clientId = receivedPacket.ClientId;
+            if (!TryGetTeamIndex(clientId, out int teamIndex, out var team))
+            {
+                Logger.Log($"Player {clientId}가 속한 팀을 찾을 수 없습니다.");
+                return;
+            }
+
+            if (!surrenderVotes.ContainsKey(teamIndex))
+            {
+                surrenderVotes[teamIndex] = new HashSet<int>();
+
+
+                // 이미 타이머가 실행 중인지 확인
+                if (!timerManager.IsTimerActive(teamIndex))
+                {
+                    // 타이머 시작
+                    timerManager.StartTimer(teamIndex, 180, OnSurrenderVoteTimeout);
+                }
+            }
+
+            var votes = surrenderVotes[teamIndex];
+            if (votes.Contains(clientId))
+            {
+                Logger.LogError($"Player {clientId}는 이미 항복 투표에 참여했습니다.");
+                return;
+            }
+
+            votes.Add(clientId);
+            Logger.Log($"Player {clientId}가 팀 {teamIndex}의 항복 투표에 참여했습니다. 현재 투표 수: {votes.Count}/{team.Players.Count}");
+
+            // 투표 상태를 알림
+            var packet = new Packet
+            {
+                PacketType = PacketType.SURRENDER_NOTIFICATION,
+                Payload = new S2CSurrenderNoti
+                {
+                    PlayerId = (uint)clientId,
+                    IsSurrender = true,
+                    SurrenderStartTime = (ulong)UnixTime.Now()
+                }
+            };
+
+            await SendPacketForTeam(packet);
+            
+            // 과반수 체크
+            if (votes.Count > team.Players.Count / 2)
+            {
+                Logger.Log($"팀 {teamIndex}의 항복이 승인되었습니다.");
+                await HandleSurrender(teamIndex);
+            }
+        }
+
+        /// <summary>
+        /// 투표 시간이 초과되었을 때 실행되는 콜백.
+        /// </summary>
+        /// <param name="teamIndex"></param>
+        private void OnSurrenderVoteTimeout(int teamIndex)
+        {
+            if (surrenderVotes.ContainsKey(teamIndex))
+            {
+                surrenderVotes.Remove(teamIndex); // 투표 삭제
+                Logger.Log($"팀 {teamIndex}의 항복 투표 데이터가 시간 초과로 제거되었습니다.");
+
+                // 필요하다면 시간 초과 알림 패킷 전송
+                /*var packet = new Packet
+                {
+                    PacketType = PacketType.SURRENDER_TIMEOUT_NOTIFICATION,
+                    Payload = new S2CSurrenderTimeoutNoti
+                    {
+                        TeamIndex = (uint)teamIndex,
+                    }
+                };
+
+                SendPacketForTeam(packet).Forget();*/
+            }
+        }
+    
+        /// <summary>
+        /// GameOver만들면 마무리 예정
+        /// </summary>
+        /// <param name="teamIndex"></param>
+        /// <returns></returns>
+        private async UniTask HandleSurrender(int teamIndex)
+        {
+            Logger.Log($"팀 {teamIndex} 항복 처리 중...");
+
+            // 항복 로직 처리
+            gameSessionInfo.state = GameSessionState.GAMEOVER; // 게임 상태 변경
+
+            surrenderVotes.Remove(teamIndex);
+
+            // 항복 결과를 모든 클라이언트에게 알림
+            // 여기서 message S2CGameOverNoti에 관한걸 넣어주면 될듯
+
+            Logger.Log("게임이 종료되었습니다.");
+        }
         #endregion
 
         /// <summary>

@@ -47,6 +47,13 @@ namespace ResourceWar.Server
         LOBBY,
         LOADING,
         PLAYING,
+        GAMEOVER,
         ERROR = -1,
+    }
+
+    public enum SurrenderResultCode : uint
+    {
+        SUCCESS = 0,
+        FAIL = 1,
     }
 }
