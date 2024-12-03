@@ -478,6 +478,7 @@ namespace ResourceWar.Server
             var packet = new Packet
             {
                 PacketType = PacketType.SURRENDER_NOTIFICATION,
+                Token = receivedPacket.Token,
                 Payload = new S2CSurrenderNoti
                 {
                     PlayerId = (uint)clientId,
