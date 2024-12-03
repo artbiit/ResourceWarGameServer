@@ -23,7 +23,7 @@ namespace ResourceWar.Server
             var itemCode = furnaceMessage.Item.ItemCode;
 
             // 아이템이 Ironstone인지 유효 검사
-            if (!TableData.Items.TryGetValue((int)itemCode, out ItemTableData item) && item.Name != "Ironstone")
+            if (!TableData.Items.TryGetValue((int)itemCode, out ItemTableData item) && item.ItemType != 2)
             {
                 Logger.LogError($"FurnaceHandler: Item is not a Ironstone. itemCode: {itemCode}");
                 resultCode = FurnaceResultCode.INVALID_ITEM;
