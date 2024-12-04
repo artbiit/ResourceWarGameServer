@@ -267,7 +267,6 @@ namespace ResourceWar.Server
                     action?.Invoke(i, playerPair.Key, playerPair.Value);
                 }
             }
-
         }
 
         /// <summary>
@@ -433,13 +432,34 @@ namespace ResourceWar.Server
             teamIndex = -1;
             team = null;
             return false;
-        }
-        
+        } 
         #endregion
 
         private TimerManager<int> timerManager = new TimerManager<int>();
 
         #region 용광로
+        private async void OnFurnaceStateUpdate(SyncFurnaceStateCode state, int teamIndex, float progress, string token)
+        {
+            if (state == SyncFurnaceStateCode.WAITING)
+            {
+                return; // WAITING 상태는 동기화 하지 않음
+            }
+
+            var syncPacket = new Packet
+            {
+                PacketType = PacketType.SYNC_FURNACE_STATE_NOTIFICATION,
+                Token = token,
+                Payload = new S2CSyncFurnaceStateNoti
+                {
+                    TeamIndex = (uint)teamIndex,
+                    FurnaceStateCode = (uint)state,
+                    Progress = progress
+                }
+            };
+
+            await SendPacketForTeam(syncPacket);
+        }
+
         public async UniTask FurnaceResponseHandler(ReceivedPacket receivedPacket)
         {
             var clientId = receivedPacket.ClientId;
@@ -460,37 +480,7 @@ namespace ResourceWar.Server
 
             FurnaceResultCode resultCode = FurnaceResultCode.SUCCESS;
 
-            // 용광로 상태 처리
-            switch (furnace.State)
-            {
-                case SyncFurnaceStateCode.WAITING:
-                    if (player.EquippedItem == (int)ItemTypes.Ironstone)
-                    {
-                        player.EquippedItem = 0;
-                        furnace.StartProgress();
-                    }
-                    else
-                    {
-                        resultCode = FurnaceResultCode.INVALID_ITEM;
-                    }
-                    break;
-                case SyncFurnaceStateCode.PRODUCING:
-                case SyncFurnaceStateCode.OVERFLOW:
-                    {
-                        player.EquippedItem = furnace.State == SyncFurnaceStateCode.PRODUCING ? (int)ItemTypes.Iron : (int)ItemTypes.Garbage;
-                        furnace.ResetProgress();
-                        furnace.StartProgress();
-                    }
-                    break;
-                case SyncFurnaceStateCode.RUNNING:
-                    {
-                        resultCode = FurnaceResultCode.RUNNING_STATE;
-                    }
-                    break;
-                default:
-                    resultCode = FurnaceResultCode.FAIL;
-                    break;
-            }
+            resultCode = furnace.FurnaceStateProcess(player, teamIndex, token);
 
             var responsePacket = new Packet
             {
@@ -758,27 +748,42 @@ namespace ResourceWar.Server
         {
             S2CGameStartNoti s2CGameStartNoti = new S2CGameStartNoti();
 
+            if (teams[0].Players.Count > 0)
+            {
+                Logger.LogError($"Game cannot start. Teams[0] has player for {teams[0].Players.Count}.");
+            }
+
+            // 1팀과 2팀의 플레이어 수 확인
+            int team1PlayerCount = teams[1].Players.Count;
+            int team2PlayerCount = teams[2].Players.Count;
+
+            // 1팀 2팀에 플레이어가 2명씩 들어가 있는지 확인
+            if (team1PlayerCount != 2 || team2PlayerCount != 2)
+            {
+                Logger.LogError($"Game cannot start. Team[1]={team1PlayerCount}, Team[2]={team2PlayerCount}");
+                return;
+            }
+
             // 팀별 플레이어 수와 준비 상태를 동시에 확인
-            int team1Count = 0;
-            int team2Count = 0;
             bool isAllReady = true;
 
             LoopAllPlayers((teamIndex, token, player) =>
             {
-                // 팀별 플레이어 수를 계산
-                if (teamIndex == 1) team1Count++;
-                if (teamIndex == 2) team2Count++;
-
                 // 논리 게이트 하나라도 true가 아니면 false
                 isAllReady &= player.IsReady;
             });
 
-           /* // 팀 구성 및 준비 상태 확인
-            if (team1Count != 2 || team2Count != 2 || !isAllReady)
+            // 준비 상태 확인
+            if (!isAllReady)
             {
-                Logger.LogError($"Game cannot start. Team composition or readiness is invalid: Team[1]={team1Count}, Team[2]={team2Count}, AllReady={isAllReady}");
+                Logger.LogError($"Game cannot start. Not all ready");
                 return;
-            }*/
+            }
+
+            for (int i = 1; i < teams.Length; i++)
+            {
+                teams[i].TeamFurnace.SetAction(OnFurnaceStateUpdate);
+            }
 
             var packet = new Packet
             {

@@ -91,7 +91,7 @@ namespace ResourceWar.Server
                 player.Value.Disconnected();
             }
             Players.Clear();
-            TeamFurnace = new Furnace();
+            TeamFurnace.Reset();
         }
     }
 }

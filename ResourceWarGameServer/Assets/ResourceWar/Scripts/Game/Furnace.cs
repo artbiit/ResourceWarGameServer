@@ -15,13 +15,59 @@ namespace ResourceWar.Server
         public float Progress { get; private set; } = 0.0f; // 진행도 (0~100%)
 
         private CancellationTokenSource progressToken;
+        private Action<SyncFurnaceStateCode, int, float, string> onStateUpdate;
 
-        public void StartProgress()
+        public void SetAction(Action<SyncFurnaceStateCode, int, float, string> stateUpdateCallback)
         {
-            if (progressToken != null)
+            onStateUpdate = stateUpdateCallback;
+        }
+
+        public Action<SyncFurnaceStateCode, int, float, string> GetAction() => onStateUpdate;
+
+        public FurnaceResultCode FurnaceStateProcess(Player player, int teamIndex, string clientToken)
+        {
+            FurnaceResultCode resultCode = FurnaceResultCode.SUCCESS;
+
+            // 용광로 상태 처리
+            switch (State)
             {
-                progressToken.Cancel();
+                case SyncFurnaceStateCode.WAITING:
+                    if (player.EquippedItem == (int)PlayerEquippedItem.IRONSTONE)
+                    {
+                        player.EquippedItem = (int)PlayerEquippedItem.NONE;
+                        StartProgress(teamIndex, clientToken);
+                    }
+                    else
+                    {
+                        resultCode = FurnaceResultCode.INVALID_ITEM;
+                    }
+                    break;
+                case SyncFurnaceStateCode.PRODUCING:
+                case SyncFurnaceStateCode.OVERFLOW:
+                    {
+                        player.EquippedItem = State == SyncFurnaceStateCode.PRODUCING
+                            ? (int)PlayerEquippedItem.IRON
+                            : (int)PlayerEquippedItem.GARBAGE;
+                        ResetProgress();
+                        StartProgress(teamIndex, clientToken);
+                    }
+                    break;
+                case SyncFurnaceStateCode.RUNNING:
+                    {
+                        resultCode = FurnaceResultCode.RUNNING_STATE;
+                    }
+                    break;
+                default:
+                    resultCode = FurnaceResultCode.FAIL;
+                    break;
             }
+
+            return resultCode;
+        }
+
+        public void StartProgress(int teamIndex, string clientToken)
+        {
+            StopProgress();
 
             progressToken= new CancellationTokenSource();
             IntervalManager.Instance.AddTask(
@@ -29,35 +75,38 @@ namespace ResourceWar.Server
                 async token =>
                 {
                     Progress += 10;
-                    if (Progress >= 100 && Progress < 150)
-                    {
-                        State = SyncFurnaceStateCode.PRODUCING;
-                    }
-                    else if (Progress >= 150)
-                    {
-                        State = SyncFurnaceStateCode.OVERFLOW;
-                    }
+                    UpdateStateBasedOnProgress();
+
+                    // 상태 업데이트 콜백 실행
+                    onStateUpdate?.Invoke(State, teamIndex, Progress, clientToken);
+
                     await UniTask.CompletedTask;
                 },
                 1.0f);
         }
 
+        public void StopProgress()
+        {
+            if (progressToken != null)
+            {
+                IntervalManager.Instance.CancelTask(progressToken.Token);
+                progressToken = null;
+            }
+        }
+
         public void ResetProgress()
         {
+            StopProgress();
             Progress = 0;
             State = SyncFurnaceStateCode.WAITING;
-            IntervalManager.Instance.CancelTask(progressToken.Token);
         }
 
-        public void UpdateState(SyncFurnaceStateCode newState)
+        public void Reset()
         {
-            State = newState;
-        }
-
-        public void UpdateProgress(float newProgress)
-        {
-            Progress = Math.Clamp(newProgress, 0.0f, 150.0f);
-            UpdateStateBasedOnProgress();
+            StopProgress();
+            Progress = 0;
+            State = SyncFurnaceStateCode.WAITING;
+            onStateUpdate = null;
         }
 
         private void UpdateStateBasedOnProgress()
