@@ -729,30 +729,32 @@ namespace ResourceWar.Server
                 Logger.LogError($"Game cannot start. Teams[0] has player for {teams[0].Players.Count}.");
             }
 
-            // 1팀과 2팀의 플레이어 수 확인
-            int team1PlayerCount = teams[1].Players.Count;
-            int team2PlayerCount = teams[2].Players.Count;
+            bool isReady = true;
 
-            // 1팀 2팀에 플레이어가 2명씩 들어가 있는지 확인
-            if (team1PlayerCount != 2 || team2PlayerCount != 2)
+            for (int i = 1; i < teams.Length; i++)
             {
-                Logger.LogError($"Game cannot start. Team[1]={team1PlayerCount}, Team[2]={team2PlayerCount}");
-                return;
+                if (teams[i].Players.Count != 2)
+                {
+                    Logger.LogError($"Game cannot start. Because of Team[{i}]");
+                    isReady = false;
+                    break;
+                } 
+                
+                foreach(var player in teams[i].Players.Values)
+                {
+                    if(!player.IsReady)
+                    {
+                        i = teams.Length;
+                        Logger.LogError($"Game cannot start. Player {player.ClientId} is not ready. ");
+                        isReady = false;
+                        break;
+                    }
+                }
             }
 
-            // 팀별 플레이어 수와 준비 상태를 동시에 확인
-            bool isAllReady = true;
-
-            LoopAllPlayers((teamIndex, token, player) =>
+            // CPU가 분기를 예측할 수 있는 확률이 조금더 올라가요.
+            if (!isReady)
             {
-                // 논리 게이트 하나라도 true가 아니면 false
-                isAllReady &= player.IsReady;
-            });
-
-            // 준비 상태 확인
-            if (!isAllReady)
-            {
-                Logger.LogError($"Game cannot start. Not all ready");
                 return;
             }
 
