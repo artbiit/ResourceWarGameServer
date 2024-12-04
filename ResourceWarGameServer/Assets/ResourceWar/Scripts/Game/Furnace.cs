@@ -111,7 +111,7 @@ namespace ResourceWar.Server
 
         private void UpdateStateBasedOnProgress()
         {
-            if (Progress < 1.0f)
+            if (Progress <= 0.001f)
                 State = SyncFurnaceStateCode.WAITING;
             else if (Progress < 100.0f)
                 State = SyncFurnaceStateCode.RUNNING;

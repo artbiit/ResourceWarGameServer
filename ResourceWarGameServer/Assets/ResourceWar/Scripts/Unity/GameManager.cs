@@ -492,30 +492,6 @@ namespace ResourceWar.Server
                 }
             };
             await SendPacketForUser(responsePacket);
-
-
-            // 용광로 상태 동기화
-            if (resultCode == FurnaceResultCode.SUCCESS)
-            {
-                await SyncFurnaceState(token, teamIndex, furnace);
-            }
-        }
-
-        private async UniTask SyncFurnaceState(string clientToken, int teamIndex, Furnace furnace)
-        {
-            var syncPacket = new Packet
-            {
-                PacketType = PacketType.SYNC_FURNACE_STATE_NOTIFICATION,
-                Token = clientToken,
-                Payload = new S2CSyncFurnaceStateNoti
-                {
-                    TeamIndex = (uint)teamIndex,
-                    FurnaceStateCode = (uint)furnace.State,
-                    Progress = furnace.Progress
-                }
-            };
-
-            await SendPacketForTeam(syncPacket);
         }
         #endregion
 
