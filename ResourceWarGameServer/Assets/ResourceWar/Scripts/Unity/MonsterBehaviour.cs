@@ -62,7 +62,7 @@ namespace ResourceWar.Server
             stateMachine.AddTransition(chase, attack, () => IsTargetInAttackRange());
             stateMachine.AddTransition(attack, chase, () => TargetUnit?.IsAlive == true && GetDistanceForTarget() > this.AttackRanged);
             stateMachine.AddTransition(attack, move, () => TargetUnit == null);
-            stateMachine.AddTransition(chase, move, () => TargetUnit?.IsAlive == false);
+            stateMachine.AddTransition(chase, move, () => TargetUnit == null);
             _ = stateMachine.ChangeState(idle, this);
 
 
