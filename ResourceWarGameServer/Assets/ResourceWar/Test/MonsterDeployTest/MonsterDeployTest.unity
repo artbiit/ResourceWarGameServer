@@ -1290,7 +1290,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   monsterController: {fileID: 1170836507}
-  spawnCount: 01000000000000000000000000000000
+  spawnCountTeam1: 01000000020000000200000001000000
+  spawnCountTeam2: 01000000020000000200000001000000
 --- !u!1 &1286866860
 GameObject:
   m_ObjectHideFlags: 0

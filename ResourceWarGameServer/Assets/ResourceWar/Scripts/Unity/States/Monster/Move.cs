@@ -27,7 +27,7 @@ namespace ResourceWar.Server.Monster
         {
             var transform = monster.transform;
 
-            // 정면에 아군이 있는지 확인
+         /*   // 정면에 아군이 있는지 확인
             if (physicsScene.Raycast(transform.position, transform.forward, out var allyHit, avoidanceDistance,  allyLayer))
             {
                 var ally = allyHit.collider.GetComponent<MonsterBehaviour>();
@@ -36,7 +36,7 @@ namespace ResourceWar.Server.Monster
                     await UniTask.Yield(); // 아군이 이동할 때까지 대기
                     return;
                 }
-            }
+            }*/
 
             int count = physicsScene.OverlapSphere(monster.transform.position, monster.DetectRanged, castedEnemies, enemyLayer, QueryTriggerInteraction.UseGlobal);
 
@@ -58,7 +58,7 @@ namespace ResourceWar.Server.Monster
      
 
             // 기본 이동
-            Vector3 targetPosition = transform.position + monster.DefaultDirection.normalized * monster.DetectRanged;
+            Vector3 targetPosition = transform.position + monster.DefaultDirection.normalized * (monster.DetectRanged + monster.AttackRanged);
             if (monster.NavMeshAgent.pathPending || !monster.NavMeshAgent.SetDestination(targetPosition))
             {
                 Debug.LogWarning("NavMesh 경로 탐색 실패: 기본 경로로 이동합니다.");

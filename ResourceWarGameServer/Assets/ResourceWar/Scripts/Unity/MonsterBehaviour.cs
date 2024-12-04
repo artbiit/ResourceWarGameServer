@@ -82,9 +82,8 @@ namespace ResourceWar.Server
             stateMachine.AddTransition(attack, move, () => targetUnit == null);
             stateMachine.AddTransition(chase, move, () => targetUnit == null);
             _ = stateMachine.ChangeState(idle, this);
-
-
         }
+
         public bool Init(int teamId, int monsterId)
         {
             PhysicsScene = gameObject.scene.GetPhysicsScene();
@@ -101,6 +100,7 @@ namespace ResourceWar.Server
             this.AttackRanged = monsterData.AttackRanged;
             this.DetectRanged = monsterData.DetectRanged;
             this.Position = monsterData.Position;
+            this.NavMeshAgent.speed = this.Speed;
             return true;
         }
 
