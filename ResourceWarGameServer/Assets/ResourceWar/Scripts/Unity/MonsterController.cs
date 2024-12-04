@@ -126,7 +126,7 @@ namespace ResourceWar.Server
                     int monsterPosition = (int)monster.Position-1;
                     int count = spawnedCounter[teamId][monsterPosition]++;
 
-                    pos -= spawnPoint.forward * SpawnOffset.y * (float)(monster.Position + (count / 7));
+                    pos -= spawnPoint.forward * SpawnOffset.y * (float)(monster.Position + (count / 9));
                     pos += spawnPoint.right * ((-(count & 1) | 1) * (((count + 1) >> 1) * SpawnOffset.x));
                     pos.y = transform.localScale.y;
                     //Debug.Log($"[{TableData.Monsters[monsterId].Name}]{i} - {spawnPoint.forward * SpawnOffset.y * (float)(monster.Position + (count / 3))} - {spawnPoint.right * SpawnOffset.x * (1f - ((i & 1) << 1)) * (i % 3)}\n{pos}");

@@ -8,7 +8,7 @@ using UnityEngine.AI;
 using Logger = ResourceWar.Server.Lib.Logger;
 namespace ResourceWar.Server
 {
-    public class MonsterBehaviour : MonoBehaviour
+    public class MonsterBehaviour : MonoBehaviour, IDamageable
     {
         #region Variables
         #region Stats
@@ -36,6 +36,8 @@ namespace ResourceWar.Server
         public int monsterId { get; private set; }
         public int TeamId { get; private set; }
 
+        public Transform Transform => this.transform;
+
         public NavMeshAgent NavMeshAgent;
         private AsyncStateMachine<MonsterBehaviour> stateMachine = new();
         public PhysicsScene PhysicsScene;
@@ -43,19 +45,19 @@ namespace ResourceWar.Server
         /// 기본적으로 이동해야할 방향
         /// </summary>
         public Vector3 DefaultDirection;
-        public MonsterBehaviour TargetMonster;
+        public IDamageable TargetUnit;
         #endregion
 
         private void Awake()
         {
             var die = new Die();
-            var move = new Move(this);
+            var move = new Move();
             var chase = new Chase();
             var attack = new Attack();
             var idle = new Idle();
             stateMachine.AddGlobalTransition(die, () => this.IsAlive == false);
             stateMachine.AddTransition(idle, move, () => true);
-            stateMachine.AddTransition(move, chase, () => GetDistanceForTarget() <= this.DetectRanged);
+            stateMachine.AddTransition(move, chase, () => TargetUnit?.IsAlive == true);
             stateMachine.AddTransition(move, attack, () => GetDistanceForTarget() <= this.AttackRanged);
             stateMachine.AddTransition(chase, attack, () => GetDistanceForTarget() <= this.AttackRanged);
             stateMachine.AddTransition(attack, chase, () => GetDistanceForTarget() > this.AttackRanged);
@@ -83,6 +85,15 @@ namespace ResourceWar.Server
             return true;
         }
 
+        public void TakeDamage(float damage, IDamageable hitUnit)
+        {
+            this.currentHelath -= damage;
+            if(this.TargetUnit == null)
+            {
+                this.TargetUnit = hitUnit;
+            }
+        }
+
         public async UniTask Execute()
         {
    
@@ -92,9 +103,9 @@ namespace ResourceWar.Server
         public float GetDistanceForTarget()
         {
             float distance =float.MaxValue;
-            if (TargetMonster)
+            if (TargetUnit != null)
             {
-                distance = Vector3.Distance(transform.position, TargetMonster.transform.position);
+                distance = Vector3.Distance(transform.position, TargetUnit.Transform.position);
 
             }
             return distance;
@@ -102,14 +113,14 @@ namespace ResourceWar.Server
 
         public (bool needsToMove, Vector3 targetPosition) CalculateMovementToAttackRange()
         {
-            if (TargetMonster == null)
+            if (TargetUnit == null)
             {
                 return (false, Vector3.zero); // 타겟이 없으면 이동 필요 없음
             }
 
             // 내 위치와 타겟 위치
             Vector3 myPosition = transform.position;
-            Vector3 targetPosition = TargetMonster.transform.position;
+            Vector3 targetPosition = TargetUnit.Transform.position;
 
             // 두 위치 간 거리 계산
             float distance = Vector3.Distance(myPosition, targetPosition);
@@ -138,8 +149,6 @@ namespace ResourceWar.Server
             return (false, Vector3.zero);
         }
 
-
-
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.green;
@@ -147,7 +156,7 @@ namespace ResourceWar.Server
             Gizmos.color = Color.red;
             DrawCircle(transform.position, this.AttackRanged);
 
-            if (TargetMonster)
+            if (TargetUnit != null)
             {
                 
                 var attackInfo = CalculateMovementToAttackRange();
@@ -165,16 +174,18 @@ namespace ResourceWar.Server
         private void DrawCircle(Vector3 center, float radius)
         {
             int segments = 50; // 원의 세그먼트 개수
-            float angle = 0f;
-            Vector3 prevPoint = center + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
+            float angleStep = 2 * Mathf.PI / segments; // 각도 간격
+            Vector3 prevPoint = center + new Vector3(Mathf.Cos(0), 0, Mathf.Sin(0)) * radius;
 
             for (int i = 1; i <= segments; i++)
             {
-                angle += 2 * Mathf.PI / segments;
+                float angle = i * angleStep;
                 Vector3 newPoint = center + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
                 Gizmos.DrawLine(prevPoint, newPoint);
                 prevPoint = newPoint;
             }
         }
+
+
     }
 }

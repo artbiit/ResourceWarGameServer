@@ -21,8 +21,8 @@ namespace ResourceWar.Server.Monster
             if (attackable)
             {
                 _ = CoolDown();
-                Debug.Log($"Hit! {monster.name} -> {monster.TargetMonster.name}");
-                monster.TargetMonster.CurrentHealth -= monster.Attack;
+                Debug.Log($"Hit! {monster.name} -> {monster.TargetUnit.Transform.name}");
+                monster.TargetUnit.TakeDamage(monster.Attack, monster);
             }
           
             

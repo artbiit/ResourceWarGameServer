@@ -24,7 +24,7 @@ public class MonsterDeployTest : MonoBehaviour
         {
             for (var j = 0; j < spawnCount; j++)
             {
-                spawnMonster[i * (keys.Length-1) + j] = keys[i];
+                spawnMonster[i * spawnCount + j] = keys[i];
             }
         }
 

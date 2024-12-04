@@ -13,17 +13,13 @@ namespace ResourceWar.Server.Monster
         private float avoidanceDistance = 6f; // 우회 거리
         private float rayAngle = 45f; // 좌우 탐색 각도
         private PhysicsScene physicsScene;
-
-        public Move(MonsterBehaviour monster)
-        {
-            enemyLayer = LayerMask.NameToLayer($"Team{(monster.TeamId == 1 ? 2 : 1)}");
-            allyLayer = LayerMask.NameToLayer($"Team{monster.TeamId}");
-            physicsScene = monster.PhysicsScene;
-        }
-
+        Collider[] castedEnemies = new Collider[3];
         public async UniTask Enter(MonsterBehaviour monster)
         {
-           monster.NavMeshAgent.ResetPath();
+            enemyLayer = 1 << LayerMask.NameToLayer($"Team{(monster.TeamId == 1 ? 2 : 1)}");
+            allyLayer = 1 << LayerMask.NameToLayer($"Team{monster.TeamId}");
+            physicsScene = monster.PhysicsScene;
+            monster.NavMeshAgent.ResetPath();
             await UniTask.Yield();
         }
 
@@ -31,8 +27,8 @@ namespace ResourceWar.Server.Monster
         {
             var transform = monster.transform;
 
-        /*    // 정면에 아군이 있는지 확인
-            if (physicsScene.Raycast(transform.position, transform.forward, out var allyHit, avoidanceDistance, 1 << allyLayer))
+            // 정면에 아군이 있는지 확인
+            if (physicsScene.Raycast(transform.position, transform.forward, out var allyHit, avoidanceDistance,  allyLayer))
             {
                 var ally = allyHit.collider.GetComponent<MonsterBehaviour>();
                 if (ally && ally.IsAlive)
@@ -40,15 +36,16 @@ namespace ResourceWar.Server.Monster
                     await UniTask.Yield(); // 아군이 이동할 때까지 대기
                     return;
                 }
-            }*/
+            }
 
-            // 적 탐지
-            if (physicsScene.SphereCast(transform.position, monster.DetectRanged, transform.forward, out var enemyHit, layerMask: 1 << enemyLayer))
+            int count = physicsScene.OverlapSphere(monster.transform.position, monster.DetectRanged, castedEnemies, enemyLayer, QueryTriggerInteraction.UseGlobal);
+
+            for (int i = 0; i < count; i++)
             {
-                var target = enemyHit.collider.GetComponent<MonsterBehaviour>();
-                if (target && target.IsAlive)
+                var target = castedEnemies[i].GetComponent<IDamageable>();
+                if (target != null && target.IsAlive)
                 {
-                    monster.TargetMonster = target;
+                    monster.TargetUnit = target;
                     var moveInfo = monster.CalculateMovementToAttackRange();
                     if (moveInfo.needsToMove)
                     {
@@ -56,7 +53,9 @@ namespace ResourceWar.Server.Monster
                     }
                     return;
                 }
+
             }
+     
 
             // 기본 이동
             Vector3 targetPosition = transform.position + monster.DefaultDirection.normalized * monster.DetectRanged;
