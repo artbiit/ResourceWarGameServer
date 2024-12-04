@@ -9,10 +9,9 @@ namespace ResourceWar.Server.Monster
 {
     public class Chase : IAsyncState<MonsterBehaviour>
     {
-        int count = 0;
+   
         public async UniTask Enter(MonsterBehaviour monster)
         {
-          //  Debug.Log($"{monster.name}[{++count}] Chase Enter -> {monster.TargetUnit.Transform.name} - {Vector3.Distance(monster.transform.position, monster.TargetUnit.Transform.position)}");
             monster.NavMeshAgent.isStopped = false;
             await UniTask.Yield();
         }

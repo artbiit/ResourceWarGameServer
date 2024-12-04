@@ -9,7 +9,8 @@ using static UnityEditor.Progress;
 public class MonsterDeployTest : MonoBehaviour
 {
     public MonsterController monsterController;
-    public int[] spawnCount = new int[4];
+    public int[] spawnCountTeam1 = new int[4];
+    public int[] spawnCountTeam2 = new int[4];
     private void Awake()
     {
         DotEnv.Config();
@@ -20,21 +21,32 @@ public class MonsterDeployTest : MonoBehaviour
 
         var keys = TableData.Monsters.Keys.ToArray();
 
-        int totalCount = spawnCount.Aggregate((acc, i) => acc + i);
+        int totalCount = spawnCountTeam1.Aggregate((acc, i) => acc + i);
         int[] spawnMonster = new int[totalCount];
         int currentCount = 0;
-        for (var j = 0; j < spawnCount.Length; j++)
+        for (var j = 0; j < spawnCountTeam1.Length; j++)
         {
-            for (int i = 0; i < spawnCount[j]; i++)
+            for (int i = 0; i < spawnCountTeam1[j]; i++)
             {
                 spawnMonster[currentCount++] = keys[j];
             }
         }
-
-
-
         monsterController.AddMonster(1, spawnMonster);
+        totalCount = spawnCountTeam2.Aggregate((acc, i) => acc + i);
+        spawnMonster = new int[totalCount];
+        currentCount = 0;
+        for (var j = 0; j < spawnCountTeam2.Length; j++)
+        {
+            for (int i = 0; i < spawnCountTeam2[j]; i++)
+            {
+                spawnMonster[currentCount++] = keys[j];
+            }
+        }
         monsterController.AddMonster(2, spawnMonster);
+
+
+
+
 
     }
 }

@@ -18,6 +18,10 @@ namespace ResourceWar.Server.Monster
 
         public async UniTask Execute(MonsterBehaviour monster)
         {
+            if(monster.Position == MonsterPosition.Mellee)
+            {
+                Debug.Log($"{monster.gameObject.name} -> {monster.TargetUnit}");
+            }
             if (attackable && monster.TargetUnit != null)
             {
                 _ = CoolDown();

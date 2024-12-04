@@ -45,7 +45,25 @@ namespace ResourceWar.Server
         /// 기본적으로 이동해야할 방향
         /// </summary>
         public Vector3 DefaultDirection;
-        public IDamageable TargetUnit;
+
+        private Collider targetCollider;
+        private IDamageable targetUnit;
+        public IDamageable TargetUnit {
+            get => targetUnit;
+
+           set
+            {
+                this.targetUnit = value;
+                if(value == null)
+                {
+                    this.targetCollider = null;
+                }
+                else
+                {
+                    this.targetCollider = value.Transform.gameObject.GetComponent<Collider>();
+                }
+            }
+        }
         #endregion
 
         private void Awake()
@@ -57,12 +75,12 @@ namespace ResourceWar.Server
             var idle = new Idle();
             stateMachine.AddGlobalTransition(die, () => this.IsAlive == false);
             stateMachine.AddTransition(idle, move, () => true);
-            stateMachine.AddTransition(move, chase, () => TargetUnit?.IsAlive == true);
+            stateMachine.AddTransition(move, chase, () => targetUnit != null && targetUnit.IsAlive );
             stateMachine.AddTransition(move, attack, () => IsTargetInAttackRange());
             stateMachine.AddTransition(chase, attack, () => IsTargetInAttackRange());
-            stateMachine.AddTransition(attack, chase, () => TargetUnit?.IsAlive == true && GetDistanceForTarget() > this.AttackRanged);
-            stateMachine.AddTransition(attack, move, () => TargetUnit == null);
-            stateMachine.AddTransition(chase, move, () => TargetUnit == null);
+            stateMachine.AddTransition(attack, chase, () => targetUnit != null && targetUnit.IsAlive == true && !IsTargetInAttackRange());
+            stateMachine.AddTransition(attack, move, () => targetUnit == null);
+            stateMachine.AddTransition(chase, move, () => targetUnit == null);
             _ = stateMachine.ChangeState(idle, this);
 
 
@@ -97,28 +115,26 @@ namespace ResourceWar.Server
 
         public bool IsTargetInAttackRange()
         {
-            if (TargetUnit == null)
+            if (targetUnit == null)
             {
                 return false;
             }
 
             // 내 위치와 타겟 위치
             Vector3 myPosition = transform.position;
-            Vector3 targetPosition = TargetUnit.Transform.position;
+            Vector3 targetPosition = targetUnit.Transform.position;
 
             // 타겟의 Collider 크기를 고려
-            Collider targetCollider = TargetUnit.Transform.GetComponent<Collider>();
+   
             float targetRadius = 0f;
 
             if (targetCollider != null)
             {
-                // 타겟의 반지름 계산 (간단히 최대 크기를 사용)
                 targetRadius = Mathf.Max(targetCollider.bounds.extents.x, targetCollider.bounds.extents.z);
             }
 
             // 거리 계산
             float distance = Vector3.Distance(myPosition, targetPosition);
-
             // 공격 범위 + 타겟의 크기 확인
             return distance <= AttackRanged + targetRadius;
         }
@@ -131,32 +147,34 @@ namespace ResourceWar.Server
         public float GetDistanceForTarget()
         {
             float distance = float.MaxValue;
-            if (TargetUnit != null)
+            if (targetUnit != null)
             {
-                distance = Vector3.Distance(transform.position, TargetUnit.Transform.position);
+                distance = Vector3.Distance(transform.position, targetUnit.Transform.position);
             }
             return distance;
         }
 
         public (bool needsToMove, Vector3 targetPosition) CalculateMovementToAttackRange()
         {
-            if (TargetUnit == null)
+            if (targetUnit == null)
             {
                 return (false, Vector3.zero); // 타겟이 없으면 이동 필요 없음
             }
 
             // 내 위치와 타겟 위치
             Vector3 myPosition = transform.position;
-            Vector3 targetPosition = TargetUnit.Transform.position;
+            Vector3 targetPosition = targetUnit.Transform.position;
 
             // 두 위치 간 거리 계산
-            float distance = Vector3.Distance(myPosition, targetPosition);
-
-            if (distance <= AttackRanged)
+        
+            if (IsTargetInAttackRange())
             {
                 // 공격 범위 내에 이미 타겟이 있으므로 이동할 필요 없음
                 return (false, targetPosition);
             }
+
+            float distance = Vector3.Distance(myPosition, targetPosition);
+
 
             // 공격 범위에 들어가도록 이동해야 함
             // 방향 벡터 계산
@@ -175,7 +193,7 @@ namespace ResourceWar.Server
             Gizmos.color = Color.red;
             DrawCircle(transform.position, this.AttackRanged);
 
-            if (TargetUnit != null)
+            if (targetUnit != null)
             {
 
                 var attackInfo = CalculateMovementToAttackRange();
