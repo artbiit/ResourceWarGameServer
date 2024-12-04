@@ -33,7 +33,7 @@ namespace ResourceWar.Server
             GameStart = 9,
             LoadProgressNoti = 10,
             SurrenderNoti = 11,
-
+            FurnaceHandler = 12,
 
         }
 
@@ -157,6 +157,7 @@ namespace ResourceWar.Server
             receivedDispatcher.Subscribe(GameManagerEvent.GameStart, GameStart);
             receivedDispatcher.Subscribe(GameManagerEvent.LoadProgressNoti, LoadProgressNoti);
             receivedDispatcher.Subscribe(GameManagerEvent.SurrenderNoti, SurrenderNoti);
+            receivedDispatcher.Subscribe(GameManagerEvent.FurnaceHandler, FurnaceResponseHandler);
 
             //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
@@ -437,10 +438,95 @@ namespace ResourceWar.Server
         #endregion
 
         private TimerManager<int> timerManager = new TimerManager<int>();
-        private TimerManager<int> furnaceTimerManager = new TimerManager<int>();
 
         #region 용광로
-        
+        public async UniTask FurnaceResponseHandler(ReceivedPacket receivedPacket)
+        {
+            var clientId = receivedPacket.ClientId;
+            var token = receivedPacket.Token;
+            if (!TryGetTeamIndex(clientId, out int teamIndex, out var team))
+            {
+                Logger.LogError($"Team not found for clientId {clientId}");
+                return;
+            }
+
+            var furnace = team.TeamFurnace;
+
+            if (!TryGetPlayer(clientId, out var player))
+            {
+                Logger.LogError($"Player not found for clientId {clientId}");
+                return;
+            }
+
+            FurnaceResultCode resultCode = FurnaceResultCode.SUCCESS;
+
+            // 용광로 상태 처리
+            switch (furnace.State)
+            {
+                case SyncFurnaceStateCode.WAITING:
+                    if (player.EquippedItem == (int)ItemTypes.Ironstone)
+                    {
+                        player.EquippedItem = 0;
+                        furnace.StartProgress();
+                    }
+                    else
+                    {
+                        resultCode = FurnaceResultCode.INVALID_ITEM;
+                    }
+                    break;
+                case SyncFurnaceStateCode.PRODUCING:
+                case SyncFurnaceStateCode.OVERFLOW:
+                    {
+                        player.EquippedItem = furnace.State == SyncFurnaceStateCode.PRODUCING ? (int)ItemTypes.Iron : (int)ItemTypes.Garbage;
+                        furnace.ResetProgress();
+                        furnace.StartProgress();
+                    }
+                    break;
+                case SyncFurnaceStateCode.RUNNING:
+                    {
+                        resultCode = FurnaceResultCode.RUNNING_STATE;
+                    }
+                    break;
+                default:
+                    resultCode = FurnaceResultCode.FAIL;
+                    break;
+            }
+
+            var responsePacket = new Packet
+            {
+                PacketType = PacketType.FURNACE_RESPONSE,
+                Token = token,
+                Payload = new S2CFurnaceRes
+                {
+                    FurnaceResultCode = (uint)resultCode,
+                }
+            };
+            await SendPacketForUser(responsePacket);
+
+
+            // 용광로 상태 동기화
+            if (resultCode == FurnaceResultCode.SUCCESS)
+            {
+                await SyncFurnaceState(token, teamIndex, furnace);
+            }
+        }
+
+        private async UniTask SyncFurnaceState(string clientToken, int teamIndex, Furnace furnace)
+        {
+            var syncPacket = new Packet
+            {
+                PacketType = PacketType.SYNC_FURNACE_STATE_NOTIFICATION,
+                Token = clientToken,
+                Payload = new S2CSyncFurnaceStateNoti
+                {
+                    TeamIndex = (uint)teamIndex,
+                    FurnaceStateCode = (uint)furnace.State,
+                    Progress = furnace.Progress
+                }
+            };
+
+            await SendPacketForTeam(syncPacket);
+        }
         #endregion
 
         #region 항복 투표
@@ -687,12 +773,12 @@ namespace ResourceWar.Server
                 isAllReady &= player.IsReady;
             });
 
-            // 팀 구성 및 준비 상태 확인
+           /* // 팀 구성 및 준비 상태 확인
             if (team1Count != 2 || team2Count != 2 || !isAllReady)
             {
                 Logger.LogError($"Game cannot start. Team composition or readiness is invalid: Team[1]={team1Count}, Team[2]={team2Count}, AllReady={isAllReady}");
                 return;
-            }
+            }*/
 
             var packet = new Packet
             {

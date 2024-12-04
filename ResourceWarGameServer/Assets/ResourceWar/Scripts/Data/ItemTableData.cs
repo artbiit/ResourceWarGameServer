@@ -8,7 +8,8 @@ namespace ResourceWar.Server
 {
     public enum ItemTypes
     {
-        SolidWood = 1,
+        Empty = 1,
+        SolidWood,
         Ironstone,
         Wood,
         Iron,
