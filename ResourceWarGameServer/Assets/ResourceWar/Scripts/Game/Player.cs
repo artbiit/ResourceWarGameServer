@@ -27,7 +27,7 @@ namespace ResourceWar.Server
         public int playerSpeed = 100;
         public Vector3 position = Vector3.zero;
         public int ActionType { get; set; }
-        public int EquippedItem { get; set; }
+        public PlayerEquippedItem EquippedItem { get; set; }
 
 
         /// <summary>

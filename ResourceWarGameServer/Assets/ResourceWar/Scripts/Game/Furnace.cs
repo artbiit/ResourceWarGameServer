@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Protocol;
 using ResourceWar.Server.Lib;
 using System;
 using System.Collections.Generic;
@@ -6,23 +7,49 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static ResourceWar.Server.GameManager;
 
 namespace ResourceWar.Server
 {
     public class Furnace
     {
+        public enum Event
+        {
+            FurnaceRequest
+        }
         public SyncFurnaceStateCode State { get; private set; } = SyncFurnaceStateCode.WAITING;
         public float Progress { get; private set; } = 0.0f; // 진행도 (0~100%)
 
         private CancellationTokenSource progressToken;
-        private Action<SyncFurnaceStateCode, int, float, string> onStateUpdate;
 
-        public void SetAction(Action<SyncFurnaceStateCode, int, float, string> stateUpdateCallback)
+        public Furnace()
         {
-            onStateUpdate = stateUpdateCallback;
+            EventDispatcher<Event,ReceivedPacket>.Instance.Subscribe(Event.FurnaceRequest, FurnaceResponseHandler);
         }
 
-        public Action<SyncFurnaceStateCode, int, float, string> GetAction() => onStateUpdate;
+        public async UniTask FurnaceResponseHandler(ReceivedPacket receivedPacket)
+        {
+            var clientId = receivedPacket.ClientId;
+            var token = receivedPacket.Token;
+
+            var player = await DataDispatcher<int, Player>.Instance.RequestDataAsync(clientId);
+            var (teamIndex, team) = await DataDispatcher<int, (int teamIndex, Team team)>.Instance.RequestDataAsync(clientId);
+            FurnaceResultCode resultCode = this.FurnaceStateProcess(player, teamIndex, token);
+
+            var packet = new Packet
+            {
+                PacketType = PacketType.FURNACE_RESPONSE,
+                Token = token,
+                Payload = new S2CFurnaceRes
+                {
+                    FurnaceResultCode = (uint)resultCode,
+                }
+            };
+            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManagerEvent.SendPacketForUser, packet);
+
+        
+        }
+
 
         public FurnaceResultCode FurnaceStateProcess(Player player, int teamIndex, string clientToken)
         {
@@ -32,9 +59,9 @@ namespace ResourceWar.Server
             switch (State)
             {
                 case SyncFurnaceStateCode.WAITING:
-                    if (player.EquippedItem == (int)PlayerEquippedItem.IRONSTONE)
+                    if (player.EquippedItem == PlayerEquippedItem.IRONSTONE)
                     {
-                        player.EquippedItem = (int)PlayerEquippedItem.NONE;
+                        player.EquippedItem =  PlayerEquippedItem.NONE;
                         StartProgress(teamIndex, clientToken);
                     }
                     else
@@ -46,8 +73,8 @@ namespace ResourceWar.Server
                 case SyncFurnaceStateCode.OVERFLOW:
                     {
                         player.EquippedItem = State == SyncFurnaceStateCode.PRODUCING
-                            ? (int)PlayerEquippedItem.IRON
-                            : (int)PlayerEquippedItem.GARBAGE;
+                            ?  PlayerEquippedItem.IRON
+                            :  PlayerEquippedItem.GARBAGE;
                         ResetProgress();
                         StartProgress(teamIndex, clientToken);
                     }
@@ -78,18 +105,41 @@ namespace ResourceWar.Server
                     UpdateStateBasedOnProgress();
 
                     // 상태 업데이트 콜백 실행
-                    onStateUpdate?.Invoke(State, teamIndex, Progress, clientToken);
-
+                    OnFurnaceStateUpdate(State, teamIndex, Progress, clientToken);
                     await UniTask.CompletedTask;
                 },
                 1.0f);
         }
+
+        private async void OnFurnaceStateUpdate(SyncFurnaceStateCode state, int teamIndex, float progress, string token)
+        {
+            if (state == SyncFurnaceStateCode.WAITING)
+            {
+                return; // WAITING 상태는 동기화 하지 않음
+            }
+
+            var syncPacket = new Packet
+            {
+                PacketType = PacketType.SYNC_FURNACE_STATE_NOTIFICATION,
+                Token = token,
+                Payload = new S2CSyncFurnaceStateNoti
+                {
+                    TeamIndex = (uint)teamIndex,
+                    FurnaceStateCode = (uint)state,
+                    Progress = progress
+                }
+            };
+
+           await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForTeam, syncPacket);
+        }
+
 
         public void StopProgress()
         {
             if (progressToken != null)
             {
                 IntervalManager.Instance.CancelTask(progressToken.Token);
+                progressToken.Dispose();
                 progressToken = null;
             }
         }
@@ -106,7 +156,6 @@ namespace ResourceWar.Server
             StopProgress();
             Progress = 0;
             State = SyncFurnaceStateCode.WAITING;
-            onStateUpdate = null;
         }
 
         private void UpdateStateBasedOnProgress()
