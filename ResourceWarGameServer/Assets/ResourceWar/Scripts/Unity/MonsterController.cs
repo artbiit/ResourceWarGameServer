@@ -84,14 +84,14 @@ namespace ResourceWar.Server
                     }
                 }
                 await UniTask.WhenAll(tasks);
-
                 for (int i = 1; i <= monsters.Count; i++)
                 {
                     for (int j = 0; j < monsters[i].Count; j++)
                     {
-                        if(monsters[i][j].IsAlive == false)
+                        if (monsters[i][j].IsAlive == false)
                         {
                             monsterPool.Release(monsters[i][j]);
+                            monsters[i].RemoveAt(j);
                             j--;
                         }
                     }

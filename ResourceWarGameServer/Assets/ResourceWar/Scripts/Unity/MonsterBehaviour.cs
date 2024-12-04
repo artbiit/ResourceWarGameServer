@@ -58,10 +58,10 @@ namespace ResourceWar.Server
             stateMachine.AddGlobalTransition(die, () => this.IsAlive == false);
             stateMachine.AddTransition(idle, move, () => true);
             stateMachine.AddTransition(move, chase, () => TargetUnit?.IsAlive == true);
-            stateMachine.AddTransition(move, attack, () => GetDistanceForTarget() <= this.AttackRanged);
-            stateMachine.AddTransition(chase, attack, () => GetDistanceForTarget() <= this.AttackRanged);
-            stateMachine.AddTransition(attack, chase, () => GetDistanceForTarget() > this.AttackRanged);
-            stateMachine.AddTransition(chase, move, () => GetDistanceForTarget() > this.DetectRanged);
+            stateMachine.AddTransition(move, attack, () => IsTargetInAttackRange());
+            stateMachine.AddTransition(chase, attack, () => IsTargetInAttackRange());
+            stateMachine.AddTransition(attack, chase, () => TargetUnit?.IsAlive == true && GetDistanceForTarget() > this.AttackRanged);
+            stateMachine.AddTransition(chase, move, () => TargetUnit?.IsAlive == false);
             _ = stateMachine.ChangeState(idle, this);
 
 
@@ -71,7 +71,7 @@ namespace ResourceWar.Server
             PhysicsScene = gameObject.scene.GetPhysicsScene();
             if (TableData.Monsters.TryGetValue(monsterId, out var monsterData) == false)
             {
-               Logger.LogError($"Could not found monster in table : {monsterId}");
+                Logger.LogError($"Could not found monster in table : {monsterId}");
                 return false;
             }
             this.TeamId = teamId;
@@ -88,25 +88,51 @@ namespace ResourceWar.Server
         public void TakeDamage(float damage, IDamageable hitUnit)
         {
             this.currentHelath -= damage;
-            if(this.TargetUnit == null)
+            if (this.TargetUnit == null)
             {
                 this.TargetUnit = hitUnit;
             }
         }
 
+        public bool IsTargetInAttackRange()
+        {
+            if (TargetUnit == null)
+            {
+                return false;
+            }
+
+            // 내 위치와 타겟 위치
+            Vector3 myPosition = transform.position;
+            Vector3 targetPosition = TargetUnit.Transform.position;
+
+            // 타겟의 Collider 크기를 고려
+            Collider targetCollider = TargetUnit.Transform.GetComponent<Collider>();
+            float targetRadius = 0f;
+
+            if (targetCollider != null)
+            {
+                // 타겟의 반지름 계산 (간단히 최대 크기를 사용)
+                targetRadius = Mathf.Max(targetCollider.bounds.extents.x, targetCollider.bounds.extents.z);
+            }
+
+            // 거리 계산
+            float distance = Vector3.Distance(myPosition, targetPosition);
+
+            // 공격 범위 + 타겟의 크기 확인
+            return distance <= AttackRanged + targetRadius;
+        }
+
         public async UniTask Execute()
         {
-   
-           await stateMachine.Update(this);
+            await stateMachine.Update(this);
         }
 
         public float GetDistanceForTarget()
         {
-            float distance =float.MaxValue;
+            float distance = float.MaxValue;
             if (TargetUnit != null)
             {
                 distance = Vector3.Distance(transform.position, TargetUnit.Transform.position);
-
             }
             return distance;
         }
@@ -138,15 +164,7 @@ namespace ResourceWar.Server
             // 공격 범위 가장자리에 해당하는 목표 좌표 계산
             Vector3 moveToPosition = targetPosition - direction * AttackRanged;
 
-            // 네비메쉬에서 이동 가능 여부 확인
-            if (NavMesh.SamplePosition(moveToPosition, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
-            {
-                // 네비메쉬 상에서 이동 가능한 좌표 반환
-                return (true, hit.position);
-            }
-
-            // 네비메쉬에서 유효하지 않으면 이동하지 않음
-            return (false, Vector3.zero);
+            return (true, moveToPosition);
         }
 
         private void OnDrawGizmosSelected()
@@ -158,7 +176,7 @@ namespace ResourceWar.Server
 
             if (TargetUnit != null)
             {
-                
+
                 var attackInfo = CalculateMovementToAttackRange();
                 if (attackInfo.needsToMove)
                 {

@@ -19,7 +19,7 @@ namespace ResourceWar.Server.Monster
             enemyLayer = 1 << LayerMask.NameToLayer($"Team{(monster.TeamId == 1 ? 2 : 1)}");
             allyLayer = 1 << LayerMask.NameToLayer($"Team{monster.TeamId}");
             physicsScene = monster.PhysicsScene;
-            monster.NavMeshAgent.ResetPath();
+            monster.NavMeshAgent.isStopped = false;
             await UniTask.Yield();
         }
 

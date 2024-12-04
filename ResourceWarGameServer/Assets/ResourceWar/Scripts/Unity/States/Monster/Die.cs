@@ -12,13 +12,13 @@ namespace ResourceWar.Server.Monster
 
         public async UniTask Enter(MonsterBehaviour monster)
         {
-            monster.NavMeshAgent.ResetPath();
+            monster.NavMeshAgent.isStopped = true;
             await UniTask.Yield();
         }
 
         public async UniTask Execute(MonsterBehaviour monster)
         {
-            await UniTask.Delay(1000);
+            await UniTask.Yield();
         }
 
         public async UniTask Exit(MonsterBehaviour monster)
