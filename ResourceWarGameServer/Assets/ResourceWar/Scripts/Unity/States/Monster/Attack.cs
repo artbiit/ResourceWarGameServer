@@ -18,11 +18,14 @@ namespace ResourceWar.Server.Monster
 
         public async UniTask Execute(MonsterBehaviour monster)
         {
-            if (attackable)
+            if (attackable && monster.TargetUnit != null)
             {
                 _ = CoolDown();
-                Debug.Log($"Hit! {monster.name} -> {monster.TargetUnit.Transform.name}");
                 monster.TargetUnit.TakeDamage(monster.Attack, monster);
+                if(monster.TargetUnit.IsAlive == false)
+                {
+                    monster.TargetUnit = null;
+                }
             }
           
             
