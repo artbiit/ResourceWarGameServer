@@ -234,7 +234,7 @@ message C2SMoveToAreaMapReq {
     uint32 destinationAreaType = 2;
 }
 
-message S2CMoveToAreaMapRes {
+message S2CMoveToAreaMap {
     uint32 joinMapResultCode = 1;
     uint32 destinationAreaType = 2;
 }

@@ -3,6 +3,7 @@ using log4net.Repository.Hierarchy;
 using Protocol;
 using ResourceWar.Server.Lib;
 using StackExchange.Redis;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +24,13 @@ namespace ResourceWar.Server
         public bool IsConnected { get; set; }
         public int LoadProgress { get; set; }
         public int AvatarId { get; set; }
+        public bool isGatheringResource = false;
+        public long isGatheringTime = 0;
         public int playerSpeed = 100;
         public Vector3 position = Vector3.zero;
         public int ActionType { get; set; }
         public int EquippedItem { get; set; }
+        
 
         /// <summary>
         /// ms 단위 지연시간
@@ -49,6 +53,8 @@ namespace ResourceWar.Server
             IsConnected = true;
             LoadProgress = 0;
             this.hashCode = this.GetHashCode().ToString();
+            this.ActionType = 7001;
+            this.EquippedItem = 1001;
             Connected(clientId);
         }
 
@@ -64,14 +70,34 @@ namespace ResourceWar.Server
                 this.position = position;
             }
             Logger.Log($"플레이어{this.Nickname}의 이동 전 위치는 : {this.position}");
-            this.position = Vector3.Lerp(this.position, this.position + position, this.playerSpeed);
+            this.position += position / 500;
             Logger.Log($"플레이어{this.Nickname}의 이동 후 위치는 : {this.position}");
+            this.position.x = (float)Math.Round(this.position.x, 2);
+            this.position.y = (float)Math.Round(this.position.y, 2);
             return this.position;
         }
 
         public void ChangeAction(byte ActionType)
         {
-            this.ActionType = ActionType;
+            if (isGatheringResource)
+            {
+                if(UnixTime.Now() - isGatheringTime > 1000)
+                {
+                    //파괴된 자원 객체 스폰 필요
+                }
+                else
+                {
+
+                }
+                this.isGatheringResource = false;
+                this.ActionType = ActionType;
+            }
+            else
+            {
+                this.isGatheringTime = UnixTime.Now();
+                this.isGatheringResource = true;
+            }
+            
         }
 
         public void ChangeArea(uint DestinationAreaType)
@@ -85,8 +111,8 @@ namespace ResourceWar.Server
             Logger.Log($"Player is reconnected {this.ClientId} -> {clientId}");
             this.ClientId = clientId;
             this.IsConnected = true;
-            EventDispatcher<(int, int), long>.Instance.Subscribe((this.ClientId, int.MaxValue + this.ClientId), PongRes);
-            pingToken = IntervalManager.Instance.AddTask(hashCode, PingReq, 1.0f);
+            //EventDispatcher<(int, int), long>.Instance.Subscribe((this.ClientId, int.MaxValue + this.ClientId), PongRes);
+            //pingToken = IntervalManager.Instance.AddTask(hashCode, PingReq, 1.0f);
         }
 
         public void Disconnected()

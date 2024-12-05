@@ -28,7 +28,7 @@ namespace ResourceWar.Server
             {
                 PacketType = PacketType.PLAYER_ACTION_RESPONSE,
                 Token = packet.Token,
-                Payload = new Protocol.S2CMoveToAreaMapRes
+                Payload = new Protocol.S2CMoveToAreaMap
                 {
                     JoinMapResultCode = joinMapResultCode,
                     DestinationAreaType = DestinationArea // 도착 맵의 번호를 알려줘야 할 듯

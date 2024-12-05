@@ -78,39 +78,39 @@ namespace Protocol {
             "ZXJTdGFydFRpbWUYAiABKAQiOgoPUzJDR2FtZU92ZXJOb3RpEhQKDGdhbWVP",
             "dmVyVHlwZRgBIAEoDRIRCgl0ZWFtSW5kZXgYAiABKA0iSwoTQzJTTW92ZVRv",
             "QXJlYU1hcFJlcRIXCg9jdXJyZW50QXJlYVR5cGUYASABKA0SGwoTZGVzdGlu",
-            "YXRpb25BcmVhVHlwZRgCIAEoDSJNChNTMkNNb3ZlVG9BcmVhTWFwUmVzEhkK",
-            "EWpvaW5NYXBSZXN1bHRDb2RlGAEgASgNEhsKE2Rlc3RpbmF0aW9uQXJlYVR5",
-            "cGUYAiABKA0iJQoPQzJTV29ya2JlbmNoUmVxEhIKCnJlc3VsdEl0ZW0YASAB",
-            "KA0iLgoPUzJDV29ya2JlbmNoUmVzEhsKE3dvcmtiZW5jaFJlc3VsdENvZGUY",
-            "ASABKA0iMQoNQzJTRnVybmFjZVJlcRIgCgRpdGVtGAEgASgLMhIucHJvdG9j",
-            "b2wuSXRlbURhdGEiKgoNUzJDRnVybmFjZVJlcxIZChFmdXJuYWNlUmVzdWx0",
-            "Q29kZRgBIAEoDSIxCg1DMlNTYXdtaWxsUmVxEiAKBGl0ZW0YASABKAsyEi5w",
-            "cm90b2NvbC5JdGVtRGF0YSIqCg1TMkNTYXdtaWxsUmVzEhkKEXNhd21pbGxS",
-            "ZXN1bHRDb2RlGAEgASgNIiUKEEMyU0NyZWF0ZVJvb21SZXESEQoJaXNQcml2",
-            "YXRlGAEgASgIIjUKEFMyQ0NyZWF0ZVJvb21SZXMSEAoIZ2FtZUNvZGUYASAB",
-            "KAkSDwoHZ2FtZVVybBgCIAEoCSITChFDMlNNYXRjaENhbmNlbFJlcSITChFT",
-            "MkNNYXRjaENhbmNlbFJlcyINCgtDMlNNYXRjaFJlcSIqCgtTMkNNYXRjaFJl",
-            "cxIbChNyb29tTWF0Y2hSZXN1bHRDb2RlGAEgASgNIlcKFFMyQ01hdGNoUHJv",
-            "Z3Jlc3NOb3RpEhkKEW1hdGNoUHJvZ3Jlc3NDb2RlGAEgASgNEhMKC2VsYXBz",
-            "ZWRUaW1lGAIgASgEEg8KB2dhbWVVcmwYAyABKAkiIgoOQzJTSm9pblJvb21S",
-            "ZXESEAoIZ2FtZUNvZGUYASABKAkiPQoOUzJDSm9pblJvb21SZXMSGgoSam9p",
-            "blJvb21SZXN1bHRDb2RlGAEgASgNEg8KB2dhbWVVcmwYAiABKAkiEAoOQzJT",
-            "UXVpdFJvb21SZXEiIwoPUzJDUXVpdFJvb21Ob3RpEhAKCHBsYXllcklkGAEg",
-            "ASgNIiUKEEMyU1RlYW1DaGFuZ2VSZXESEQoJdGVhbUluZGV4GAEgASgNIjAK",
-            "EFMyQ1RlYW1DaGFuZ2VSZXMSHAoUdGVhbUNoYW5nZVJlc3VsdENvZGUYASAB",
-            "KA0iPAoPUzJDU3luY1Jvb21Ob3RpEikKB3BsYXllcnMYASADKAsyGC5wcm90",
-            "b2NvbC5QbGF5ZXJSb29tSW5mbyIqChlDMlNQbGF5ZXJJc1JlYWR5Q2hhbmdl",
-            "UmVxEg0KBXJlYWR5GAEgASgIIkIKGVMyQ1BsYXllcklzUmVhZHlDaGFuZ2VS",
-            "ZXMSJQodcGxheWVySXNSZWFkeUNoYW5nZVJlc3VsdENvZGUYASABKA0iEQoP",
-            "QzJTR2FtZVN0YXJ0UmVxIhIKEFMyQ0dhbWVTdGFydE5vdGkiJwoTQzJTTG9h",
-            "ZFByb2dyZXNzTm90aRIQCghwcm9ncmVzcxgBIAEoDSKDAQoPUzJDU3luY0xv",
-            "YWROb3RpEjwKDHN5bmNMb2FkRGF0YRgBIAMoCzImLnByb3RvY29sLlMyQ1N5",
-            "bmNMb2FkTm90aS5TeW5jTG9hZERhdGEaMgoMU3luY0xvYWREYXRhEhAKCHBs",
-            "YXllcklkGAEgASgNEhAKCHByb2dyZXNzGAIgASgNIiQKEEMyU01vbnN0ZXJB",
-            "ZGRSZXESEAoIbW9uc3RlcnMYASADKAUiFQoTQzJTTW9uc3RlckRlcGxveVJl",
-            "cSIWChRTMkNNb25zdGVyRGVwbG95Tm90aSJFChNTMkNNaXNzaW5nRmllbGRO",
-            "b3RpEhIKCnBhY2tldFR5cGUYASABKAUSGgoSbWlzc2luZ0ZpZWxkTGVuZ3Ro",
-            "GAIgASgFIhYKFFMyQ05lZWRBdXRob3JpemVOb3RpYgZwcm90bzM="));
+            "YXRpb25BcmVhVHlwZRgCIAEoDSJKChBTMkNNb3ZlVG9BcmVhTWFwEhkKEWpv",
+            "aW5NYXBSZXN1bHRDb2RlGAEgASgNEhsKE2Rlc3RpbmF0aW9uQXJlYVR5cGUY",
+            "AiABKA0iJQoPQzJTV29ya2JlbmNoUmVxEhIKCnJlc3VsdEl0ZW0YASABKA0i",
+            "LgoPUzJDV29ya2JlbmNoUmVzEhsKE3dvcmtiZW5jaFJlc3VsdENvZGUYASAB",
+            "KA0iMQoNQzJTRnVybmFjZVJlcRIgCgRpdGVtGAEgASgLMhIucHJvdG9jb2wu",
+            "SXRlbURhdGEiKgoNUzJDRnVybmFjZVJlcxIZChFmdXJuYWNlUmVzdWx0Q29k",
+            "ZRgBIAEoDSIxCg1DMlNTYXdtaWxsUmVxEiAKBGl0ZW0YASABKAsyEi5wcm90",
+            "b2NvbC5JdGVtRGF0YSIqCg1TMkNTYXdtaWxsUmVzEhkKEXNhd21pbGxSZXN1",
+            "bHRDb2RlGAEgASgNIiUKEEMyU0NyZWF0ZVJvb21SZXESEQoJaXNQcml2YXRl",
+            "GAEgASgIIjUKEFMyQ0NyZWF0ZVJvb21SZXMSEAoIZ2FtZUNvZGUYASABKAkS",
+            "DwoHZ2FtZVVybBgCIAEoCSITChFDMlNNYXRjaENhbmNlbFJlcSITChFTMkNN",
+            "YXRjaENhbmNlbFJlcyINCgtDMlNNYXRjaFJlcSIqCgtTMkNNYXRjaFJlcxIb",
+            "ChNyb29tTWF0Y2hSZXN1bHRDb2RlGAEgASgNIlcKFFMyQ01hdGNoUHJvZ3Jl",
+            "c3NOb3RpEhkKEW1hdGNoUHJvZ3Jlc3NDb2RlGAEgASgNEhMKC2VsYXBzZWRU",
+            "aW1lGAIgASgEEg8KB2dhbWVVcmwYAyABKAkiIgoOQzJTSm9pblJvb21SZXES",
+            "EAoIZ2FtZUNvZGUYASABKAkiPQoOUzJDSm9pblJvb21SZXMSGgoSam9pblJv",
+            "b21SZXN1bHRDb2RlGAEgASgNEg8KB2dhbWVVcmwYAiABKAkiEAoOQzJTUXVp",
+            "dFJvb21SZXEiIwoPUzJDUXVpdFJvb21Ob3RpEhAKCHBsYXllcklkGAEgASgN",
+            "IiUKEEMyU1RlYW1DaGFuZ2VSZXESEQoJdGVhbUluZGV4GAEgASgNIjAKEFMy",
+            "Q1RlYW1DaGFuZ2VSZXMSHAoUdGVhbUNoYW5nZVJlc3VsdENvZGUYASABKA0i",
+            "PAoPUzJDU3luY1Jvb21Ob3RpEikKB3BsYXllcnMYASADKAsyGC5wcm90b2Nv",
+            "bC5QbGF5ZXJSb29tSW5mbyIqChlDMlNQbGF5ZXJJc1JlYWR5Q2hhbmdlUmVx",
+            "Eg0KBXJlYWR5GAEgASgIIkIKGVMyQ1BsYXllcklzUmVhZHlDaGFuZ2VSZXMS",
+            "JQodcGxheWVySXNSZWFkeUNoYW5nZVJlc3VsdENvZGUYASABKA0iEQoPQzJT",
+            "R2FtZVN0YXJ0UmVxIhIKEFMyQ0dhbWVTdGFydE5vdGkiJwoTQzJTTG9hZFBy",
+            "b2dyZXNzTm90aRIQCghwcm9ncmVzcxgBIAEoDSKDAQoPUzJDU3luY0xvYWRO",
+            "b3RpEjwKDHN5bmNMb2FkRGF0YRgBIAMoCzImLnByb3RvY29sLlMyQ1N5bmNM",
+            "b2FkTm90aS5TeW5jTG9hZERhdGEaMgoMU3luY0xvYWREYXRhEhAKCHBsYXll",
+            "cklkGAEgASgNEhAKCHByb2dyZXNzGAIgASgNIiQKEEMyU01vbnN0ZXJBZGRS",
+            "ZXESEAoIbW9uc3RlcnMYASADKAUiFQoTQzJTTW9uc3RlckRlcGxveVJlcSIW",
+            "ChRTMkNNb25zdGVyRGVwbG95Tm90aSJFChNTMkNNaXNzaW5nRmllbGROb3Rp",
+            "EhIKCnBhY2tldFR5cGUYASABKAUSGgoSbWlzc2luZ0ZpZWxkTGVuZ3RoGAIg",
+            "ASgFIhYKFFMyQ05lZWRBdXRob3JpemVOb3RpYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -149,7 +149,7 @@ namespace Protocol {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSurrenderNoti), global::Protocol.S2CSurrenderNoti.Parser, new[]{ "PlayerId", "SurrenderStartTime" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CGameOverNoti), global::Protocol.S2CGameOverNoti.Parser, new[]{ "GameOverType", "TeamIndex" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SMoveToAreaMapReq), global::Protocol.C2SMoveToAreaMapReq.Parser, new[]{ "CurrentAreaType", "DestinationAreaType" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CMoveToAreaMapRes), global::Protocol.S2CMoveToAreaMapRes.Parser, new[]{ "JoinMapResultCode", "DestinationAreaType" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CMoveToAreaMap), global::Protocol.S2CMoveToAreaMap.Parser, new[]{ "JoinMapResultCode", "DestinationAreaType" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SWorkbenchReq), global::Protocol.C2SWorkbenchReq.Parser, new[]{ "ResultItem" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CWorkbenchRes), global::Protocol.S2CWorkbenchRes.Parser, new[]{ "WorkbenchResultCode" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SFurnaceReq), global::Protocol.C2SFurnaceReq.Parser, new[]{ "Item" }, null, null, null, null),
@@ -6111,11 +6111,11 @@ namespace Protocol {
 
   }
 
-  public sealed partial class S2CMoveToAreaMapRes : pb::IMessage<S2CMoveToAreaMapRes> {
-    private static readonly pb::MessageParser<S2CMoveToAreaMapRes> _parser = new pb::MessageParser<S2CMoveToAreaMapRes>(() => new S2CMoveToAreaMapRes());
+  public sealed partial class S2CMoveToAreaMap : pb::IMessage<S2CMoveToAreaMap> {
+    private static readonly pb::MessageParser<S2CMoveToAreaMap> _parser = new pb::MessageParser<S2CMoveToAreaMap>(() => new S2CMoveToAreaMap());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<S2CMoveToAreaMapRes> Parser { get { return _parser; } }
+    public static pb::MessageParser<S2CMoveToAreaMap> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -6128,22 +6128,22 @@ namespace Protocol {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public S2CMoveToAreaMapRes() {
+    public S2CMoveToAreaMap() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public S2CMoveToAreaMapRes(S2CMoveToAreaMapRes other) : this() {
+    public S2CMoveToAreaMap(S2CMoveToAreaMap other) : this() {
       joinMapResultCode_ = other.joinMapResultCode_;
       destinationAreaType_ = other.destinationAreaType_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public S2CMoveToAreaMapRes Clone() {
-      return new S2CMoveToAreaMapRes(this);
+    public S2CMoveToAreaMap Clone() {
+      return new S2CMoveToAreaMap(this);
     }
 
     /// <summary>Field number for the "joinMapResultCode" field.</summary>
@@ -6170,11 +6170,11 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as S2CMoveToAreaMapRes);
+      return Equals(other as S2CMoveToAreaMap);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(S2CMoveToAreaMapRes other) {
+    public bool Equals(S2CMoveToAreaMap other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -6233,7 +6233,7 @@ namespace Protocol {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(S2CMoveToAreaMapRes other) {
+    public void MergeFrom(S2CMoveToAreaMap other) {
       if (other == null) {
         return;
       }

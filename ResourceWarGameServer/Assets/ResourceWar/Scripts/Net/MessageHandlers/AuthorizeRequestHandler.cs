@@ -45,9 +45,9 @@ namespace ResourceWar.Server
                     }
                 }
             }
-
+            resultCode = AuthorizeResultCode.SUCCESS;
 #if UNITY_EDITOR
-            if(packet.Token.StartsWith("master"))
+            if (packet.Token.StartsWith("master"))
             {
                 resultCode = AuthorizeResultCode.SUCCESS;
             }
