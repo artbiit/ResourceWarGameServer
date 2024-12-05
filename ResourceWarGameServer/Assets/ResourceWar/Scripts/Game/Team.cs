@@ -9,7 +9,18 @@ namespace ResourceWar.Server
         // key - userToken
         public readonly Dictionary<string, Player> Players = new();
 
+        public Furnace TeamFurnace { get; private set; } = new();
+
         public bool ContainsPlayer(string token) => Players.ContainsKey(token);
+
+        public bool ContainsPlayer(int clientId)
+        {
+            foreach (var player in Players)
+            {
+                if (player.Value.ClientId == clientId) return true;
+            }
+            return false;
+        }
 
         public void LoopTeamPlayers(System.Func<string, Player, bool> func)
         {
@@ -89,6 +100,7 @@ namespace ResourceWar.Server
                 player.Value.Disconnected();
             }
             Players.Clear();
+            TeamFurnace.Reset();
         }
     }
 }

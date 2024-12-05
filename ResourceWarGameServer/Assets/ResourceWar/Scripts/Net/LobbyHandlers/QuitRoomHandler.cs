@@ -14,7 +14,6 @@ namespace ResourceWar.Server
     {
         public async UniTask<Packet> QuitRoomHandler(ReceivedPacket packet)
         {
-            Logger.Log("QuitRoomHandler 테스트중입니다");
             var resultCode = AuthorizeResultCode.SUCCESS;
             if (string.IsNullOrWhiteSpace(packet.Token))
             {
