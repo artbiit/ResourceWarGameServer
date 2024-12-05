@@ -1,0 +1,405 @@
+syntax = "proto3";
+
+package protocol;
+
+//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//
+//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//
+//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//
+//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//Common//
+
+// Ping 응답
+message S2CPingReq {
+    int64 serverTime = 1; // UTC+0 Unix timestamp 서버가 먼저 요청을 보냄, 헬스체크 용도, 해당 클라가 살아 있는 지 확인 하기 위해
+}
+  
+// Pong 응답
+message C2SPongRes {
+    int64 clientTime = 1; // 클라이언트 시간
+}
+
+//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//
+//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//
+//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//
+//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//Accounts//
+
+// 회원가입 요청
+message C2SSignUpReq {
+    string nickname = 1;
+    string id = 2;
+    string password = 3;
+}
+  
+// 회원가입 결과
+message S2CSignUpRes {
+    uint32 signUpResultCode = 1; // 0이면 성공
+}
+
+// 로그인 요청
+message C2SSignInReq {
+    string id = 1;
+    string password = 2;
+}
+  
+  // 로그인 결과 (토큰 발급)
+message S2CSignInRes {
+    uint32 signInResultCode = 1; // 0이면 성공
+    string token = 2;
+    uint64 expirationTime = 3;  // 만료시간
+    string nickname = 4; //유저 닉네임
+}
+
+message C2SRefreshTokenReq {
+}
+  
+  // 토큰 재발급 결과
+message S2CRefreshTokenRes {
+    string token = 1;
+    uint64 expirationTime = 2; // 만료시간 다시 정해서 보내주는거 (게임 시작하면 한번더 널널하게 보내주기)
+    uint32 refreshTokenResultCode = 3; // 0이면 성공
+}
+
+message C2SSignOutReq{
+
+}
+
+message S2CSignOutRes{
+    uint32 signOutResultCode = 1;
+}
+
+
+//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//
+//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//
+//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//
+//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//Game//
+
+  // 아이템 데이터
+message ItemData {
+    uint32 itemCode = 1;
+    uint32 itemType = 2;
+    uint32 amount = 3;
+  }
+
+  // 플레이어 정보
+message PlayerRoomInfo {
+    uint32 playerId = 1;
+    string playerName = 2;
+    uint32 avartarItem = 3; //repeated?
+    uint32 teamIndex = 4;
+    bool ready = 5;
+}
+
+// 플레이어 초기 정보
+message PlayerInitialData {
+    uint32 playerId = 1;
+    string playerName = 2;
+    uint32 avartarItem = 3; //repeated?
+    uint32 teamIndex = 4;
+    Position position = 5;
+}
+  
+// 기타 필요한 메시지 정의
+message PlayerState {
+    uint32 playerId = 1;
+    uint32 actionType = 2;
+    Position position = 3;
+    uint32 equippedItem = 4;
+}
+  
+message FieldUnit {
+    uint32 id = 1;
+    int32 unitType = 2;
+    uint32 state = 3; // 상태아이디로 이동인지, 근거리공격인지, 원거리공격인지 등등
+    Position position = 4;
+    uint32 hp = 5;
+    uint32 damage = 6;
+    uint32 targetId = 7;
+}
+  
+message Position {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+// 여기서부터 실제 패킷들
+
+message C2SAuthorizeReq{
+    
+}
+
+message S2CAuthorizeRes{
+    uint32 AuthorizeResultCode = 1; //
+}
+
+// 초기 정보 동기화
+message S2CInitialNoti {
+    repeated PlayerInitialData playerInitialData = 1; // 플레이어 초기 정보
+}
+  
+// 플레이어 상태 동기화
+message S2CSyncPlayersNoti {
+    repeated PlayerState playerStates = 1;
+}
+
+message C2SPlayerMove {
+    Position position = 1;
+}
+
+// 용광로 상태 동기화
+message S2CSyncFurnaceStateNoti {
+    uint32 teamIndex = 1;
+    uint32 furnaceStateCode = 2;
+    float progress = 3; // 백분율
+}
+
+// 제제소 상태 동기화
+message S2CSawmillStatusNoti {
+    uint32 teamIndex = 1;
+    uint32 sawmillStateCode = 2;
+    float progress = 3; // 백분율
+}
+
+// 제작소 상태 동기화
+message S2CWorkbenchStatusNoti {
+    uint32 teamIndex = 1;
+    uint32 workbenchStateCode = 2;
+    float progress = 3; // 백분율
+}  
+
+// 플레이어 액션 요청
+ message C2SPlayerActionReq {
+    uint32 actionType = 1;
+    uint32 targetObjectId = 2; // 행동 대상
+}
+  
+// 플레이어 액션 결과
+message S2CPlayerActionRes {
+    uint32 actionType = 1;
+    uint32 targetObjectId = 2;
+    bool success = 3;
+}
+  
+// 객체 스폰 알림 
+message S2CSpawnObjectNoti {
+    uint32 objectId = 1;
+    uint32 objectType = 2; // 구조물, 유닛
+    uint32 areaType = 3; // 전장, 채굴장, 벌목장, 사냥터
+    Position position = 4;
+}
+
+// 객체 파괴 알림
+message C2SDestoryObjectReq {
+    uint32 objectId = 1;
+    uint32 objectType = 2;
+    uint32 areaType = 3; // 전장, 채굴장, 벌목장, 사냥터 (검증 용)
+}
+
+message S2CDestoryObjectNoti {
+    uint32 objectId = 1;
+    uint32 objectType = 2;
+    uint32 areaType = 3; // 전장, 채굴장, 벌목장, 사냥터 (검증 용)
+}
+
+// 전장 유닛 동기화 (변동사항만 보냄)
+message S2CSyncFieldUnitNoti {
+    repeated FieldUnit Object = 1;
+}
+
+// 항복
+message C2SSurrenderReq {
+    // 두명이 동의해야 항복이 되게할지말지
+}
+
+// 자기 자신에게 알리기
+message S2CSurrenderRes {
+    uint32 surrenderResultCode = 1;
+    uint64 surrenderStartTime = 2;
+}
+
+// 팀 항복투표를 했다.
+message S2CSurrenderNoti {
+    uint32 playerId = 1;
+    uint64 surrenderStartTime = 2;
+}
+
+// 게임 종료 (게임 진행을 우리가 하고 있기 때문에 서버에서 먼저 보내줌)
+message S2CGameOverNoti {
+    uint32 gameOverType = 1; //(어떠한 사유로 게임이 끝났는지)
+    uint32 teamIndex = 2;
+}
+  
+// 공용맵 이동
+message C2SMoveToAreaMapReq {
+    uint32 currentAreaType = 1; 
+    uint32 destinationAreaType = 2;
+}
+
+message S2CMoveToAreaMap {
+    uint32 joinMapResultCode = 1;
+    uint32 destinationAreaType = 2;
+}
+  
+// 조합대 요청 (철 100, 단단한 목재도 100개, 핵도 100개)
+message C2SWorkbenchReq {
+    uint32 resultItem = 1;
+}
+  
+message S2CWorkbenchRes {
+    uint32 workbenchResultCode = 1;
+}
+
+// 용광로
+message C2SFurnaceReq {
+    ItemData item = 1;
+}
+  
+message S2CFurnaceRes {
+    uint32 furnaceResultCode = 1;
+}
+
+// 제제소
+message C2SSawmillReq {
+    ItemData item = 1;
+}
+  
+message S2CSawmillRes {
+    uint32 sawmillResultCode = 1;
+}
+
+// 대기실 생성 요청
+message C2SCreateRoomReq {
+    bool isPrivate = 1; // 비공개 방 여부 (true일때 private)
+}
+  
+// 대기실 생성 결과
+message S2CCreateRoomRes {
+    string gameCode = 1; // 방 코드
+    string gameUrl = 2; // 게임 서버 URL (API GATEWAY 쓴다고 함)
+}
+  
+// 대기실 매칭 취소
+message C2SMatchCancelReq {
+}
+
+// 대기실 매칭 취소 응답
+message S2CMatchCancelRes {
+}
+
+// 대기실 매칭 요청 (anyway public 방만)
+message C2SMatchReq {
+}
+
+// 대기실 매칭 응답
+message S2CMatchRes {
+  uint32 roomMatchResultCode = 1;
+}
+
+// 대기실 매칭 진행상황 (주기적으로 알려줘야함)
+message S2CMatchProgressNoti {
+  uint32 matchProgressCode = 1;
+  uint64 elapsedTime = 2;
+  string gameUrl = 3; // 매칭이 완료되면 gameUrl을 넣어줘야함.
+}
+
+// 대기실 입장 요청 (private 일때 만)
+message C2SJoinRoomReq {
+  string gameCode = 1; // null 불가능
+}
+
+message S2CJoinRoomRes {
+  uint32 joinRoomResultCode = 1;
+  string gameUrl =2;
+}
+
+// 대기실 나가기 요청
+message C2SQuitRoomReq {
+}
+
+// 대기실 나가기 알리기
+message S2CQuitRoomNoti {
+    uint32 playerId = 1;
+}
+
+// 팀 변경 요청 (자신이 팀을 직접 변경)
+message C2STeamChangeReq {
+    uint32 teamIndex = 1; // 팀 변경
+}
+  
+// 팀 변경 결과 (자기 자신에게)
+message S2CTeamChangeRes {
+    uint32 teamChangeResultCode = 1; // 0이면 성공
+}
+
+// 대기실 입장 알리기 (팀 변경 결과에서도 Sync로 보내줌)
+message S2CSyncRoomNoti {
+  repeated PlayerRoomInfo players = 1;
+}
+
+// 플레이어 준비 완료
+message C2SPlayerIsReadyChangeReq {
+    bool ready = 1;
+}
+
+// 플레이어 준비 완료
+message S2CPlayerIsReadyChangeRes {
+    uint32 playerIsReadyChangeResultCode = 1;
+}
+
+// 게임 시작 요청 (준비 완료)
+message C2SGameStartReq {
+    
+}
+
+// 게임 시작 결과 (준비 완료)
+message S2CGameStartNoti {
+    // 게임 시작 할 수 있다면 보내주고
+    // 게임 시작 못 하면 걍 안보내줌
+}  
+
+// 로딩 진행도 (해당 게임 세션에 들어와 있는 애들한테 Noti)
+message C2SLoadProgressNoti {
+  uint32 progress = 1; // 0~100 백분율
+}
+
+// 로딩 동기화 알림 (누가 얼마나 진행되고 있는지)
+message S2CSyncLoadNoti {
+  repeated SyncLoadData syncLoadData = 1;
+
+  message SyncLoadData {
+    uint32 playerId = 1;
+    uint32 progress = 2;
+  }
+}
+
+//TODO : 추후 삭제할 것
+//검증없이 바로 몬스터 추가할 수 있도록 해주는 메세지
+message C2SMonsterAddReq{
+    repeated int32 monsters = 1;
+}
+
+//저장된 몬스터 출격 요청
+message C2SMonsterDeployReq{
+    
+}
+
+
+//출격한 팀에게만 보내주는 몬스터 출격되었다는 알람
+message S2CMonsterDeployNoti{
+ 
+}
+
+///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error//
+///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error//
+///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error//
+///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error///Error//
+
+//해당 패킷에 대해 빠진 페이로드 데이터 갯수를 알립니다.
+message S2CMissingFieldNoti{
+    int32 packetType = 1;
+    int32 missingFieldLength = 2;
+}
+
+//게임 서버에서 인증없이 다른 패킷을 보냈을 때 반환되는 메세지
+message S2CNeedAuthorizeNoti{
+
+}

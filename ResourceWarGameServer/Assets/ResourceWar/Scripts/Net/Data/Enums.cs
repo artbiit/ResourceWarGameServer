@@ -17,14 +17,14 @@ namespace ResourceWar.Server
         MOVE = 1,
         DASH = 2,
     }
-    public enum PlayerEquippedItem : uint
+    public enum PlayerEquippedItem : int
     {
-        NONE = 0,
-        SOLIDWOOD = 1,
-        IRONSTONE = 2,
-        WOOD = 3,
-        IRON = 4,
-        GARBAGE = 5,
+        NONE = 1000,
+        SOLIDWOOD = 1001,
+        IRONSTONE = 1002,
+        WOOD = 1003,
+        IRON = 1004,
+        GARBAGE = 1005,
     }
 
     public enum TeamChangeResultCode : uint

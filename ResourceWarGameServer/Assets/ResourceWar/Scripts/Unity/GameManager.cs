@@ -7,6 +7,8 @@ using Logger = ResourceWar.Server.Lib.Logger;
 using System.Linq;
 using Protocol;
 using Google.Protobuf.Collections;
+using UnityEngine.UIElements;
+using System.ComponentModel;
 
 namespace ResourceWar.Server
 {
@@ -192,25 +194,86 @@ namespace ResourceWar.Server
         #region 플레이어 상태 동기화
         public async UniTask PlayerSync(ReceivedPacket receivedPacket)
         {
-            Protocol.Position position = new();
+            //테스트용 플레이어 등록
+            Logger.Log($"패킷 타입은 : {receivedPacket.PacketType}");
+            if (FindPlayer(receivedPacket.Token) == null)
+            {
+                Logger.Log($"플레이어 등록 : {receivedPacket.ClientId}");
+                await RegisterPlayer(receivedPacket);
+            }
+            // 페이로드 분기
+            // 싱크 패킷이 플레이어 무브일 때
             if (receivedPacket.Payload is C2SPlayerMove playerMove)
             {
-                position = playerMove.Position;
+                Vector3 direction = Vector3.zero;
+                if (playerMove.Position.ToVector3().x != 0) direction.x = playerMove.Position.ToVector3().x;
+                if (playerMove.Position.ToVector3().z != 0) direction.z = playerMove.Position.ToVector3().z;
+                Logger.Log($"기존 움직임 방향은 : {direction}");
+                FindPlayer(receivedPacket.Token).ChangePosition(direction);
+                Logger.Log($"direction : {direction}, ActionType : {FindPlayer(receivedPacket.Token).ActionType}, " +
+                    $"token : {receivedPacket.Token}, direction.magnitude : {direction.magnitude}");
+                
+                await PlayerSyncNotify((uint)receivedPacket.ClientId);
             }
-            await PlayerSyncNotify((uint)receivedPacket.ClientId, 1, position.ToVector3(), 1, receivedPacket.Token);
+            // 싱크 패킷이 플레이어 액션일 때
+            else if (receivedPacket.Payload is S2CPlayerActionRes playerAction)
+            {
+                //플레이어 액션 타입이 이동이냐 컨트롤이냐 스페이스냐를 나눠야 할 것 같음
+                if (FindPlayer(receivedPacket.Token).EquippedItem == (uint)PlayerEquippedItem.NONE)
+                {
+                    FindPlayer(receivedPacket.Token).ChangeAction((byte)playerAction.ActionType);
+                }
+                await PlayerSyncNotify((uint)receivedPacket.ClientId);
+                //액션타입이 플레이어액션에서는 uint이고 플레이어싱크에서는 바이트임 수정할 필요 있어보임
+            }
+            else if (receivedPacket.Payload is S2CMoveToAreaMap moveArea)
+            {
+                var player = FindPlayer(receivedPacket.Token);
+                if(moveArea.JoinMapResultCode == 1)
+                {
+                    // 맵의 위치를 받아서 플레이어의 위치를 수정해 줌
+                    FindPlayer(receivedPacket.Token).ChangeArea(moveArea.DestinationAreaType);
+                }
+                await PlayerSyncNotify((uint)receivedPacket.ClientId);
+            }
+            else
+            {
+                //아마 여기다 missing 뭐 이런거 보내주면 될 듯
+            }
+            
             return;
         }
 
-        private UniTask PlayerSyncNotify(uint ClientId, byte ActionType, Vector3 position, uint EquippedItem, string token)
+        private UniTask PlayerSyncNotify(uint ClientId)
         {
-            Logger.Log($"기존 포지션은 : {position}");
-            var protoPlayerState = new Protocol.PlayerState
+            
+            //if (direction.magnitude < 100) // dash가 얼마나 될 지 모르니 일단 100
+            //{
+            //    Correction(direction, ActionType, token);                
+            //}
+            //else // 이동 거리가 너무 클 경우 움직이지 않게 함
+            //{
+            //    Correction(Vector3.zero, ActionType, token);
+            //}
+            //Correction(direction, ActionType, token);
+            List<Protocol.PlayerState> playerStates = new();
+            if (TryGetTeam((int)ClientId, out Team allPlayers))
             {
-                PlayerId = ClientId,
-                ActionType = ActionType,
-                Position = Correction(position, token),
-                EquippedItem = EquippedItem
-            };
+                Logger.Log($"모든 플레이어 정보 값 : {allPlayers.Players.Values}");
+                Logger.Log($"모든 플레이어 정보 키 : {allPlayers.Players.Keys}");
+                foreach (var player in allPlayers.Players.Values) // 플레이어 목록 순회
+                {
+                    Logger.Log($"플레이어 정보 : {player.ClientId}  {player.ActionType}  {player.position}  {player.EquippedItem}");
+                    playerStates.Add(new Protocol.PlayerState
+                    {
+                        PlayerId = (uint)player.ClientId,
+                        ActionType = (uint)player.ActionType,
+                        Position = player.position.FromVector(),
+                        EquippedItem = (uint)player.EquippedItem,
+                    });
+                }
+            }
+            Logger.Log($"플레이어 스테이트 배열 : {playerStates[0]}");
 
             var packet = new Packet
             {
@@ -219,24 +282,14 @@ namespace ResourceWar.Server
                 //Token = "", // 특정 클라이언트에게 전송 시 설정
                 Payload = new Protocol.S2CSyncPlayersNoti
                 {
-                    PlayerStates = { protoPlayerState },
+                    PlayerStates = { playerStates },
                 }
             };
-            Logger.Log(packet);
+            Logger.Log("플레이어 싱크 패킷" + packet);
             SendPacketForAll(packet);
             return UniTask.CompletedTask;
         }
         #endregion
-
-        public Protocol.Position Correction(Vector3 position, string token)
-        {
-            //속도 검사하는 로직이 빠져있고
-            //이동 가능한 위치인지도 빠져있다.
-            // 밑에 함수는 포지션만 전달에서 플레이어 안에서 처리를 한다
-            FindPlayer(token).ChangePosition(position);
-            return position.FromVector();
-
-        }
 
         /// <summary>
         /// 클라이언트 제거 처리.
@@ -505,7 +558,7 @@ namespace ResourceWar.Server
                 Payload = new S2CSurrenderNoti
                 {
                     PlayerId = (uint)clientId,
-                    IsSurrender = true,
+                    //IsSurrender = true,
                     SurrenderStartTime = (ulong)UnixTime.Now()
                 }
             };
