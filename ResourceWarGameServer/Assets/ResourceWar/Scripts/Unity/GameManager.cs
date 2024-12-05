@@ -219,7 +219,7 @@ namespace ResourceWar.Server
             else if (receivedPacket.Payload is S2CPlayerActionRes playerAction)
             {
                 //플레이어 액션 타입이 이동이냐 컨트롤이냐 스페이스냐를 나눠야 할 것 같음
-                if (FindPlayer(receivedPacket.Token).EquippedItem == (uint)PlayerEquippedItem.NONE)
+                if (FindPlayer(receivedPacket.Token).EquippedItem == PlayerEquippedItem.NONE)
                 {
                     FindPlayer(receivedPacket.Token).ChangeAction((byte)playerAction.ActionType);
                 }

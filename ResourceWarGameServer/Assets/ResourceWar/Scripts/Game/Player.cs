@@ -29,7 +29,7 @@ namespace ResourceWar.Server
         public int playerSpeed = 100;
         public Vector3 position = Vector3.zero;
         public int ActionType { get; set; }
-        public int EquippedItem { get; set; }
+        public PlayerEquippedItem EquippedItem { get; set; }
 
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace ResourceWar.Server
             LoadProgress = 0;
             this.hashCode = this.GetHashCode().ToString();
             this.ActionType = 7001;
-            this.EquippedItem = 1001;
+            this.EquippedItem = PlayerEquippedItem.NONE;
             Connected(clientId);
         }
 
@@ -73,7 +73,8 @@ namespace ResourceWar.Server
             this.position += position / 500;
             Logger.Log($"플레이어{this.Nickname}의 이동 후 위치는 : {this.position}");
             this.position.x = (float)Math.Round(this.position.x, 2);
-            this.position.y = (float)Math.Round(this.position.y, 2);n this.position;
+            this.position.y = (float)Math.Round(this.position.y, 2);
+            return this.position;
         }
 
         public void ChangeAction(byte ActionType)
