@@ -704,11 +704,11 @@ namespace ResourceWar.Server
                     Logger.LogError($"Game cannot start. Because of Team[{i}]");
                     isReady = false;
                     break;
-                } 
-                
-                foreach(var player in teams[i].Players.Values)
+                }
+
+                foreach (var player in teams[i].Players.Values)
                 {
-                    if(!player.IsReady)
+                    if (!player.IsReady)
                     {
                         i = teams.Length;
                         Logger.LogError($"Game cannot start. Player {player.ClientId} is not ready. ");

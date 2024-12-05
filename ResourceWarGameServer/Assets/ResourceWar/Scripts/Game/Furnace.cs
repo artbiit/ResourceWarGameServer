@@ -32,8 +32,10 @@ namespace ResourceWar.Server
             var clientId = receivedPacket.ClientId;
             var token = receivedPacket.Token;
 
-            var player = await DataDispatcher<int, Player>.Instance.RequestDataAsync(clientId);
-            var (teamIndex, team) = await DataDispatcher<int, (int teamIndex, Team team)>.Instance.RequestDataAsync(clientId);
+            var player = await DataDispatcher<int, Player>
+                .Instance.RequestDataAsync(clientId);
+            var (teamIndex, team) = await DataDispatcher<int, (int teamIndex, Team team)>
+                .Instance.RequestDataAsync(clientId);
             FurnaceResultCode resultCode = this.FurnaceStateProcess(player, teamIndex, token);
 
             var packet = new Packet
@@ -46,9 +48,8 @@ namespace ResourceWar.Server
                 }
             };
             await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManagerEvent.SendPacketForUser, packet);
-
-        
         }
+
 
 
         public FurnaceResultCode FurnaceStateProcess(Player player, int teamIndex, string clientToken)
