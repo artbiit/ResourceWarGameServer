@@ -748,7 +748,7 @@ namespace ResourceWar.Server
                 Logger.LogError($"Game cannot start. Teams[0] has player for {teams[0].Players.Count}.");
             }
 
-            bool isReady = true;
+            /*bool isReady = true;
 
             for (int i = 1; i < teams.Length; i++)
             {
@@ -774,7 +774,7 @@ namespace ResourceWar.Server
             if (!isReady)
             {
                 return;
-            }
+            }*/
 
             var packet = new Packet
             {

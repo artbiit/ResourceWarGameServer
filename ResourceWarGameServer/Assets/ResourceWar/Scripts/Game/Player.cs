@@ -27,7 +27,7 @@ namespace ResourceWar.Server
         public bool isGatheringResource = false;
         public long isGatheringTime = 0;
         public int playerSpeed = 100;
-        public Vector3 position = Vector3.zero;
+        public Vector3 position = new Vector3(35.0f, 0.0f, 65.0f);
         public int ActionType { get; set; }
         public PlayerEquippedItem EquippedItem { get; set; }
 

@@ -24,7 +24,9 @@ namespace ResourceWar.Server
 
         public Furnace()
         {
-            EventDispatcher<Event,ReceivedPacket>.Instance.Subscribe(Event.FurnaceRequest, FurnaceResponseHandler);
+            EventDispatcher<Event,ReceivedPacket>
+                .Instance
+                .Subscribe(Event.FurnaceRequest, FurnaceResponseHandler);
         }
 
         public async UniTask FurnaceResponseHandler(ReceivedPacket receivedPacket)
@@ -47,10 +49,9 @@ namespace ResourceWar.Server
                     FurnaceResultCode = (uint)resultCode,
                 }
             };
-            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManagerEvent.SendPacketForUser, packet);
+            await EventDispatcher<GameManager.GameManagerEvent, Packet>
+                .Instance.NotifyAsync(GameManagerEvent.SendPacketForUser, packet);
         }
-
-
 
         public FurnaceResultCode FurnaceStateProcess(Player player, int teamIndex, string clientToken)
         {
