@@ -13,7 +13,8 @@ namespace ResourceWar.Server
     {
         private async UniTask<Packet> FurnaceHandler(ReceivedPacket packet)
         {
-            await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.FurnaceHandler, packet);
+            await EventDispatcher<Furnace.Event, ReceivedPacket>
+                .Instance.NotifyAsync(Furnace.Event.FurnaceRequest, packet);
 
             return null;
         }

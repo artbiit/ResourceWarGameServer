@@ -18,8 +18,6 @@ namespace ResourceWar.Server
     /// </summary>
     public class GameManager : MonoBehaviour
     {
-       
-
         // GameManager에서 처리하느 주요 이벤트를 정의하는 열거형
         public enum GameManagerEvent
         {
@@ -35,8 +33,6 @@ namespace ResourceWar.Server
             GameStart = 9,
             LoadProgressNoti = 10,
             SurrenderNoti = 11,
-            FurnaceHandler = 12,
-
         }
 
         public GameSessionState GameState => gameSessionInfo.state;

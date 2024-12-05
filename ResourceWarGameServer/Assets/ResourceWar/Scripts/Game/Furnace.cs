@@ -24,6 +24,9 @@ namespace ResourceWar.Server
 
         public Furnace()
         {
+            // 독립적인 EventDispatcher이고
+            // Event가 Key, ReceivedPacket이 value
+            // GameManager에 있는 EventDispatcher와 다르게 작동
             EventDispatcher<Event,ReceivedPacket>
                 .Instance
                 .Subscribe(Event.FurnaceRequest, FurnaceResponseHandler);
@@ -132,7 +135,8 @@ namespace ResourceWar.Server
                 }
             };
 
-           await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForTeam, syncPacket);
+           await EventDispatcher<GameManager.GameManagerEvent, Packet>
+                .Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForTeam, syncPacket);
         }
 
 
