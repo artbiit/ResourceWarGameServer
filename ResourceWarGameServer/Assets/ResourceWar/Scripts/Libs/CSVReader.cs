@@ -56,9 +56,20 @@ namespace ResourceWar.Server.Lib
                     {
                         id = int.Parse(value);
                     }
-                    if (property != null && property.CanWrite)
+                    else if (property != null && property.CanWrite)
                     {
-                        object convertedValue = Convert.ChangeType(value, property.PropertyType);
+                        object convertedValue;
+                        if (property.PropertyType.IsEnum) // 열거형 타입인지 확인
+                        {
+                            // 열거형 값을 변환
+                            convertedValue = Enum.Parse(property.PropertyType, value);
+                        }
+                        else
+                        {
+                            // 일반 타입 변환
+                            convertedValue = Convert.ChangeType(value, property.PropertyType);
+                        }
+
                         if (typeof(T).IsValueType)
                         {
                             var boxedInstance = (object)instance;
@@ -78,7 +89,7 @@ namespace ResourceWar.Server.Lib
                     dictionary[id] = instance;
                 }
             }
-            return null;
+            return dictionary;
         }
     }
 }

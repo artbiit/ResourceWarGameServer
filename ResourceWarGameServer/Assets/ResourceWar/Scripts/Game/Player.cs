@@ -16,7 +16,7 @@ namespace ResourceWar.Server
     public class Player
     {
 
-        public  int ClientId;
+        public int ClientId;
 
         public string Nickname { get; set; }
         public bool IsReady { get; set; }
@@ -30,7 +30,7 @@ namespace ResourceWar.Server
         public Vector3 position = Vector3.zero;
         public int ActionType { get; set; }
         public int EquippedItem { get; set; }
-        
+
 
         /// <summary>
         /// ms 단위 지연시간
@@ -73,8 +73,7 @@ namespace ResourceWar.Server
             this.position += position / 500;
             Logger.Log($"플레이어{this.Nickname}의 이동 후 위치는 : {this.position}");
             this.position.x = (float)Math.Round(this.position.x, 2);
-            this.position.y = (float)Math.Round(this.position.y, 2);
-            return this.position;
+            this.position.y = (float)Math.Round(this.position.y, 2);n this.position;
         }
 
         public void ChangeAction(byte ActionType)
@@ -111,8 +110,6 @@ namespace ResourceWar.Server
             Logger.Log($"Player is reconnected {this.ClientId} -> {clientId}");
             this.ClientId = clientId;
             this.IsConnected = true;
-            //EventDispatcher<(int, int), long>.Instance.Subscribe((this.ClientId, int.MaxValue + this.ClientId), PongRes);
-            //pingToken = IntervalManager.Instance.AddTask(hashCode, PingReq, 1.0f);
         }
 
         public void Disconnected()
@@ -126,12 +123,13 @@ namespace ResourceWar.Server
 
         private async UniTask PingReq(CancellationToken token)
         {
-            if(token.IsCancellationRequested) return;
+            if (token.IsCancellationRequested) return;
 
-            if(pingQueue.Count > 10)
+            if (pingQueue.Count > 10)
             {
                 Logger.LogWarning($"Player[{ClientId}] PingQueue reached maxmum count.");
-            }else if (TcpServer.Instance.TryGetClient(ClientId, out var client))
+            }
+            else if (TcpServer.Instance.TryGetClient(ClientId, out var client))
             {
                 var serverTime = UnixTime.Now();
                 Packet pingPacket = new Packet

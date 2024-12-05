@@ -29,6 +29,9 @@ namespace ResourceWar.Server
             Handlers.Add(PacketType.PLAYER_ACTION_REQUEST, this.PlayerActionHandler);
             Handlers.Add(PacketType.LOAD_PROGRESS_NOTIFICATION, this.LoadProgressHandler);
             Handlers.Add(PacketType.SURRENDER_REQUEST, this.SurrenderHandler);
+
+            // 용광로, 제제소
+            Handlers.Add(PacketType.FURNACE_REQUEST, this.FurnaceHandler);
         }
 
 

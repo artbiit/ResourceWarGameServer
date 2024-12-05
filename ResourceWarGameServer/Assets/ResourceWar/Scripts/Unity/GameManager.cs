@@ -35,15 +35,13 @@ namespace ResourceWar.Server
             GameStart = 9,
             LoadProgressNoti = 10,
             SurrenderNoti = 11,
-
+            FurnaceHandler = 12,
 
         }
 
         public GameSessionState GameState => gameSessionInfo.state;
         // 게임의 고유 토큰 (서버가 게임 세션을 식별하기 위해 사용)
         public static string GameCode {get; private set;}
-        // 이벤트 구독 여부를 확인하는 플래그
-        private bool subscribed = false;
 
         /// <summary>
         /// 0 - Gray(팀 선택x), 1 - Blue, 2 - Red
@@ -61,7 +59,7 @@ namespace ResourceWar.Server
         }
         private GameSessionInfo gameSessionInfo = new GameSessionInfo();
 
-        
+        private TimerManager<int> timerManager = new TimerManager<int>();
 
         private void Awake()
         {
@@ -106,10 +104,11 @@ namespace ResourceWar.Server
                 {
                     teams[i] = new Team();
                 }
+                Provides();
+                Subscribes();
             }
 
             await GameRedis.AddGameSessionInfo(GameCode, gameSessionInfo);
-            Subscribes();
             await SetState(GameSessionState.LOBBY);
         }
 
@@ -131,18 +130,45 @@ namespace ResourceWar.Server
    
         }
 
+
+        /// <summary>
+        /// 제공할 데이터들 구독 설정
+        /// </summary>
+        private void Provides()
+        {
+            DataDispatcher<int, Player>.Instance.SetProvider((clientId) =>
+            {
+                if (TryGetPlayer(clientId, out var player))
+                {
+                    return UniTask.FromResult(player);
+                }
+                return UniTask.FromResult<Player>(null);
+            });
+
+            DataDispatcher<int, ( int teamIndex, Team team)>.Instance.SetProvider((teamId) => { 
+                if(TryGetTeamIndex(teamId,out var teamIndex, out var team))
+                {
+                    return UniTask.FromResult((teamIndex,team));
+                }
+                return UniTask.FromResult<(int teamIndex, Team team)>((-1,null));
+            });
+
+            DataDispatcher<int, Furnace>.Instance.SetProvider((teamId) =>
+            {
+                if (TryGetTeam(teamId, out var team))
+                {
+                    return UniTask.FromResult(team.TeamFurnace);
+                }
+                return UniTask.FromResult<Furnace>(null);
+            });
+
+        }
+
         /// <summary>
         /// 이벤트에 대한 구독 설정
         /// </summary>
         private void Subscribes()
         {
-            // 재구독 방지
-            if (subscribed)
-            {
-                return;
-            }
-            subscribed = true;
-
             // 패킷 전송 관련 이벤트 등록
             var sendDispatcher = EventDispatcher<GameManagerEvent, Packet>.Instance;
             sendDispatcher.Subscribe(GameManagerEvent.SendPacketForAll, SendPacketForAll);
@@ -319,7 +345,6 @@ namespace ResourceWar.Server
                     action?.Invoke(i, playerPair.Key, playerPair.Value);
                 }
             }
-
         }
 
         /// <summary>
@@ -474,7 +499,7 @@ namespace ResourceWar.Server
         {
             for (int i = 0; i < teams.Length; i++)
             {
-                if (teams[i].Players.Values.Any(p => p.ClientId == clientId))
+                if (teams[i].ContainsPlayer(clientId))
                 {
                     teamIndex = i;
                     team = teams[i];
@@ -485,11 +510,9 @@ namespace ResourceWar.Server
             teamIndex = -1;
             team = null;
             return false;
-        }
-
+        } 
         #endregion
 
-        private TimerManager<int> timerManager = new TimerManager<int>();
 
         #region 항복 투표
         private Dictionary<int, HashSet<int>> surrenderVotes = new Dictionary<int, HashSet<int>>();
@@ -531,6 +554,7 @@ namespace ResourceWar.Server
             var packet = new Packet
             {
                 PacketType = PacketType.SURRENDER_NOTIFICATION,
+                Token = receivedPacket.Token,
                 Payload = new S2CSurrenderNoti
                 {
                     PlayerId = (uint)clientId,
@@ -719,19 +743,36 @@ namespace ResourceWar.Server
         {
             S2CGameStartNoti s2CGameStartNoti = new S2CGameStartNoti();
 
-            bool isAllReady = true;
-            int totalPlayerCount = 0;
-
-            LoopAllPlayers((teamIndex, token, player) =>
+            if (teams[0].Players.Count > 0)
             {
-                // 논리 게이트 하나라도 true가 아니면 false
-                isAllReady &= player.IsReady;
-                totalPlayerCount++;
-            });
+                Logger.LogError($"Game cannot start. Teams[0] has player for {teams[0].Players.Count}.");
+            }
 
-            if (totalPlayerCount < 4)
+            bool isReady = true;
+
+            for (int i = 1; i < teams.Length; i++)
             {
-                Logger.LogError($"Game cannot start. Current player count: {totalPlayerCount}.");
+                if (teams[i].Players.Count != 2)
+                {
+                    Logger.LogError($"Game cannot start. Because of Team[{i}]");
+                    isReady = false;
+                    break;
+                }
+
+                foreach (var player in teams[i].Players.Values)
+                {
+                    if (!player.IsReady)
+                    {
+                        i = teams.Length;
+                        Logger.LogError($"Game cannot start. Player {player.ClientId} is not ready. ");
+                        isReady = false;
+                        break;
+                    }
+                }
+            }
+            // CPU가 분기를 예측할 수 있는 확률이 조금더 올라가요.
+            if (!isReady)
+            {
                 return;
             }
 
