@@ -11,9 +11,10 @@ namespace ResourceWar.Server
 {
     public partial class MessageHandlers : Singleton<MessageHandlers>
     {
-        private async UniTask<Packet> GameStartHandler(ReceivedPacket packet)
+        private async UniTask<Packet> FurnaceHandler(ReceivedPacket packet)
         {
-            await EventDispatcher<GameManager.GameManagerEvent, ReceivedPacket>.Instance.NotifyAsync(GameManager.GameManagerEvent.GameStart, packet);
+            await EventDispatcher<Furnace.Event, ReceivedPacket>
+                .Instance.NotifyAsync(Furnace.Event.FurnaceRequest, packet);
 
             return null;
         }

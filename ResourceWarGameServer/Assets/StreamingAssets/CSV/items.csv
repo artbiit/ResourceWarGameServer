@@ -1,0 +1,8 @@
+ID,Name,ItemType
+아이템 코드,이름,아이템 타입
+1001,Empty,1
+1002,SolidWood,2
+1003,Ironstone,3
+1004,Wood,4
+1005,Iron,5
+1006,Garbage,6

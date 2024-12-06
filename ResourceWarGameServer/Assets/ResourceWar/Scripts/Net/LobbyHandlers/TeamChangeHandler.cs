@@ -23,7 +23,6 @@ namespace ResourceWar.Server
             C2STeamChangeReq teamChangeMessage = (C2STeamChangeReq)packet.Payload;
 
 
-            // 패킷 검증
             if (string.IsNullOrWhiteSpace(packet.Token))
             {
                 Logger.LogError("TeamChangeHandler: Token is null or empty.");
