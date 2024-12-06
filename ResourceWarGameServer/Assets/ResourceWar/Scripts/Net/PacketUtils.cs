@@ -128,11 +128,20 @@ namespace ResourceWar.Server
     //게임 서버 연결 후 인증
     { PacketType.AUTHORIZE_REQUEST, "Protocol.C2SAuthorizeReq" },
     { PacketType.AUTHORIZE_RESPONSE, "Protocol.S2CAuthorizeRes" },
+            //몬스터 출격 관련
+            {PacketType.MONSTER_DEPLOY_REQUEST, "Protocol.C2SMonsterDeployReq" },
+            {PacketType.MONSTER_DEPLOY_NOTI, "Protocol.S2CMonsterDeployNoti" },
+
     // 에러
     { PacketType.MISSING_FIELD, "Protocol.S2CMissingFieldNoti" },
-    { PacketType.NEED_AUTHORIZE, "Protocol.S2CNeedAuthorizeNoti" }
+    { PacketType.NEED_AUTHORIZE, "Protocol.S2CNeedAuthorizeNoti" },
+            //테스트용 코드
+#if UNITY_EDITOR
+            { PacketType.ADD_MONSTER_REQUEST, "Protocol.C2SMonsterAddReq" }
 
-};
+#endif
+
+        };
 
         private static ConcurrentDictionary<string, Type> CachedMessageTypes = new ConcurrentDictionary<string, Type>();
 

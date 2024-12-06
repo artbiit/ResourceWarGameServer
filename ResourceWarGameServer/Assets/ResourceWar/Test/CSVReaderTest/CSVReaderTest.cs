@@ -18,6 +18,8 @@ public class CSVReaderTest : MonoBehaviour
         {
             Debug.Log($"{monsterTable.Key} - {JsonConvert.SerializeObject(monsterTable.Value)}");
         }
+
+        
     }
     
 }

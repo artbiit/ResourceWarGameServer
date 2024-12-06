@@ -182,7 +182,7 @@ namespace ResourceWar.Server
             receivedDispatcher.Subscribe(GameManagerEvent.LoadProgressNoti, LoadProgressNoti);
             receivedDispatcher.Subscribe(GameManagerEvent.SurrenderNoti, SurrenderNoti);
 
-            //
+                       //
             var innerDispatcher = EventDispatcher<GameManagerEvent, int>.Instance;
             innerDispatcher.Subscribe(GameManagerEvent.ClientRemove, ClientRemove);
         }
@@ -554,7 +554,6 @@ namespace ResourceWar.Server
                 Payload = new S2CSurrenderNoti
                 {
                     PlayerId = (uint)clientId,
-                    //IsSurrender = true,
                     SurrenderStartTime = (ulong)UnixTime.Now()
                 }
             };
@@ -625,22 +624,24 @@ namespace ResourceWar.Server
         {
             if (playerCount >= 4)
             {
-                throw new System.InvalidOperationException("Player count has reached its maximum limit.");
+                Logger.LogError("Player count has reached its maximum limit.");
+                return;
             }
 
             var token = receivedPacket.Token;
             var clientId = receivedPacket.ClientId;
             if (teams.Any(t => t.ContainsPlayer(token)))
             {
-                throw new System.InvalidOperationException($"Already exists player[{clientId}] : {token}");
+                 Logger.LogError($"Already exists player[{clientId}] : {token}");
+                return;
             }
 
             var nickName = await UserRedis.GetNickName(token);
             if (string.IsNullOrEmpty(nickName))
             {
-                throw new System.InvalidOperationException($"Invalid nickName for token: {token}");
+                Logger.LogError($"Invalid nickName for token: {token}");
+                return;
             }
-
 
             // 플레이어 객체 생성 및 팀 0에 추가
             var player = new Player(clientId, nickName);

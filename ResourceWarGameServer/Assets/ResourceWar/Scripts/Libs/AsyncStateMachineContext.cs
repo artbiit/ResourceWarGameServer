@@ -22,11 +22,16 @@ namespace ResourceWar.Server
 
         public async UniTask ChangeState(IAsyncState<T> newState, T context)
         {
+            if (newState == currentState)
+            {
+                return;
+            }
             if (currentState != null)
             {
                 await currentState.Exit(context);
             }
 
+            //Debug.Log($"{context} -> {currentState} -> {newState}");
             currentState = newState;
 
             if (currentState != null)

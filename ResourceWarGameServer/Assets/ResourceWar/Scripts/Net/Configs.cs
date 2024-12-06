@@ -129,8 +129,15 @@ namespace ResourceWar.Server
         AUTHORIZE_REQUEST = 62,
         AUTHORIZE_RESPONSE = 63,
 
+        //몬스터 출격 관련
+        MONSTER_DEPLOY_REQUEST = 67,
+        MONSTER_DEPLOY_NOTI = 68,
+
         // 에러
         MISSING_FIELD = 10000, // 요청 파라미터 재점검 필요
         NEED_AUTHORIZE = 10001, //인증 후 다른 패킷 하도록 요청
+
+        //테스트용 코드
+        ADD_MONSTER_REQUEST = 20001,
     }
 }

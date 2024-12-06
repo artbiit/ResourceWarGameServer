@@ -4,13 +4,16 @@ using UnityEngine;
 using ResourceWar.Server;
 using Cysharp.Threading.Tasks;
 using ResourceWar.Server.Lib;
+
 namespace ResourceWar.Server.Monster
 {
-    public class Idle : IAsyncState<MonsterBehaviour>
+    public class Die : IAsyncState<MonsterBehaviour>
     {
+
         public async UniTask Enter(MonsterBehaviour monster)
         {
-            monster.CurrentState = MonsterBehaviour.State.Idle;
+            monster.CurrentState = MonsterBehaviour.State.Die;
+            monster.NavMeshAgent.isStopped = true;
             await UniTask.Yield();
         }
 
