@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class MonsterDeployTest : MonoBehaviour
 {
@@ -19,34 +18,36 @@ public class MonsterDeployTest : MonoBehaviour
         PostgreSQLClient.Instance.Connect(DotEnv.Get<string>("DB_HOST"), DotEnv.Get<int>("DB_PORT"), DotEnv.Get<string>("DB_NAME"), DotEnv.Get<string>("DB_USER"), DotEnv.Get<string>("DB_PASSWORD"), DotEnv.Get<int>("DB_CONNECTION_LIMIT_MIN"), DotEnv.Get<int>("DB_CONNECTION_LIMIT_MAX"));
 
 
-        var keys = TableData.Monsters.Keys.ToArray();
+    }
 
-        int totalCount = spawnCountTeam1.Aggregate((acc, i) => acc + i);
-        int[] spawnMonster = new int[totalCount];
-        int currentCount = 0;
-        for (var j = 0; j < spawnCountTeam1.Length; j++)
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.Return))
         {
-            for (int i = 0; i < spawnCountTeam1[j]; i++)
+            var keys = TableData.Monsters.Keys.ToArray();
+
+            int totalCount = spawnCountTeam1.Aggregate((acc, i) => acc + i);
+            int[] spawnMonster = new int[totalCount];
+            int currentCount = 0;
+            for (var j = 0; j < spawnCountTeam1.Length; j++)
             {
-                spawnMonster[currentCount++] = keys[j];
+                for (int i = 0; i < spawnCountTeam1[j]; i++)
+                {
+                    spawnMonster[currentCount++] = keys[j];
+                }
             }
-        }
-        monsterController.AddMonster(1, spawnMonster);
-        totalCount = spawnCountTeam2.Aggregate((acc, i) => acc + i);
-        spawnMonster = new int[totalCount];
-        currentCount = 0;
-        for (var j = 0; j < spawnCountTeam2.Length; j++)
-        {
-            for (int i = 0; i < spawnCountTeam2[j]; i++)
+            monsterController.AddMonster(1, spawnMonster);
+            totalCount = spawnCountTeam2.Aggregate((acc, i) => acc + i);
+            spawnMonster = new int[totalCount];
+            currentCount = 0;
+            for (var j = 0; j < spawnCountTeam2.Length; j++)
             {
-                spawnMonster[currentCount++] = keys[j];
+                for (int i = 0; i < spawnCountTeam2[j]; i++)
+                {
+                    spawnMonster[currentCount++] = keys[j];
+                }
             }
+            monsterController.AddMonster(2, spawnMonster);
         }
-        monsterController.AddMonster(2, spawnMonster);
-
-
-
-
-
     }
 }

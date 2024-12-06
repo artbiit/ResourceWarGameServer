@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using log4net.Repository.Hierarchy;
 using Protocol;
 using ResourceWar.Server.Lib;
 using StackExchange.Redis;

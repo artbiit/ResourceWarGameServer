@@ -133,7 +133,7 @@ namespace ResourceWar.Server
         private async void RemoveClient(int clientId)
         {
             clients.TryRemove(clientId, out var client); // 클라이언트 목록에서 제거
-            if (client.IsAuthorized == false)
+            if (client?.IsAuthorized == false)
             {
                 await ChangePreviousPlayer(false);
             }

@@ -45,72 +45,73 @@ namespace Protocol {
             "IAEoCzISLnByb3RvY29sLlBvc2l0aW9uIm8KC1BsYXllclN0YXRlEhAKCHBs",
             "YXllcklkGAEgASgNEhIKCmFjdGlvblR5cGUYAiABKA0SJAoIcG9zaXRpb24Y",
             "AyABKAsyEi5wcm90b2NvbC5Qb3NpdGlvbhIUCgxlcXVpcHBlZEl0ZW0YBCAB",
-            "KA0ijAEKCUZpZWxkVW5pdBIKCgJpZBgBIAEoDRIQCgh1bml0VHlwZRgCIAEo",
-            "BRINCgVzdGF0ZRgDIAEoDRIkCghwb3NpdGlvbhgEIAEoCzISLnByb3RvY29s",
-            "LlBvc2l0aW9uEgoKAmhwGAUgASgNEg4KBmRhbWFnZRgGIAEoDRIQCgh0YXJn",
-            "ZXRJZBgHIAEoDSIrCghQb3NpdGlvbhIJCgF4GAEgASgCEgkKAXkYAiABKAIS",
-            "CQoBehgDIAEoAiIRCg9DMlNBdXRob3JpemVSZXEiLgoPUzJDQXV0aG9yaXpl",
-            "UmVzEhsKE0F1dGhvcml6ZVJlc3VsdENvZGUYASABKA0iSAoOUzJDSW5pdGlh",
-            "bE5vdGkSNgoRcGxheWVySW5pdGlhbERhdGEYASADKAsyGy5wcm90b2NvbC5Q",
-            "bGF5ZXJJbml0aWFsRGF0YSJBChJTMkNTeW5jUGxheWVyc05vdGkSKwoMcGxh",
-            "eWVyU3RhdGVzGAEgAygLMhUucHJvdG9jb2wuUGxheWVyU3RhdGUiNQoNQzJT",
-            "UGxheWVyTW92ZRIkCghwb3NpdGlvbhgBIAEoCzISLnByb3RvY29sLlBvc2l0",
-            "aW9uIlgKF1MyQ1N5bmNGdXJuYWNlU3RhdGVOb3RpEhEKCXRlYW1JbmRleBgB",
-            "IAEoDRIYChBmdXJuYWNlU3RhdGVDb2RlGAIgASgNEhAKCHByb2dyZXNzGAMg",
-            "ASgCIlUKFFMyQ1Nhd21pbGxTdGF0dXNOb3RpEhEKCXRlYW1JbmRleBgBIAEo",
-            "DRIYChBzYXdtaWxsU3RhdGVDb2RlGAIgASgNEhAKCHByb2dyZXNzGAMgASgC",
-            "IlkKFlMyQ1dvcmtiZW5jaFN0YXR1c05vdGkSEQoJdGVhbUluZGV4GAEgASgN",
-            "EhoKEndvcmtiZW5jaFN0YXRlQ29kZRgCIAEoDRIQCghwcm9ncmVzcxgDIAEo",
-            "AiJAChJDMlNQbGF5ZXJBY3Rpb25SZXESEgoKYWN0aW9uVHlwZRgBIAEoDRIW",
-            "Cg50YXJnZXRPYmplY3RJZBgCIAEoDSJRChJTMkNQbGF5ZXJBY3Rpb25SZXMS",
-            "EgoKYWN0aW9uVHlwZRgBIAEoDRIWCg50YXJnZXRPYmplY3RJZBgCIAEoDRIP",
-            "CgdzdWNjZXNzGAMgASgIInIKElMyQ1NwYXduT2JqZWN0Tm90aRIQCghvYmpl",
-            "Y3RJZBgBIAEoDRISCgpvYmplY3RUeXBlGAIgASgNEhAKCGFyZWFUeXBlGAMg",
-            "ASgNEiQKCHBvc2l0aW9uGAQgASgLMhIucHJvdG9jb2wuUG9zaXRpb24iTQoT",
-            "QzJTRGVzdG9yeU9iamVjdFJlcRIQCghvYmplY3RJZBgBIAEoDRISCgpvYmpl",
-            "Y3RUeXBlGAIgASgNEhAKCGFyZWFUeXBlGAMgASgNIk4KFFMyQ0Rlc3RvcnlP",
-            "YmplY3ROb3RpEhAKCG9iamVjdElkGAEgASgNEhIKCm9iamVjdFR5cGUYAiAB",
-            "KA0SEAoIYXJlYVR5cGUYAyABKA0iOwoUUzJDU3luY0ZpZWxkVW5pdE5vdGkS",
-            "IwoGT2JqZWN0GAEgAygLMhMucHJvdG9jb2wuRmllbGRVbml0IhEKD0MyU1N1",
-            "cnJlbmRlclJlcSIuCg9TMkNTdXJyZW5kZXJSZXMSGwoTc3VycmVuZGVyUmVz",
-            "dWx0Q29kZRgBIAEoDSJVChBTMkNTdXJyZW5kZXJOb3RpEhAKCHBsYXllcklk",
-            "GAEgASgNEhMKC2lzU3VycmVuZGVyGAIgASgIEhoKEnN1cnJlbmRlclN0YXJ0",
-            "VGltZRgDIAEoBCI6Cg9TMkNHYW1lT3Zlck5vdGkSFAoMZ2FtZU92ZXJUeXBl",
-            "GAEgASgNEhEKCXRlYW1JbmRleBgCIAEoDSJLChNDMlNNb3ZlVG9BcmVhTWFw",
-            "UmVxEhcKD2N1cnJlbnRBcmVhVHlwZRgBIAEoDRIbChNkZXN0aW5hdGlvbkFy",
-            "ZWFUeXBlGAIgASgNIlMKEFMyQ01vdmVUb0FyZWFNYXASGQoRam9pbk1hcFJl",
-            "c3VsdENvZGUYASABKA0SJAoIcG9zaXRpb24YAiABKAsyEi5wcm90b2NvbC5Q",
-            "b3NpdGlvbiIlCg9DMlNXb3JrYmVuY2hSZXESEgoKcmVzdWx0SXRlbRgBIAEo",
-            "DSIuCg9TMkNXb3JrYmVuY2hSZXMSGwoTd29ya2JlbmNoUmVzdWx0Q29kZRgB",
-            "IAEoDSIxCg1DMlNGdXJuYWNlUmVxEiAKBGl0ZW0YASABKAsyEi5wcm90b2Nv",
-            "bC5JdGVtRGF0YSIqCg1TMkNGdXJuYWNlUmVzEhkKEWZ1cm5hY2VSZXN1bHRD",
-            "b2RlGAEgASgNIjEKDUMyU1Nhd21pbGxSZXESIAoEaXRlbRgBIAEoCzISLnBy",
-            "b3RvY29sLkl0ZW1EYXRhIioKDVMyQ1Nhd21pbGxSZXMSGQoRc2F3bWlsbFJl",
-            "c3VsdENvZGUYASABKA0iJQoQQzJTQ3JlYXRlUm9vbVJlcRIRCglpc1ByaXZh",
-            "dGUYASABKAgiNQoQUzJDQ3JlYXRlUm9vbVJlcxIQCghnYW1lQ29kZRgBIAEo",
-            "CRIPCgdnYW1lVXJsGAIgASgJIhMKEUMyU01hdGNoQ2FuY2VsUmVxIhMKEVMy",
-            "Q01hdGNoQ2FuY2VsUmVzIg0KC0MyU01hdGNoUmVxIioKC1MyQ01hdGNoUmVz",
-            "EhsKE3Jvb21NYXRjaFJlc3VsdENvZGUYASABKA0iVwoUUzJDTWF0Y2hQcm9n",
-            "cmVzc05vdGkSGQoRbWF0Y2hQcm9ncmVzc0NvZGUYASABKA0SEwoLZWxhcHNl",
-            "ZFRpbWUYAiABKAQSDwoHZ2FtZVVybBgDIAEoCSIiCg5DMlNKb2luUm9vbVJl",
-            "cRIQCghnYW1lQ29kZRgBIAEoCSI9Cg5TMkNKb2luUm9vbVJlcxIaChJqb2lu",
-            "Um9vbVJlc3VsdENvZGUYASABKA0SDwoHZ2FtZVVybBgCIAEoCSIQCg5DMlNR",
-            "dWl0Um9vbVJlcSIjCg9TMkNRdWl0Um9vbU5vdGkSEAoIcGxheWVySWQYASAB",
-            "KA0iJQoQQzJTVGVhbUNoYW5nZVJlcRIRCgl0ZWFtSW5kZXgYASABKA0iMAoQ",
-            "UzJDVGVhbUNoYW5nZVJlcxIcChR0ZWFtQ2hhbmdlUmVzdWx0Q29kZRgBIAEo",
-            "DSI8Cg9TMkNTeW5jUm9vbU5vdGkSKQoHcGxheWVycxgBIAMoCzIYLnByb3Rv",
-            "Y29sLlBsYXllclJvb21JbmZvIioKGUMyU1BsYXllcklzUmVhZHlDaGFuZ2VS",
-            "ZXESDQoFcmVhZHkYASABKAgiQgoZUzJDUGxheWVySXNSZWFkeUNoYW5nZVJl",
-            "cxIlCh1wbGF5ZXJJc1JlYWR5Q2hhbmdlUmVzdWx0Q29kZRgBIAEoDSIRCg9D",
-            "MlNHYW1lU3RhcnRSZXEiEgoQUzJDR2FtZVN0YXJ0Tm90aSInChNDMlNMb2Fk",
-            "UHJvZ3Jlc3NOb3RpEhAKCHByb2dyZXNzGAEgASgNIoMBCg9TMkNTeW5jTG9h",
-            "ZE5vdGkSPAoMc3luY0xvYWREYXRhGAEgAygLMiYucHJvdG9jb2wuUzJDU3lu",
-            "Y0xvYWROb3RpLlN5bmNMb2FkRGF0YRoyCgxTeW5jTG9hZERhdGESEAoIcGxh",
-            "eWVySWQYASABKA0SEAoIcHJvZ3Jlc3MYAiABKA0iJAoQQzJTTW9uc3RlckFk",
-            "ZFJlcRIQCghtb25zdGVycxgBIAMoBSIVChNDMlNNb25zdGVyRGVwbG95UmVx",
-            "IhYKFFMyQ01vbnN0ZXJEZXBsb3lOb3RpIkUKE1MyQ01pc3NpbmdGaWVsZE5v",
-            "dGkSEgoKcGFja2V0VHlwZRgBIAEoBRIaChJtaXNzaW5nRmllbGRMZW5ndGgY",
-            "AiABKAUiFgoUUzJDTmVlZEF1dGhvcml6ZU5vdGliBnByb3RvMw=="));
+            "KA0ipQEKCUZpZWxkVW5pdBITCgtzcGF3bk51bWJlchgBIAEoBRIQCgh1bml0",
+            "VHlwZRgCIAEoBRINCgVzdGF0ZRgDIAEoBRIkCghwb3NpdGlvbhgEIAEoCzIS",
+            "LnByb3RvY29sLlBvc2l0aW9uEgoKAmhwGAUgASgFEg4KBnRlYW1JZBgGIAEo",
+            "BRIQCgh0YXJnZXRJZBgHIAEoBRIOCgZ1bml0SWQYCCABKAUiKwoIUG9zaXRp",
+            "b24SCQoBeBgBIAEoAhIJCgF5GAIgASgCEgkKAXoYAyABKAIiEQoPQzJTQXV0",
+            "aG9yaXplUmVxIi4KD1MyQ0F1dGhvcml6ZVJlcxIbChNBdXRob3JpemVSZXN1",
+            "bHRDb2RlGAEgASgNIkgKDlMyQ0luaXRpYWxOb3RpEjYKEXBsYXllckluaXRp",
+            "YWxEYXRhGAEgAygLMhsucHJvdG9jb2wuUGxheWVySW5pdGlhbERhdGEiQQoS",
+            "UzJDU3luY1BsYXllcnNOb3RpEisKDHBsYXllclN0YXRlcxgBIAMoCzIVLnBy",
+            "b3RvY29sLlBsYXllclN0YXRlIjUKDUMyU1BsYXllck1vdmUSJAoIcG9zaXRp",
+            "b24YASABKAsyEi5wcm90b2NvbC5Qb3NpdGlvbiJYChdTMkNTeW5jRnVybmFj",
+            "ZVN0YXRlTm90aRIRCgl0ZWFtSW5kZXgYASABKA0SGAoQZnVybmFjZVN0YXRl",
+            "Q29kZRgCIAEoDRIQCghwcm9ncmVzcxgDIAEoAiJVChRTMkNTYXdtaWxsU3Rh",
+            "dHVzTm90aRIRCgl0ZWFtSW5kZXgYASABKA0SGAoQc2F3bWlsbFN0YXRlQ29k",
+            "ZRgCIAEoDRIQCghwcm9ncmVzcxgDIAEoAiJZChZTMkNXb3JrYmVuY2hTdGF0",
+            "dXNOb3RpEhEKCXRlYW1JbmRleBgBIAEoDRIaChJ3b3JrYmVuY2hTdGF0ZUNv",
+            "ZGUYAiABKA0SEAoIcHJvZ3Jlc3MYAyABKAIiQAoSQzJTUGxheWVyQWN0aW9u",
+            "UmVxEhIKCmFjdGlvblR5cGUYASABKA0SFgoOdGFyZ2V0T2JqZWN0SWQYAiAB",
+            "KA0iUQoSUzJDUGxheWVyQWN0aW9uUmVzEhIKCmFjdGlvblR5cGUYASABKA0S",
+            "FgoOdGFyZ2V0T2JqZWN0SWQYAiABKA0SDwoHc3VjY2VzcxgDIAEoCCJyChJT",
+            "MkNTcGF3bk9iamVjdE5vdGkSEAoIb2JqZWN0SWQYASABKA0SEgoKb2JqZWN0",
+            "VHlwZRgCIAEoDRIQCghhcmVhVHlwZRgDIAEoDRIkCghwb3NpdGlvbhgEIAEo",
+            "CzISLnByb3RvY29sLlBvc2l0aW9uIk0KE0MyU0Rlc3RvcnlPYmplY3RSZXES",
+            "EAoIb2JqZWN0SWQYASABKA0SEgoKb2JqZWN0VHlwZRgCIAEoDRIQCghhcmVh",
+            "VHlwZRgDIAEoDSJOChRTMkNEZXN0b3J5T2JqZWN0Tm90aRIQCghvYmplY3RJ",
+            "ZBgBIAEoDRISCgpvYmplY3RUeXBlGAIgASgNEhAKCGFyZWFUeXBlGAMgASgN",
+            "IjsKFFMyQ1N5bmNGaWVsZFVuaXROb3RpEiMKBk9iamVjdBgBIAMoCzITLnBy",
+            "b3RvY29sLkZpZWxkVW5pdCIRCg9DMlNTdXJyZW5kZXJSZXEiSgoPUzJDU3Vy",
+            "cmVuZGVyUmVzEhsKE3N1cnJlbmRlclJlc3VsdENvZGUYASABKA0SGgoSc3Vy",
+            "cmVuZGVyU3RhcnRUaW1lGAIgASgEIkAKEFMyQ1N1cnJlbmRlck5vdGkSEAoI",
+            "cGxheWVySWQYASABKA0SGgoSc3VycmVuZGVyU3RhcnRUaW1lGAIgASgEIjoK",
+            "D1MyQ0dhbWVPdmVyTm90aRIUCgxnYW1lT3ZlclR5cGUYASABKA0SEQoJdGVh",
+            "bUluZGV4GAIgASgNIksKE0MyU01vdmVUb0FyZWFNYXBSZXESFwoPY3VycmVu",
+            "dEFyZWFUeXBlGAEgASgNEhsKE2Rlc3RpbmF0aW9uQXJlYVR5cGUYAiABKA0i",
+            "UwoQUzJDTW92ZVRvQXJlYU1hcBIZChFqb2luTWFwUmVzdWx0Q29kZRgBIAEo",
+            "DRIkCghwb3NpdGlvbhgCIAEoCzISLnByb3RvY29sLlBvc2l0aW9uIiUKD0My",
+            "U1dvcmtiZW5jaFJlcRISCgpyZXN1bHRJdGVtGAEgASgNIi4KD1MyQ1dvcmti",
+            "ZW5jaFJlcxIbChN3b3JrYmVuY2hSZXN1bHRDb2RlGAEgASgNIjEKDUMyU0Z1",
+            "cm5hY2VSZXESIAoEaXRlbRgBIAEoCzISLnByb3RvY29sLkl0ZW1EYXRhIioK",
+            "DVMyQ0Z1cm5hY2VSZXMSGQoRZnVybmFjZVJlc3VsdENvZGUYASABKA0iMQoN",
+            "QzJTU2F3bWlsbFJlcRIgCgRpdGVtGAEgASgLMhIucHJvdG9jb2wuSXRlbURh",
+            "dGEiKgoNUzJDU2F3bWlsbFJlcxIZChFzYXdtaWxsUmVzdWx0Q29kZRgBIAEo",
+            "DSIlChBDMlNDcmVhdGVSb29tUmVxEhEKCWlzUHJpdmF0ZRgBIAEoCCI1ChBT",
+            "MkNDcmVhdGVSb29tUmVzEhAKCGdhbWVDb2RlGAEgASgJEg8KB2dhbWVVcmwY",
+            "AiABKAkiEwoRQzJTTWF0Y2hDYW5jZWxSZXEiEwoRUzJDTWF0Y2hDYW5jZWxS",
+            "ZXMiDQoLQzJTTWF0Y2hSZXEiKgoLUzJDTWF0Y2hSZXMSGwoTcm9vbU1hdGNo",
+            "UmVzdWx0Q29kZRgBIAEoDSJXChRTMkNNYXRjaFByb2dyZXNzTm90aRIZChFt",
+            "YXRjaFByb2dyZXNzQ29kZRgBIAEoDRITCgtlbGFwc2VkVGltZRgCIAEoBBIP",
+            "CgdnYW1lVXJsGAMgASgJIiIKDkMyU0pvaW5Sb29tUmVxEhAKCGdhbWVDb2Rl",
+            "GAEgASgJIj0KDlMyQ0pvaW5Sb29tUmVzEhoKEmpvaW5Sb29tUmVzdWx0Q29k",
+            "ZRgBIAEoDRIPCgdnYW1lVXJsGAIgASgJIhAKDkMyU1F1aXRSb29tUmVxIiMK",
+            "D1MyQ1F1aXRSb29tTm90aRIQCghwbGF5ZXJJZBgBIAEoDSIlChBDMlNUZWFt",
+            "Q2hhbmdlUmVxEhEKCXRlYW1JbmRleBgBIAEoDSIwChBTMkNUZWFtQ2hhbmdl",
+            "UmVzEhwKFHRlYW1DaGFuZ2VSZXN1bHRDb2RlGAEgASgNIjwKD1MyQ1N5bmNS",
+            "b29tTm90aRIpCgdwbGF5ZXJzGAEgAygLMhgucHJvdG9jb2wuUGxheWVyUm9v",
+            "bUluZm8iKgoZQzJTUGxheWVySXNSZWFkeUNoYW5nZVJlcRINCgVyZWFkeRgB",
+            "IAEoCCJCChlTMkNQbGF5ZXJJc1JlYWR5Q2hhbmdlUmVzEiUKHXBsYXllcklz",
+            "UmVhZHlDaGFuZ2VSZXN1bHRDb2RlGAEgASgNIhEKD0MyU0dhbWVTdGFydFJl",
+            "cSISChBTMkNHYW1lU3RhcnROb3RpIicKE0MyU0xvYWRQcm9ncmVzc05vdGkS",
+            "EAoIcHJvZ3Jlc3MYASABKA0igwEKD1MyQ1N5bmNMb2FkTm90aRI8CgxzeW5j",
+            "TG9hZERhdGEYASADKAsyJi5wcm90b2NvbC5TMkNTeW5jTG9hZE5vdGkuU3lu",
+            "Y0xvYWREYXRhGjIKDFN5bmNMb2FkRGF0YRIQCghwbGF5ZXJJZBgBIAEoDRIQ",
+            "Cghwcm9ncmVzcxgCIAEoDSI0ChBDMlNNb25zdGVyQWRkUmVxEg4KBnRlYW1J",
+            "ZBgBIAEoBRIQCghtb25zdGVycxgCIAMoBSIVChNDMlNNb25zdGVyRGVwbG95",
+            "UmVxIhYKFFMyQ01vbnN0ZXJEZXBsb3lOb3RpIkUKE1MyQ01pc3NpbmdGaWVs",
+            "ZE5vdGkSEgoKcGFja2V0VHlwZRgBIAEoBRIaChJtaXNzaW5nRmllbGRMZW5n",
+            "dGgYAiABKAUiFgoUUzJDTmVlZEF1dGhvcml6ZU5vdGliBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -128,7 +129,7 @@ namespace Protocol {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.PlayerRoomInfo), global::Protocol.PlayerRoomInfo.Parser, new[]{ "PlayerId", "PlayerName", "AvartarItem", "TeamIndex", "Ready" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.PlayerInitialData), global::Protocol.PlayerInitialData.Parser, new[]{ "PlayerId", "PlayerName", "AvartarItem", "TeamIndex", "Position" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.PlayerState), global::Protocol.PlayerState.Parser, new[]{ "PlayerId", "ActionType", "Position", "EquippedItem" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.FieldUnit), global::Protocol.FieldUnit.Parser, new[]{ "Id", "UnitType", "State", "Position", "Hp", "Damage", "TargetId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.FieldUnit), global::Protocol.FieldUnit.Parser, new[]{ "SpawnNumber", "UnitType", "State", "Position", "Hp", "TeamId", "TargetId", "UnitId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.Position), global::Protocol.Position.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SAuthorizeReq), global::Protocol.C2SAuthorizeReq.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CAuthorizeRes), global::Protocol.S2CAuthorizeRes.Parser, new[]{ "AuthorizeResultCode" }, null, null, null, null),
@@ -145,8 +146,8 @@ namespace Protocol {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CDestoryObjectNoti), global::Protocol.S2CDestoryObjectNoti.Parser, new[]{ "ObjectId", "ObjectType", "AreaType" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSyncFieldUnitNoti), global::Protocol.S2CSyncFieldUnitNoti.Parser, new[]{ "Object" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SSurrenderReq), global::Protocol.C2SSurrenderReq.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSurrenderRes), global::Protocol.S2CSurrenderRes.Parser, new[]{ "SurrenderResultCode" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSurrenderNoti), global::Protocol.S2CSurrenderNoti.Parser, new[]{ "PlayerId", "IsSurrender", "SurrenderStartTime" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSurrenderRes), global::Protocol.S2CSurrenderRes.Parser, new[]{ "SurrenderResultCode", "SurrenderStartTime" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSurrenderNoti), global::Protocol.S2CSurrenderNoti.Parser, new[]{ "PlayerId", "SurrenderStartTime" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CGameOverNoti), global::Protocol.S2CGameOverNoti.Parser, new[]{ "GameOverType", "TeamIndex" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SMoveToAreaMapReq), global::Protocol.C2SMoveToAreaMapReq.Parser, new[]{ "CurrentAreaType", "DestinationAreaType" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CMoveToAreaMap), global::Protocol.S2CMoveToAreaMap.Parser, new[]{ "JoinMapResultCode", "Position" }, null, null, null, null),
@@ -176,7 +177,7 @@ namespace Protocol {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CGameStartNoti), global::Protocol.S2CGameStartNoti.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SLoadProgressNoti), global::Protocol.C2SLoadProgressNoti.Parser, new[]{ "Progress" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSyncLoadNoti), global::Protocol.S2CSyncLoadNoti.Parser, new[]{ "SyncLoadData" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CSyncLoadNoti.Types.SyncLoadData), global::Protocol.S2CSyncLoadNoti.Types.SyncLoadData.Parser, new[]{ "PlayerId", "Progress" }, null, null, null, null)}),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SMonsterAddReq), global::Protocol.C2SMonsterAddReq.Parser, new[]{ "Monsters" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SMonsterAddReq), global::Protocol.C2SMonsterAddReq.Parser, new[]{ "TeamId", "Monsters" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.C2SMonsterDeployReq), global::Protocol.C2SMonsterDeployReq.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CMonsterDeployNoti), global::Protocol.S2CMonsterDeployNoti.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.S2CMissingFieldNoti), global::Protocol.S2CMissingFieldNoti.Parser, new[]{ "PacketType", "MissingFieldLength" }, null, null, null, null),
@@ -2625,13 +2626,14 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public FieldUnit(FieldUnit other) : this() {
-      id_ = other.id_;
+      spawnNumber_ = other.spawnNumber_;
       unitType_ = other.unitType_;
       state_ = other.state_;
       position_ = other.position_ != null ? other.position_.Clone() : null;
       hp_ = other.hp_;
-      damage_ = other.damage_;
+      teamId_ = other.teamId_;
       targetId_ = other.targetId_;
+      unitId_ = other.unitId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -2640,20 +2642,26 @@ namespace Protocol {
       return new FieldUnit(this);
     }
 
-    /// <summary>Field number for the "id" field.</summary>
-    public const int IdFieldNumber = 1;
-    private uint id_;
+    /// <summary>Field number for the "spawnNumber" field.</summary>
+    public const int SpawnNumberFieldNumber = 1;
+    private int spawnNumber_;
+    /// <summary>
+    ///소환된 순서
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Id {
-      get { return id_; }
+    public int SpawnNumber {
+      get { return spawnNumber_; }
       set {
-        id_ = value;
+        spawnNumber_ = value;
       }
     }
 
     /// <summary>Field number for the "unitType" field.</summary>
     public const int UnitTypeFieldNumber = 2;
     private int unitType_;
+    /// <summary>
+    ///근접, 원거리, 공중
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int UnitType {
       get { return unitType_; }
@@ -2664,12 +2672,12 @@ namespace Protocol {
 
     /// <summary>Field number for the "state" field.</summary>
     public const int StateFieldNumber = 3;
-    private uint state_;
+    private int state_;
     /// <summary>
-    /// 상태아이디로 이동인지, 근거리공격인지, 원거리공격인지 등등
+    ///어떤 상태머신인지
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint State {
+    public int State {
       get { return state_; }
       set {
         state_ = value;
@@ -2679,6 +2687,9 @@ namespace Protocol {
     /// <summary>Field number for the "position" field.</summary>
     public const int PositionFieldNumber = 4;
     private global::Protocol.Position position_;
+    /// <summary>
+    ///현 위치
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Protocol.Position Position {
       get { return position_; }
@@ -2689,34 +2700,57 @@ namespace Protocol {
 
     /// <summary>Field number for the "hp" field.</summary>
     public const int HpFieldNumber = 5;
-    private uint hp_;
+    private int hp_;
+    /// <summary>
+    ///지금 체력
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Hp {
+    public int Hp {
       get { return hp_; }
       set {
         hp_ = value;
       }
     }
 
-    /// <summary>Field number for the "damage" field.</summary>
-    public const int DamageFieldNumber = 6;
-    private uint damage_;
+    /// <summary>Field number for the "teamId" field.</summary>
+    public const int TeamIdFieldNumber = 6;
+    private int teamId_;
+    /// <summary>
+    ///어느팀인지
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Damage {
-      get { return damage_; }
+    public int TeamId {
+      get { return teamId_; }
       set {
-        damage_ = value;
+        teamId_ = value;
       }
     }
 
     /// <summary>Field number for the "targetId" field.</summary>
     public const int TargetIdFieldNumber = 7;
-    private uint targetId_;
+    private int targetId_;
+    /// <summary>
+    ///추격중인 대상(공격, 쫓아가는 상태일 수 있음)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint TargetId {
+    public int TargetId {
       get { return targetId_; }
       set {
         targetId_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "unitId" field.</summary>
+    public const int UnitIdFieldNumber = 8;
+    private int unitId_;
+    /// <summary>
+    ///테이블의 키 값
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int UnitId {
+      get { return unitId_; }
+      set {
+        unitId_ = value;
       }
     }
 
@@ -2733,26 +2767,28 @@ namespace Protocol {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Id != other.Id) return false;
+      if (SpawnNumber != other.SpawnNumber) return false;
       if (UnitType != other.UnitType) return false;
       if (State != other.State) return false;
       if (!object.Equals(Position, other.Position)) return false;
       if (Hp != other.Hp) return false;
-      if (Damage != other.Damage) return false;
+      if (TeamId != other.TeamId) return false;
       if (TargetId != other.TargetId) return false;
+      if (UnitId != other.UnitId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Id != 0) hash ^= Id.GetHashCode();
+      if (SpawnNumber != 0) hash ^= SpawnNumber.GetHashCode();
       if (UnitType != 0) hash ^= UnitType.GetHashCode();
       if (State != 0) hash ^= State.GetHashCode();
       if (position_ != null) hash ^= Position.GetHashCode();
       if (Hp != 0) hash ^= Hp.GetHashCode();
-      if (Damage != 0) hash ^= Damage.GetHashCode();
+      if (TeamId != 0) hash ^= TeamId.GetHashCode();
       if (TargetId != 0) hash ^= TargetId.GetHashCode();
+      if (UnitId != 0) hash ^= UnitId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -2766,9 +2802,9 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Id != 0) {
+      if (SpawnNumber != 0) {
         output.WriteRawTag(8);
-        output.WriteUInt32(Id);
+        output.WriteInt32(SpawnNumber);
       }
       if (UnitType != 0) {
         output.WriteRawTag(16);
@@ -2776,7 +2812,7 @@ namespace Protocol {
       }
       if (State != 0) {
         output.WriteRawTag(24);
-        output.WriteUInt32(State);
+        output.WriteInt32(State);
       }
       if (position_ != null) {
         output.WriteRawTag(34);
@@ -2784,15 +2820,19 @@ namespace Protocol {
       }
       if (Hp != 0) {
         output.WriteRawTag(40);
-        output.WriteUInt32(Hp);
+        output.WriteInt32(Hp);
       }
-      if (Damage != 0) {
+      if (TeamId != 0) {
         output.WriteRawTag(48);
-        output.WriteUInt32(Damage);
+        output.WriteInt32(TeamId);
       }
       if (TargetId != 0) {
         output.WriteRawTag(56);
-        output.WriteUInt32(TargetId);
+        output.WriteInt32(TargetId);
+      }
+      if (UnitId != 0) {
+        output.WriteRawTag(64);
+        output.WriteInt32(UnitId);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -2802,26 +2842,29 @@ namespace Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Id != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Id);
+      if (SpawnNumber != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(SpawnNumber);
       }
       if (UnitType != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(UnitType);
       }
       if (State != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(State);
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(State);
       }
       if (position_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Position);
       }
       if (Hp != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Hp);
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Hp);
       }
-      if (Damage != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Damage);
+      if (TeamId != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(TeamId);
       }
       if (TargetId != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(TargetId);
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(TargetId);
+      }
+      if (UnitId != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(UnitId);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -2834,8 +2877,8 @@ namespace Protocol {
       if (other == null) {
         return;
       }
-      if (other.Id != 0) {
-        Id = other.Id;
+      if (other.SpawnNumber != 0) {
+        SpawnNumber = other.SpawnNumber;
       }
       if (other.UnitType != 0) {
         UnitType = other.UnitType;
@@ -2852,11 +2895,14 @@ namespace Protocol {
       if (other.Hp != 0) {
         Hp = other.Hp;
       }
-      if (other.Damage != 0) {
-        Damage = other.Damage;
+      if (other.TeamId != 0) {
+        TeamId = other.TeamId;
       }
       if (other.TargetId != 0) {
         TargetId = other.TargetId;
+      }
+      if (other.UnitId != 0) {
+        UnitId = other.UnitId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -2870,7 +2916,7 @@ namespace Protocol {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Id = input.ReadUInt32();
+            SpawnNumber = input.ReadInt32();
             break;
           }
           case 16: {
@@ -2878,7 +2924,7 @@ namespace Protocol {
             break;
           }
           case 24: {
-            State = input.ReadUInt32();
+            State = input.ReadInt32();
             break;
           }
           case 34: {
@@ -2889,15 +2935,19 @@ namespace Protocol {
             break;
           }
           case 40: {
-            Hp = input.ReadUInt32();
+            Hp = input.ReadInt32();
             break;
           }
           case 48: {
-            Damage = input.ReadUInt32();
+            TeamId = input.ReadInt32();
             break;
           }
           case 56: {
-            TargetId = input.ReadUInt32();
+            TargetId = input.ReadInt32();
+            break;
+          }
+          case 64: {
+            UnitId = input.ReadInt32();
             break;
           }
         }
@@ -5497,6 +5547,7 @@ namespace Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public S2CSurrenderRes(S2CSurrenderRes other) : this() {
       surrenderResultCode_ = other.surrenderResultCode_;
+      surrenderStartTime_ = other.surrenderStartTime_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -5516,6 +5567,17 @@ namespace Protocol {
       }
     }
 
+    /// <summary>Field number for the "surrenderStartTime" field.</summary>
+    public const int SurrenderStartTimeFieldNumber = 2;
+    private ulong surrenderStartTime_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ulong SurrenderStartTime {
+      get { return surrenderStartTime_; }
+      set {
+        surrenderStartTime_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as S2CSurrenderRes);
@@ -5530,6 +5592,7 @@ namespace Protocol {
         return true;
       }
       if (SurrenderResultCode != other.SurrenderResultCode) return false;
+      if (SurrenderStartTime != other.SurrenderStartTime) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -5537,6 +5600,7 @@ namespace Protocol {
     public override int GetHashCode() {
       int hash = 1;
       if (SurrenderResultCode != 0) hash ^= SurrenderResultCode.GetHashCode();
+      if (SurrenderStartTime != 0UL) hash ^= SurrenderStartTime.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -5554,6 +5618,10 @@ namespace Protocol {
         output.WriteRawTag(8);
         output.WriteUInt32(SurrenderResultCode);
       }
+      if (SurrenderStartTime != 0UL) {
+        output.WriteRawTag(16);
+        output.WriteUInt64(SurrenderStartTime);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -5564,6 +5632,9 @@ namespace Protocol {
       int size = 0;
       if (SurrenderResultCode != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(SurrenderResultCode);
+      }
+      if (SurrenderStartTime != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(SurrenderStartTime);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -5579,6 +5650,9 @@ namespace Protocol {
       if (other.SurrenderResultCode != 0) {
         SurrenderResultCode = other.SurrenderResultCode;
       }
+      if (other.SurrenderStartTime != 0UL) {
+        SurrenderStartTime = other.SurrenderStartTime;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -5592,6 +5666,10 @@ namespace Protocol {
             break;
           case 8: {
             SurrenderResultCode = input.ReadUInt32();
+            break;
+          }
+          case 16: {
+            SurrenderStartTime = input.ReadUInt64();
             break;
           }
         }
@@ -5629,7 +5707,6 @@ namespace Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public S2CSurrenderNoti(S2CSurrenderNoti other) : this() {
       playerId_ = other.playerId_;
-      isSurrender_ = other.isSurrender_;
       surrenderStartTime_ = other.surrenderStartTime_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -5650,19 +5727,8 @@ namespace Protocol {
       }
     }
 
-    /// <summary>Field number for the "isSurrender" field.</summary>
-    public const int IsSurrenderFieldNumber = 2;
-    private bool isSurrender_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool IsSurrender {
-      get { return isSurrender_; }
-      set {
-        isSurrender_ = value;
-      }
-    }
-
     /// <summary>Field number for the "surrenderStartTime" field.</summary>
-    public const int SurrenderStartTimeFieldNumber = 3;
+    public const int SurrenderStartTimeFieldNumber = 2;
     private ulong surrenderStartTime_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ulong SurrenderStartTime {
@@ -5686,7 +5752,6 @@ namespace Protocol {
         return true;
       }
       if (PlayerId != other.PlayerId) return false;
-      if (IsSurrender != other.IsSurrender) return false;
       if (SurrenderStartTime != other.SurrenderStartTime) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -5695,7 +5760,6 @@ namespace Protocol {
     public override int GetHashCode() {
       int hash = 1;
       if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
-      if (IsSurrender != false) hash ^= IsSurrender.GetHashCode();
       if (SurrenderStartTime != 0UL) hash ^= SurrenderStartTime.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -5714,12 +5778,8 @@ namespace Protocol {
         output.WriteRawTag(8);
         output.WriteUInt32(PlayerId);
       }
-      if (IsSurrender != false) {
-        output.WriteRawTag(16);
-        output.WriteBool(IsSurrender);
-      }
       if (SurrenderStartTime != 0UL) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(16);
         output.WriteUInt64(SurrenderStartTime);
       }
       if (_unknownFields != null) {
@@ -5732,9 +5792,6 @@ namespace Protocol {
       int size = 0;
       if (PlayerId != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(PlayerId);
-      }
-      if (IsSurrender != false) {
-        size += 1 + 1;
       }
       if (SurrenderStartTime != 0UL) {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(SurrenderStartTime);
@@ -5752,9 +5809,6 @@ namespace Protocol {
       }
       if (other.PlayerId != 0) {
         PlayerId = other.PlayerId;
-      }
-      if (other.IsSurrender != false) {
-        IsSurrender = other.IsSurrender;
       }
       if (other.SurrenderStartTime != 0UL) {
         SurrenderStartTime = other.SurrenderStartTime;
@@ -5775,10 +5829,6 @@ namespace Protocol {
             break;
           }
           case 16: {
-            IsSurrender = input.ReadBool();
-            break;
-          }
-          case 24: {
             SurrenderStartTime = input.ReadUInt64();
             break;
           }
@@ -9851,6 +9901,7 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public C2SMonsterAddReq(C2SMonsterAddReq other) : this() {
+      teamId_ = other.teamId_;
       monsters_ = other.monsters_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -9860,10 +9911,21 @@ namespace Protocol {
       return new C2SMonsterAddReq(this);
     }
 
+    /// <summary>Field number for the "teamId" field.</summary>
+    public const int TeamIdFieldNumber = 1;
+    private int teamId_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int TeamId {
+      get { return teamId_; }
+      set {
+        teamId_ = value;
+      }
+    }
+
     /// <summary>Field number for the "monsters" field.</summary>
-    public const int MonstersFieldNumber = 1;
+    public const int MonstersFieldNumber = 2;
     private static readonly pb::FieldCodec<int> _repeated_monsters_codec
-        = pb::FieldCodec.ForInt32(10);
+        = pb::FieldCodec.ForInt32(18);
     private readonly pbc::RepeatedField<int> monsters_ = new pbc::RepeatedField<int>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<int> Monsters {
@@ -9883,6 +9945,7 @@ namespace Protocol {
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (TeamId != other.TeamId) return false;
       if(!monsters_.Equals(other.monsters_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -9890,6 +9953,7 @@ namespace Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
+      if (TeamId != 0) hash ^= TeamId.GetHashCode();
       hash ^= monsters_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -9904,6 +9968,10 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+      if (TeamId != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(TeamId);
+      }
       monsters_.WriteTo(output, _repeated_monsters_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -9913,6 +9981,9 @@ namespace Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
+      if (TeamId != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(TeamId);
+      }
       size += monsters_.CalculateSize(_repeated_monsters_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -9924,6 +9995,9 @@ namespace Protocol {
     public void MergeFrom(C2SMonsterAddReq other) {
       if (other == null) {
         return;
+      }
+      if (other.TeamId != 0) {
+        TeamId = other.TeamId;
       }
       monsters_.Add(other.monsters_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -9937,8 +10011,12 @@ namespace Protocol {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10:
           case 8: {
+            TeamId = input.ReadInt32();
+            break;
+          }
+          case 18:
+          case 16: {
             monsters_.AddEntriesFrom(input, _repeated_monsters_codec);
             break;
           }

@@ -60,7 +60,7 @@ namespace ResourceWar.Server
         private void EnqueueReceive(ReceivedPacket packet)
         {
             receiveQueue.Enqueue(packet); // 수신 큐에 시작
-            Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}, clientId = {packet.ClientId}");
+         //   Logger.Log($"[ReceiveQueue] Enqueued packet: Type={packet.PacketType}, Token={packet.Token}, Payload= {packet.Payload}, clientId = {packet.ClientId}");
             _ = ProcessReceiveQueue(); // 수신 큐  처리 시작
         }
 
@@ -123,7 +123,7 @@ namespace ResourceWar.Server
 
                     // Protobuf 메시지를 JSON 문자열로 변환
                     string payloadString = packet.Payload.ToString();
-                    Logger.Log($"[SendQueue] Dequeued and sent packet: Type={packet.PacketType}, Token={packet.Token}, Payload={payloadString}");
+                   // Logger.Log($"[SendQueue] Dequeued and sent packet: Type={packet.PacketType}, Token={packet.Token}, Payload={payloadString}");
                 }
                 catch (IOException e)
                 {

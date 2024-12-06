@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
+using Protocol;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -30,8 +32,10 @@ namespace ResourceWar.Server
         /// Team - Position Count, 소환용 계수기
         /// </summary>
         private Dictionary<int, int[]> spawnedCounter = new();
+        private int monsterAcc = 0;
         private void Awake()
         {
+            EventDispatcher<MonsterController.Event, ReceivedPacket>.Instance.Subscribe(Event.AddNewTeam, Cheat_AddMonsters);
             monsterPool = new(monsterPool_OnCreate, monsterPool_OnGet, monsterPool_OnRelease, monsterPool_OnDestroy, true, 100, 300);
             for (int i = 0; i < TeamSpawnPoints.Length; ++i)
             {
@@ -39,7 +43,11 @@ namespace ResourceWar.Server
             }
         }
 
-        
+        public async UniTask Cheat_AddMonsters(ReceivedPacket receivedPacket)
+        {
+            var payload = (C2SMonsterAddReq)receivedPacket.Payload;
+            AddMonster(payload.TeamId, payload.Monsters.ToArray());
+        }
 
         private void OnEnable()
         {
@@ -83,7 +91,11 @@ namespace ResourceWar.Server
                         tasks.Add(monster.Execute());
                     }
                 }
-                await UniTask.WhenAll(tasks);
+                if (tasks.Count > 0)
+                {
+                    await UniTask.WhenAll(tasks);
+               
+                _ = SendSyncFieldUnitNoti();
                 for (int i = 1; i <= monsters.Count; i++)
                 {
                     for (int j = 0; j < monsters[i].Count; j++)
@@ -96,11 +108,41 @@ namespace ResourceWar.Server
                         }
                     }
                 }
+                }
                 await UniTask.Yield(cts.Token);
                 tasks.Clear();
             }
 
             
+        }
+
+        private  async UniTask SendSyncFieldUnitNoti()
+        {
+            Packet packet = new Packet();
+            packet.PacketType = PacketType.SYNC_FIELD_UNIT_NOTIFICATION;
+            packet.Token = "";
+            var payload = new S2CSyncFieldUnitNoti();
+            foreach (var monsterPair in monsters)
+            {
+                var teamId = monsterPair.Key;
+                foreach(var monster in monsterPair.Value)
+                {
+                    payload.Object.Add(new FieldUnit
+                    {
+                        Hp = (int)monster.CurrentHealth,
+                        SpawnNumber = (int)monster.ID,
+                        Position = monster.transform.position.FromVector(),
+                        State = (int)monster.CurrentState,
+                        TargetId = (monster.TargetUnit?.GetID ?? 0),
+                        UnitType = (int)monster.Position,
+                        TeamId = teamId,
+                        UnitId = monster.monsterId
+                    });
+                }
+                
+            }
+            packet.Payload = payload;
+            await EventDispatcher<GameManager.GameManagerEvent, Packet>.Instance.NotifyAsync(GameManager.GameManagerEvent.SendPacketForAll, packet);
         }
 
         public void AddMonster(int teamId, int[] monsterIds)
@@ -119,13 +161,11 @@ namespace ResourceWar.Server
 #if UNITY_EDITOR
                     monster.name = $"[{teamId}]{TableData.Monsters[monsterId].Name}{monsters[teamId].Count}";
 #endif
-        
+                    monster.ID = ++monsterAcc;
                     monsters[teamId].Add(monster);
-                    
                     Vector3 pos = spawnPoint.transform.position;
                     int monsterPosition = (int)monster.Position-1;
                     int count = spawnedCounter[teamId][monsterPosition]++;
-
                     pos -= spawnPoint.forward * SpawnOffset.y * (float)(monster.Position + (count / 9));
                     pos += spawnPoint.right * ((-(count & 1) | 1) * (((count + 1) >> 1) * SpawnOffset.x));
                     pos.y = transform.localScale.y;

@@ -14,7 +14,6 @@ namespace ResourceWar.Server
 {
     public class Initializer : MonoBehaviour
     {
-
         private void Awake()
         {
             Init().Forget();

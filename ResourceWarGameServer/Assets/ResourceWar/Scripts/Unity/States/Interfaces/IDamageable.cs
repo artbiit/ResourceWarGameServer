@@ -9,5 +9,7 @@ namespace ResourceWar.Server
        public UnityEngine.Transform Transform { get; }
         public bool IsAlive { get; }
        public void TakeDamage(float damage, IDamageable hitUnit);
+
+        public int GetID { get; }
     }
 }

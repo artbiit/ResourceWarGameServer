@@ -10,6 +10,7 @@ namespace ResourceWar.Server.Monster
     {
         public async UniTask Enter(MonsterBehaviour monster)
         {
+            monster.CurrentState = MonsterBehaviour.State.Idle;
             await UniTask.Yield();
         }
 

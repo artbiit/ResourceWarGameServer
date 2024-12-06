@@ -12,6 +12,7 @@ namespace ResourceWar.Server.Monster
 
         public async UniTask Enter(MonsterBehaviour monster)
         {
+            monster.CurrentState = MonsterBehaviour.State.Die;
             monster.NavMeshAgent.isStopped = true;
             await UniTask.Yield();
         }

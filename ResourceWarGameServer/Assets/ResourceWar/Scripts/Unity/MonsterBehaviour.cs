@@ -10,6 +10,14 @@ namespace ResourceWar.Server
 {
     public class MonsterBehaviour : MonoBehaviour, IDamageable
     {
+        public enum State : uint
+        {
+            Idle = 0,
+            Attack = 1,
+            Move = 2,
+            Chase = 3,
+            Die = 4,
+        }
         #region Variables
         #region Stats
         public float MaxHealth;
@@ -64,15 +72,27 @@ namespace ResourceWar.Server
                 }
             }
         }
+        /// <summary>
+        /// 소환된 몬스터 고유 번호
+        /// </summary>
+        public int ID;
+
+        public int GetID => ID;
+        /// <summary>
+        /// 현 상태머신 상태
+        /// </summary>
+        public State CurrentState = State.Idle;
+        Die die = new Die();
+        Move move = new Move();
+        Chase chase = new Chase();
+        Attack attack = new Attack();
+        Idle idle = new Idle();
+
         #endregion
 
         private void Awake()
         {
-            var die = new Die();
-            var move = new Move();
-            var chase = new Chase();
-            var attack = new Attack();
-            var idle = new Idle();
+          
             stateMachine.AddGlobalTransition(die, () => this.IsAlive == false);
             stateMachine.AddTransition(idle, move, () => true);
             stateMachine.AddTransition(move, chase, () => targetUnit != null && targetUnit.IsAlive );
@@ -101,6 +121,7 @@ namespace ResourceWar.Server
             this.DetectRanged = monsterData.DetectRanged;
             this.Position = monsterData.Position;
             this.NavMeshAgent.speed = this.Speed;
+            _ = stateMachine.ChangeState(idle, this);
             return true;
         }
 

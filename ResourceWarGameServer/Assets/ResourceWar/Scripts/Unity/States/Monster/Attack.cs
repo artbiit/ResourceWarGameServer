@@ -12,6 +12,7 @@ namespace ResourceWar.Server.Monster
         public bool attackable = true;
         public async UniTask Enter(MonsterBehaviour monster)
         {
+            monster.CurrentState= MonsterBehaviour.State.Attack;
             monster.NavMeshAgent.isStopped = true;
             await UniTask.Yield();
         }

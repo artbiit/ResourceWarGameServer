@@ -16,6 +16,7 @@ namespace ResourceWar.Server.Monster
         Collider[] castedEnemies = new Collider[3];
         public async UniTask Enter(MonsterBehaviour monster)
         {
+            monster.CurrentState = MonsterBehaviour.State.Move;
             enemyLayer = 1 << LayerMask.NameToLayer($"Team{(monster.TeamId == 1 ? 2 : 1)}");
             allyLayer = 1 << LayerMask.NameToLayer($"Team{monster.TeamId}");
             physicsScene = monster.PhysicsScene;

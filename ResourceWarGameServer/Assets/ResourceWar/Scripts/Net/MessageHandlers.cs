@@ -26,6 +26,7 @@ namespace ResourceWar.Server
             Handlers.Add(PacketType.PLAYER_IS_READY_CHANGE_REQUEST, this.PlayerIsReadyChangeHandler);
             Handlers.Add(PacketType.LOAD_PROGRESS_NOTIFICATION, this.LoadProgressHandler);
             Handlers.Add(PacketType.SURRENDER_REQUEST, this.SurrenderHandler);
+            Handlers.Add(PacketType.ADD_MONSTER_REQUEST, this.AddMonsterRequestHandler);
         }
 
 
